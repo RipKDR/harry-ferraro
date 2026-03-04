@@ -73,7 +73,7 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Image */}
-        <div className="flex items-center justify-center bg-[#131118] flex-shrink-0">
+        <div className="flex items-center justify-center bg-[#22202c] flex-shrink-0">
           <Image
             key={art.id}
             src={`/paintings/${art.filename}`}
@@ -91,10 +91,10 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire 
         {/* Info panel */}
         <div
           className="w-[300px] flex-shrink-0 flex flex-col overflow-y-auto max-md:hidden"
-          style={{ background: '#0d0c10', border: '1px solid #1e1c24', borderLeft: 'none' }}
+          style={{ background: '#1c1a24', border: '1px solid #38354a', borderLeft: 'none' }}
         >
           {/* Header */}
-          <div className="flex justify-between items-center px-8 py-6 border-b border-[#1e1c24]">
+          <div className="flex justify-between items-center px-8 py-6 border-b border-[#38354a]">
             <button
               ref={closeBtn}
               onClick={onClose}
@@ -108,13 +108,13 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire 
               <button
                 onClick={() => onNav(-1)}
                 disabled={idx <= 0}
-                className="w-8 h-8 flex items-center justify-center border border-[#1e1c24] text-text-3 hover:text-text hover:border-[#45424f] transition-all disabled:opacity-30 text-sm"
+                className="w-8 h-8 flex items-center justify-center border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-all disabled:opacity-30 text-sm"
                 aria-label="Previous artwork"
               >←</button>
               <button
                 onClick={() => onNav(1)}
                 disabled={idx >= all.length - 1}
-                className="w-8 h-8 flex items-center justify-center border border-[#1e1c24] text-text-3 hover:text-text hover:border-[#45424f] transition-all disabled:opacity-30 text-sm"
+                className="w-8 h-8 flex items-center justify-center border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-all disabled:opacity-30 text-sm"
                 aria-label="Next artwork"
               >→</button>
             </div>
@@ -200,14 +200,14 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire 
       {idx > 0 && (
         <button
           onClick={(e) => { e.stopPropagation(); onNav(-1) }}
-          className="md:hidden absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#1e1c24] text-text-2 hover:text-text bg-[rgba(7,6,10,0.8)]"
+          className="md:hidden absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#38354a] text-text-2 hover:text-text bg-[rgba(21,19,28,0.8)]"
           aria-label="Previous artwork"
         >←</button>
       )}
       {idx < all.length - 1 && (
         <button
           onClick={(e) => { e.stopPropagation(); onNav(1) }}
-          className="md:hidden absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#1e1c24] text-text-2 hover:text-text bg-[rgba(7,6,10,0.8)]"
+          className="md:hidden absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#38354a] text-text-2 hover:text-text bg-[rgba(21,19,28,0.8)]"
           aria-label="Next artwork"
         >→</button>
       )}
@@ -219,7 +219,7 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire 
             key={a.id}
             onClick={(e) => { e.stopPropagation(); onJumpTo(i) }}
             className="w-[5px] h-[5px] rounded-full transition-all"
-            style={{ background: a.id === art.id ? '#c8570a' : '#2a2733' }}
+            style={{ background: a.id === art.id ? '#c8570a' : '#48455a' }}
             aria-label={`Go to ${a.title}`}
             aria-current={a.id === art.id ? 'true' : undefined}
           />

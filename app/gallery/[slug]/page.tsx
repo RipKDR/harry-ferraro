@@ -137,7 +137,7 @@ export default async function ArtworkPage({ params }: Props) {
             </div>
           ) : (
             <div className="mt-8 mb-8">
-              <p className="font-mono text-[11px] tracking-[0.12em] uppercase text-text-3 py-4 border-t border-[#1e1c24]">
+              <p className="font-mono text-[11px] tracking-[0.12em] uppercase text-text-3 py-4 border-t border-[#38354a]">
                 This work has found its home.
               </p>
             </div>
@@ -158,7 +158,7 @@ export default async function ArtworkPage({ params }: Props) {
           {related.length > 0 && (
             <Reveal className="mt-12">
               <div className="divider mb-6" />
-              <p className="font-mono text-[8.5px] tracking-[0.16em] uppercase text-text-3 mb-4">
+              <p className="font-mono text-[10px] tracking-[0.16em] uppercase text-text-3 mb-4">
                 Also from {art.series}
               </p>
               <div className="grid grid-cols-3 gap-1">
@@ -186,7 +186,7 @@ export default async function ArtworkPage({ params }: Props) {
           )}
 
           {/* Mobile prev/next */}
-          <div className="hidden max-md:flex justify-between mt-12 pt-6 border-t border-[#1e1c24]">
+          <div className="hidden max-md:flex justify-between mt-12 pt-6 border-t border-[#38354a]">
             {prev ? (
               <Link href={`/gallery/${prev.slug}`} className="font-mono text-[9px] tracking-[0.12em] uppercase text-text-3 hover:text-ember transition-colors flex items-center gap-2">
                 ← {prev.title}

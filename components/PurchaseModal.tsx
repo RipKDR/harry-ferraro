@@ -45,11 +45,11 @@ export function PurchaseModal({ art, onClose }: { art: Artwork; onClose: () => v
     <div ref={containerRef} role="dialog" aria-modal="true" aria-label={`Purchase ${art.title}`} className="modal-backdrop" onClick={onClose}>
       <div
         className="w-full max-w-[540px] overflow-y-auto max-h-[90vh] animate-scale-in"
-        style={{ background: '#0d0c10', border: '1px solid #1e1c24' }}
+        style={{ background: '#1c1a24', border: '1px solid #38354a' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-9 py-7 border-b border-[#1e1c24] flex justify-between items-start">
+        <div className="px-9 py-7 border-b border-[#38354a] flex justify-between items-start">
           <div>
             <p className="text-[9px] tracking-[0.2em] uppercase text-ember mb-2" style={{ fontFamily: 'var(--font-jetbrains)' }}>Purchase Original</p>
             <h2 className="text-[28px] font-light" style={{ fontFamily: 'var(--font-cormorant)' }}>Secure this work</h2>
@@ -59,7 +59,7 @@ export function PurchaseModal({ art, onClose }: { art: Artwork; onClose: () => v
 
         <div className="px-9 py-7">
           {/* Artwork summary */}
-          <div className="flex gap-5 mb-7 pb-7 border-b border-[#1e1c24]">
+          <div className="flex gap-5 mb-7 pb-7 border-b border-[#38354a]">
             <Image
               src={`/paintings/${art.filename}`}
               alt={art.title}
@@ -89,8 +89,8 @@ export function PurchaseModal({ art, onClose }: { art: Artwork; onClose: () => v
           ))}
 
           <div
-            className="mt-5 mb-6 p-4 border border-[#1e1c24] text-[12px] text-text-2 leading-[1.65]"
-            style={{ background: '#131118', fontFamily: 'var(--font-jetbrains)' }}
+            className="mt-5 mb-6 p-4 border border-[#38354a] text-[12px] text-text-2 leading-[1.65]"
+            style={{ background: '#22202c', fontFamily: 'var(--font-jetbrains)' }}
           >
             <strong className="text-text font-normal">Secure checkout:</strong> You will be redirected to Stripe to complete your payment. Shipping address and payment details are collected securely by Stripe.
           </div>

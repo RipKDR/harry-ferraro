@@ -27,7 +27,7 @@ export default function AboutPage() {
         />
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(to top, #07060a 0%, rgba(7,6,10,0.4) 55%, transparent 100%)' }}
+          style={{ background: 'linear-gradient(to top, #15131c 0%, rgba(21,19,28,0.4) 55%, transparent 100%)' }}
         />
         <div className="relative z-[2] px-[52px] pb-[72px] max-md:px-6 max-md:pb-[52px]">
           <h1
@@ -73,7 +73,7 @@ export default function AboutPage() {
             <p>
               Each painting begins as a question I cannot answer in words. If I could explain it, I would not need to paint it.
             </p>
-            <p className="text-[12px] text-text-3 pt-4 border-t border-[#1e1c24] tracking-[0.05em]">
+            <p className="text-[12px] text-text-3 pt-4 border-t border-[#38354a] tracking-[0.05em]">
               Available for exhibitions, print licensing, and private commissions.<br />
               Based in Melbourne, AU.
             </p>

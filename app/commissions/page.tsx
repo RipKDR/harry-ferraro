@@ -69,7 +69,7 @@ export default function CommissionsPage() {
             { n: '02', t: 'I paint', b: '6–12 weeks of focused studio work. Progress shared at key stages.' },
             { n: '03', t: 'It arrives', b: 'Professionally packed and delivered with certificate of authenticity.' },
           ].map(({ n, t, b }) => (
-            <div key={n} className="p-6 border border-[#1e1c24] bg-[#131118]">
+            <div key={n} className="p-6 border border-[#38354a] bg-[#22202c]">
               <div className="font-serif text-[36px] font-light text-ember opacity-60 mb-3 italic">{n}</div>
               <div className="font-serif text-[18px] font-light mb-2">{t}</div>
               <p className="font-mono text-[12px] text-text-2 leading-[1.7]">{b}</p>

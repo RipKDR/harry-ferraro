@@ -40,7 +40,7 @@ export default function GalleryPage() {
     <>
       <div className="page-enter">
         {/* Header */}
-        <header className="pt-[140px] px-[52px] pb-11 border-b border-[#1e1c24] max-md:px-6">
+        <header className="pt-[140px] px-[52px] pb-11 border-b border-[#38354a] max-md:px-6">
           <div className="flex justify-between items-end mb-7">
             <Reveal>
               <h1 className="font-serif font-light tracking-[-0.02em]" style={{ fontSize: 'clamp(44px,7vw,88px)' }}>Gallery</h1>
@@ -60,7 +60,7 @@ export default function GalleryPage() {
 
         {/* Filters */}
         <div
-          className="flex overflow-x-auto border-b border-[#1e1c24] scrollbar-none"
+          className="flex overflow-x-auto border-b border-[#38354a] scrollbar-none"
           role="tablist"
           aria-label="Filter artworks"
           style={{ scrollbarWidth: 'none' }}
@@ -73,7 +73,7 @@ export default function GalleryPage() {
               onClick={() => setFilter(f)}
               className="font-mono text-[9px] tracking-[0.16em] uppercase px-5 py-[18px] border-b-2 whitespace-nowrap flex-shrink-0 transition-all"
               style={{
-                color: filter === f ? '#ede8df' : '#45424f',
+                color: filter === f ? '#f2ede5' : '#7c768a',
                 borderBottomColor: filter === f ? '#c8570a' : 'transparent',
                 fontFamily: 'var(--font-jetbrains)',
               }}

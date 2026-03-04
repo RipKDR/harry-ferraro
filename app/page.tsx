@@ -25,7 +25,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
     <div
       className="fixed inset-0 z-[8000] flex flex-col items-center justify-center gap-6"
       style={{
-        background: '#07060a',
+        background: '#15131c',
         transition: 'opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1)',
         opacity: out ? 0 : 1,
         transform: out ? 'translateY(-14px)' : 'none',
@@ -44,7 +44,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
       >
         Fine Art Studio
       </span>
-      <div className="w-[120px] h-px bg-[#1e1c24] relative overflow-hidden mt-2">
+      <div className="w-[120px] h-px bg-[#38354a] relative overflow-hidden mt-2">
         <div className="splash-bar-fill absolute inset-0 bg-ember" />
       </div>
     </div>
@@ -90,7 +90,7 @@ export default function HomePage() {
             />
           </div>
           <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 90% at 65% 50%, transparent 15%, rgba(7,6,10,0.65) 100%)' }} aria-hidden />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #07060a 0%, rgba(7,6,10,0.52) 38%, transparent 72%)' }} aria-hidden />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #15131c 0%, rgba(21,19,28,0.52) 38%, transparent 72%)' }} aria-hidden />
 
           <div
             className="relative z-[2] px-[52px] pb-20 max-md:px-6"
@@ -127,7 +127,7 @@ export default function HomePage() {
         <Marquee />
 
         {/* ─── STATS ─── */}
-        <div className="grid grid-cols-3 border-b border-[#1e1c24] max-sm:grid-cols-1" role="list" aria-label="Studio statistics">
+        <div className="grid grid-cols-3 border-b border-[#38354a] max-sm:grid-cols-1" role="list" aria-label="Studio statistics">
           <StatCounter value={7} suffix="+" label="Years in Practice" />
           <StatCounter value={40} suffix="+" label="Works Sold" />
           <StatCounter value={5} label="Active Series" />
@@ -250,7 +250,7 @@ export default function HomePage() {
                       placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[cover.slug]}
                     />
                     <div className="absolute inset-0 flex flex-col justify-end p-8"
-                      style={{ background: 'linear-gradient(to top, rgba(7,6,10,0.93) 0%, rgba(7,6,10,0.28) 60%, transparent 100%)' }}>
+                      style={{ background: 'linear-gradient(to top, rgba(21,19,28,0.93) 0%, rgba(21,19,28,0.28) 60%, transparent 100%)' }}>
                       <h3 className="font-serif font-light mb-2" style={{ fontSize: 'clamp(24px,3vw,38px)' }}>{name}</h3>
                       <p className="font-mono text-[12px] text-text-2 leading-[1.65] max-w-[300px] mb-3.5">{info.desc.slice(0, 90)}…</p>
                       <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-ember">{works.length} work{works.length !== 1 ? 's' : ''}</span>
@@ -264,7 +264,7 @@ export default function HomePage() {
 
         {/* ─── COMMISSION CTA ─── */}
         <section
-          className="px-[52px] py-[100px] border-t border-[#1e1c24] flex justify-between items-center flex-wrap gap-8 max-md:px-6"
+          className="px-[52px] py-[100px] border-t border-[#38354a] flex justify-between items-center flex-wrap gap-8 max-md:px-6"
           aria-label="Commission a work"
         >
           <Reveal>

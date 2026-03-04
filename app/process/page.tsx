@@ -33,7 +33,7 @@ export default function ProcessPage() {
           sizes="100vw"
           placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS['tempest']}
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #07060a 0%, transparent 65%)' }} aria-hidden />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #15131c 0%, transparent 65%)' }} aria-hidden />
         <div className="relative z-[2] px-[52px] pb-16 max-md:px-6 max-md:pb-12">
           <h1 className="font-serif font-light italic leading-[0.9]" style={{ fontSize: 'clamp(44px,8vw,96px)' }}>
             The making<br />of it
@@ -48,7 +48,7 @@ export default function ProcessPage() {
           { src: 'dissolution', alt: 'Dissolution detail' },
           { src: 'radiance', alt: 'Radiance detail' },
         ].map(({ src, alt }) => (
-          <div key={src} className="overflow-hidden" style={{ background: '#131118' }}>
+          <div key={src} className="overflow-hidden" style={{ background: '#22202c' }}>
             <Image
               src={`/paintings/${src}.jpg`} alt={alt}
               width={600} height={450} className="w-full"
@@ -83,7 +83,7 @@ export default function ProcessPage() {
 
       {/* CTA */}
       <section
-        className="px-[52px] py-[100px] border-t border-[#1e1c24] flex justify-between items-center flex-wrap gap-8 max-md:px-6"
+        className="px-[52px] py-[100px] border-t border-[#38354a] flex justify-between items-center flex-wrap gap-8 max-md:px-6"
         aria-label="Commission"
       >
         <Reveal>

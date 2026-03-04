@@ -12,7 +12,7 @@ const FOOTER_NAV = [
 export function Footer() {
   return (
     <footer aria-label="Site footer">
-      <div className="border-t border-[#1e1c24] px-[52px] pt-[72px] pb-12 grid grid-cols-3 gap-12 max-md:grid-cols-2 max-md:px-6 max-sm:grid-cols-1">
+      <div className="border-t border-[#38354a] px-[52px] pt-[72px] pb-12 grid grid-cols-3 gap-12 max-md:grid-cols-2 max-md:px-6 max-sm:grid-cols-1">
         {/* Brand */}
         <div>
           <Link
@@ -32,7 +32,7 @@ export function Footer() {
               href="https://instagram.com/harryferraroart"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[9px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#1e1c24] text-text-3 hover:text-text hover:border-[#45424f] transition-colors"
+              className="text-[10px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-colors"
               style={{ fontFamily: 'var(--font-jetbrains)' }}
               aria-label="Harry Ferraro on Instagram"
             >
@@ -40,7 +40,7 @@ export function Footer() {
             </a>
             <Link
               href="/contact"
-              className="text-[9px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#1e1c24] text-text-3 hover:text-text hover:border-[#45424f] transition-colors"
+              className="text-[10px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-colors"
               style={{ fontFamily: 'var(--font-jetbrains)' }}
             >
               Contact
@@ -51,7 +51,7 @@ export function Footer() {
         {/* Nav */}
         <nav aria-label="Footer navigation">
           <div
-            className="text-[8.5px] tracking-[0.18em] uppercase text-text-3 mb-5"
+            className="text-[10px] tracking-[0.18em] uppercase text-text-3 mb-5"
             style={{ fontFamily: 'var(--font-jetbrains)' }}
           >
             Navigate
@@ -74,7 +74,7 @@ export function Footer() {
         {/* Contact */}
         <address className="not-italic">
           <div
-            className="text-[8.5px] tracking-[0.18em] uppercase text-text-3 mb-5"
+            className="text-[10px] tracking-[0.18em] uppercase text-text-3 mb-5"
             style={{ fontFamily: 'var(--font-jetbrains)' }}
           >
             Studio
@@ -93,7 +93,7 @@ export function Footer() {
           </div>
           <div className="mt-8">
             <div
-              className="text-[8.5px] tracking-[0.18em] uppercase text-text-3 mb-3"
+              className="text-[10px] tracking-[0.18em] uppercase text-text-3 mb-3"
               style={{ fontFamily: 'var(--font-jetbrains)' }}
             >
               Commission
@@ -106,7 +106,7 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-[#1e1c24] mx-[52px] max-md:mx-6 py-6 flex justify-between items-center flex-wrap gap-3">
+      <div className="border-t border-[#38354a] mx-[52px] max-md:mx-6 py-6 flex justify-between items-center flex-wrap gap-3">
         <p
           className="text-[9px] tracking-[0.1em] uppercase text-text-3"
           style={{ fontFamily: 'var(--font-jetbrains)' }}

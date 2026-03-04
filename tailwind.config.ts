@@ -9,18 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#07060a',
-        'bg-2': '#0d0c10',
-        surface: '#131118',
-        'surface-2': '#1a1820',
+        bg: '#15131c',
+        'bg-2': '#1c1a24',
+        surface: '#22202c',
+        'surface-2': '#2b2836',
         ember: '#c8570a',
         'ember-2': '#e06a18',
         'ember-3': '#7a3408',
-        text: '#ede8df',
-        'text-2': '#8a8494',
-        'text-3': '#45424f',
-        border: '#1e1c24',
-        'border-2': '#2a2733',
+        text: '#f2ede5',
+        'text-2': '#b0a9bc',
+        'text-3': '#7c768a',
+        border: '#38354a',
+        'border-2': '#48455a',
       },
       fontFamily: {
         serif: ['var(--font-cormorant)', 'Georgia', 'serif'],

@@ -38,7 +38,7 @@ export function StatCounter({ value, suffix = '', label }: StatCounterProps) {
   }, [value])
 
   return (
-    <div ref={ref} className="reveal px-12 py-[52px] border-r border-[#1e1c24] last:border-r-0 max-sm:border-r-0 max-sm:border-b max-sm:last:border-b-0">
+    <div ref={ref} className="reveal px-12 py-[52px] border-r border-[#38354a] last:border-r-0 max-sm:border-r-0 max-sm:border-b max-sm:last:border-b-0">
       <div
         className="text-ember leading-none mb-2.5"
         style={{ fontFamily: 'var(--font-cormorant)', fontSize: '68px', fontWeight: 300 }}
@@ -46,7 +46,7 @@ export function StatCounter({ value, suffix = '', label }: StatCounterProps) {
         {count}{suffix}
       </div>
       <div
-        className="text-[9px] tracking-[0.18em] uppercase text-text-2"
+        className="text-[10.5px] tracking-[0.18em] uppercase text-text-2"
         style={{ fontFamily: 'var(--font-jetbrains)' }}
       >
         {label}
