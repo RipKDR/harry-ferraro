@@ -175,7 +175,7 @@ export default async function ArtworkPage({ params }: Props) {
           )}
 
           {/* Mobile prev/next */}
-          <div className="hidden max-md:flex justify-between mt-12 pt-6 border-t border-[#38354a]">
+          <div className="hidden max-md:flex justify-between mt-12 pt-6 border-t border-[#2a2622]">
             {prev ? (
               <Link href={`/gallery/${prev.slug}`} className="font-mono text-[9px] tracking-[0.12em] uppercase text-text-3 hover:text-ember transition-colors flex items-center gap-2">
                 ← {prev.title}

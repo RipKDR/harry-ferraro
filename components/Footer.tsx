@@ -14,7 +14,7 @@ const FOOTER_NAV = [
 export function Footer() {
   return (
     <footer aria-label="Site footer">
-      <div className="border-t border-[#38354a] px-[52px] pt-[72px] pb-12 grid grid-cols-3 gap-12 max-md:grid-cols-2 max-md:px-6 max-sm:grid-cols-1">
+      <div className="border-t border-[#2a2622] px-[52px] pt-[72px] pb-12 grid grid-cols-3 gap-12 max-md:grid-cols-2 max-md:px-6 max-sm:grid-cols-1">
         {/* Brand */}
         <div>
           <Link
@@ -90,7 +90,7 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-[#38354a] mx-[52px] max-md:mx-6 py-6 flex justify-between items-center flex-wrap gap-3">
+      <div className="border-t border-[#2a2622] mx-[52px] max-md:mx-6 py-6 flex justify-between items-center flex-wrap gap-3">
         <p
           className="text-[9px] tracking-[0.1em] uppercase text-text-3"
           style={{ fontFamily: 'var(--font-jetbrains)' }}

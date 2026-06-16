@@ -25,7 +25,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
     <div
       className="fixed inset-0 z-[8000] flex flex-col items-center justify-center gap-6"
       style={{
-        background: '#15131c',
+        background: '#0b0a09',
         transition: 'opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1)',
         opacity: out ? 0 : 1,
         transform: out ? 'translateY(-14px)' : 'none',
@@ -44,9 +44,6 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
       >
         Original Fine Art · Melbourne
       </span>
-      <div className="w-[120px] h-px bg-[#38354a] relative overflow-hidden mt-2">
-        <div className="splash-bar-fill absolute inset-0 bg-ember" />
-      </div>
     </div>
   )
 }
@@ -64,70 +61,61 @@ export default function HomePage() {
 
       <div style={{ opacity: splashDone ? 1 : 0, transition: 'opacity 0.7s ease 0.1s' }}>
 
-        {/* ─── HERO ─── */}
-        <section className="relative h-screen min-h-[640px] flex flex-col justify-end overflow-hidden" aria-label="Hero">
-          <div
-            className="absolute pointer-events-none select-none"
-            style={{
-              top: '50%', right: '52px', transform: 'translateY(-50%)',
-              fontFamily: 'var(--font-cormorant)', fontSize: 'min(18vw, 200px)',
-              fontWeight: 300, color: 'rgba(255,255,255,0.022)', lineHeight: 1, letterSpacing: '-0.04em',
-            }}
-            aria-hidden="true"
-          >I</div>
-
-          <div className="absolute inset-0">
-            <Image
-              src="/paintings/ignition-ii.jpg"
-              alt="Ignition II — Harrison Ferraro, 2024. Oil & mixed media on canvas."
-              fill priority
-              className="object-cover"
-              style={{ objectPosition: 'center 18%', filter: 'brightness(0.38) contrast(1.22) saturate(0.78)', animation: 'heroZoom 18s ease-out forwards' }}
-              sizes="100vw"
-              placeholder="blur"
-              blurDataURL={BLUR_PLACEHOLDERS['ignition-ii']}
-            />
-          </div>
-          <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 90% at 65% 50%, transparent 15%, rgba(7,6,10,0.65) 100%)' }} aria-hidden />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #15131c 0%, rgba(21,19,28,0.52) 38%, transparent 72%)' }} aria-hidden />
-
-          <div
-            className="relative z-[2] px-[52px] pb-20 max-md:px-6"
-            style={{ animation: 'fadeUp 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s both' }}
-          >
-            <div className="eyebrow mb-6">Original Fine Art</div>
-            <h1
-              className="font-serif font-light leading-[0.86] tracking-[-0.03em] mb-8"
-              style={{ fontSize: 'clamp(64px,11.5vw,140px)' }}
-            >
-              The<br />moment<br /><em className="italic text-text-2">before</em><br />the flame
-            </h1>
-            <p
-              className="font-mono text-[13px] text-text-2 leading-[1.85] max-w-[340px] mb-12 font-light tracking-[0.025em]"
-            >
-              Figurative oil paintings that live in the emotional space between tension and release. Dark. Dramatic. Permanent.
-            </p>
-            <div className="flex gap-3 flex-wrap">
-              <Link href="/gallery" className="btn-ember">View the Gallery</Link>
-              <Link href="/commissions" className="btn-ghost">Enquire About a Commission</Link>
-              <a href={SOCIAL.instagram.url} target="_blank" rel="noopener noreferrer" className="btn-ghost">Follow on Instagram</a>
+        {/* ─── HERO — work first, quiet split ─── */}
+        <section
+          className="relative min-h-screen flex items-center px-[clamp(20px,5vw,80px)] pt-[140px] pb-[88px]"
+          aria-label="Introduction"
+        >
+          <div className="w-full grid grid-cols-[1.05fr_0.95fr] gap-[clamp(40px,6vw,104px)] items-center max-lg:grid-cols-1 max-lg:gap-12">
+            {/* Identity */}
+            <div style={{ animation: 'fadeUp 1.2s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
+              <div className="eyebrow mb-8">Original Fine Art · Melbourne</div>
+              <h1
+                className="font-serif leading-[0.9] tracking-[-0.02em] mb-9"
+                style={{ fontSize: 'clamp(52px,8.5vw,112px)', fontWeight: 400 }}
+              >
+                Harrison<br />Ferraro<span className="text-ember">.</span>
+              </h1>
+              <p className="font-sans text-[16px] text-text-2 leading-[1.65] max-w-[440px] mb-11">
+                Figurative oil paintings that live in the space between tension and release —
+                dark, expressive, and made to be lived with.
+              </p>
+              <div className="flex gap-3 flex-wrap">
+                <Link href="/gallery" className="btn-ember">View the Work</Link>
+                <Link href="/commissions" className="btn-ghost">Commission a Piece</Link>
+                <a href={SOCIAL.instagram.url} target="_blank" rel="noopener noreferrer" className="btn-ghost">Instagram</a>
+              </div>
             </div>
-          </div>
 
-          <div
-            className="absolute bottom-20 right-[52px] z-[2] flex flex-col items-center gap-2 max-md:right-6"
-            style={{ animation: 'fadeUp 1.5s cubic-bezier(0.16,1,0.3,1) 0.85s both' }}
-            aria-hidden="true"
-          >
-            <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-text-3">scroll</span>
-            <div className="w-px h-16" style={{ background: 'linear-gradient(to bottom, transparent, #7a3408)', animation: 'scrollPulse 2.4s ease-in-out infinite' }} />
+            {/* The work, shown truthfully with a caption */}
+            <figure
+              className="relative max-lg:order-first"
+              style={{ animation: 'fadeUp 1.3s cubic-bezier(0.16,1,0.3,1) 0.28s both' }}
+            >
+              <div className="relative w-full overflow-hidden bg-surface" style={{ aspectRatio: '4 / 5' }}>
+                <Image
+                  src="/paintings/ignition-ii.jpg"
+                  alt="Ignition II — Harrison Ferraro, 2024. Oil & mixed media on canvas."
+                  fill priority
+                  className="object-cover"
+                  style={{ objectPosition: 'center 14%' }}
+                  sizes="(max-width:1024px) 100vw, 46vw"
+                  placeholder="blur"
+                  blurDataURL={BLUR_PLACEHOLDERS['ignition-ii']}
+                />
+              </div>
+              <figcaption className="mt-4 flex items-baseline justify-between gap-4 font-sans text-[12.5px] text-text-3">
+                <span className="text-text-2">Ignition II</span>
+                <span>2024 · Oil &amp; mixed media</span>
+              </figcaption>
+            </figure>
           </div>
         </section>
 
         <Marquee />
 
         {/* ─── STUDIO FACTS (no fabricated numbers) ─── */}
-        <div className="grid grid-cols-3 border-b border-[#38354a] max-sm:grid-cols-1" role="list" aria-label="About the work">
+        <div className="grid grid-cols-3 border-b border-[#2a2622] max-sm:grid-cols-1" role="list" aria-label="About the work">
           {[
             ['Original Works', 'One of one — no prints, no editions'],
             ['Oil & Mixed Media', 'Figurative painting on canvas'],
@@ -136,7 +124,7 @@ export default function HomePage() {
             <div
               key={title}
               role="listitem"
-              className="px-12 py-[52px] border-r border-[#38354a] last:border-r-0 max-sm:border-r-0 max-sm:border-b max-sm:last:border-b-0"
+              className="px-12 py-[52px] border-r border-[#2a2622] last:border-r-0 max-sm:border-r-0 max-sm:border-b max-sm:last:border-b-0"
             >
               <div className="font-serif font-light text-text mb-2.5" style={{ fontSize: '30px' }}>{title}</div>
               <div className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-text-3">{sub}</div>
@@ -228,9 +216,9 @@ export default function HomePage() {
               className="font-mono text-[9px] tracking-[0.26em] uppercase text-ember mt-7 flex items-center justify-center gap-4"
               aria-label="Harrison Ferraro"
             >
-              <span className="inline-block w-6 h-px bg-[#7a3408]" aria-hidden="true" />
+              <span className="inline-block w-6 h-px bg-[#6e4631]" aria-hidden="true" />
               Harrison Ferraro
-              <span className="inline-block w-6 h-px bg-[#7a3408]" aria-hidden="true" />
+              <span className="inline-block w-6 h-px bg-[#6e4631]" aria-hidden="true" />
             </footer>
           </Reveal>
         </div>
@@ -261,7 +249,7 @@ export default function HomePage() {
                       placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[cover.slug]}
                     />
                     <div className="absolute inset-0 flex flex-col justify-end p-8"
-                      style={{ background: 'linear-gradient(to top, rgba(21,19,28,0.93) 0%, rgba(21,19,28,0.28) 60%, transparent 100%)' }}>
+                      style={{ background: 'linear-gradient(to top, rgba(11, 10, 9,0.93) 0%, rgba(11, 10, 9,0.28) 60%, transparent 100%)' }}>
                       <h3 className="font-serif font-light mb-2" style={{ fontSize: 'clamp(24px,3vw,38px)' }}>{name}</h3>
                       <p className="font-mono text-[12px] text-text-2 leading-[1.65] max-w-[300px] mb-3.5">{info.desc.slice(0, 90)}…</p>
                       <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-ember">{works.length} work{works.length !== 1 ? 's' : ''}</span>
@@ -275,7 +263,7 @@ export default function HomePage() {
 
         {/* ─── COMMISSION CTA ─── */}
         <section
-          className="px-[52px] py-[100px] border-t border-[#38354a] flex justify-between items-center flex-wrap gap-8 max-md:px-6"
+          className="px-[52px] py-[100px] border-t border-[#2a2622] flex justify-between items-center flex-wrap gap-8 max-md:px-6"
           aria-label="Commission a work"
         >
           <Reveal>

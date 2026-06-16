@@ -49,8 +49,8 @@ export async function POST(req: Request) {
         reply_to: data.email,
         subject: `Commission enquiry from ${data.name} — ${data.budget}`,
         html: `
-          <div style="font-family:monospace;background:#07060a;color:#ede8df;padding:40px;max-width:600px">
-            <h2 style="font-family:serif;font-weight:300;color:#c8570a;font-size:28px;margin-bottom:24px">Commission Enquiry</h2>
+          <div style="font-family:monospace;background:#060504;color:#ede8df;padding:40px;max-width:600px">
+            <h2 style="font-family:serif;font-weight:300;color:#b8714c;font-size:28px;margin-bottom:24px">Commission Enquiry</h2>
             <table style="width:100%;border-collapse:collapse">
               ${row('From', data.name)}
               ${row('Email', data.email)}
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
               ${row('Budget', data.budget)}
               ${row('Timeline', data.timeline)}
             </table>
-            <div style="margin-top:24px;padding:20px;background:#131118;border-left:2px solid #c8570a">
+            <div style="margin-top:24px;padding:20px;background:#120f0d;border-left:2px solid #b8714c">
               <p style="font-size:11px;color:#45424f;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px">Description</p>
               <p style="font-size:13px;line-height:1.8;color:#8a8494;white-space:pre-wrap">${escapeHtml(data.description)}</p>
             </div>

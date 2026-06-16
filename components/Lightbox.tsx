@@ -64,7 +64,7 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onInquire }: Ligh
       aria-modal="true"
       aria-label={`${art.title} — ${art.year}`}
       className="fixed inset-0 z-[600] flex items-center justify-center lightbox-enter"
-      style={{ background: 'rgba(4,3,8,0.98)' }}
+      style={{ background: 'rgba(6, 5, 4,0.98)' }}
       onClick={onClose}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -74,7 +74,7 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onInquire }: Ligh
         onClick={(e) => e.stopPropagation()}
       >
         {/* Image */}
-        <div className="flex items-center justify-center bg-[#22202c] flex-shrink-0">
+        <div className="flex items-center justify-center bg-[#1c1916] flex-shrink-0">
           <Image
             key={art.id}
             src={`/paintings/${art.filename}`}
@@ -92,10 +92,10 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onInquire }: Ligh
         {/* Info panel */}
         <div
           className="w-[300px] flex-shrink-0 flex flex-col overflow-y-auto max-md:hidden"
-          style={{ background: '#1c1a24', border: '1px solid #38354a', borderLeft: 'none' }}
+          style={{ background: '#141210', border: '1px solid #2a2622', borderLeft: 'none' }}
         >
           {/* Header */}
-          <div className="flex justify-between items-center px-8 py-6 border-b border-[#38354a]">
+          <div className="flex justify-between items-center px-8 py-6 border-b border-[#2a2622]">
             <button
               ref={closeBtn}
               onClick={onClose}
@@ -109,13 +109,13 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onInquire }: Ligh
               <button
                 onClick={() => onNav(-1)}
                 disabled={idx <= 0}
-                className="w-8 h-8 flex items-center justify-center border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-all disabled:opacity-30 text-sm"
+                className="w-8 h-8 flex items-center justify-center border border-[#2a2622] text-text-3 hover:text-text hover:border-[#6e665f] transition-all disabled:opacity-30 text-sm"
                 aria-label="Previous artwork"
               >←</button>
               <button
                 onClick={() => onNav(1)}
                 disabled={idx >= all.length - 1}
-                className="w-8 h-8 flex items-center justify-center border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-all disabled:opacity-30 text-sm"
+                className="w-8 h-8 flex items-center justify-center border border-[#2a2622] text-text-3 hover:text-text hover:border-[#6e665f] transition-all disabled:opacity-30 text-sm"
                 aria-label="Next artwork"
               >→</button>
             </div>
@@ -185,14 +185,14 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onInquire }: Ligh
       {idx > 0 && (
         <button
           onClick={(e) => { e.stopPropagation(); onNav(-1) }}
-          className="md:hidden absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#38354a] text-text-2 hover:text-text bg-[rgba(21,19,28,0.8)]"
+          className="md:hidden absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#2a2622] text-text-2 hover:text-text bg-[rgba(11,10,9,0.8)]"
           aria-label="Previous artwork"
         >←</button>
       )}
       {idx < all.length - 1 && (
         <button
           onClick={(e) => { e.stopPropagation(); onNav(1) }}
-          className="md:hidden absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#38354a] text-text-2 hover:text-text bg-[rgba(21,19,28,0.8)]"
+          className="md:hidden absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center border border-[#2a2622] text-text-2 hover:text-text bg-[rgba(11,10,9,0.8)]"
           aria-label="Next artwork"
         >→</button>
       )}
@@ -204,7 +204,7 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onInquire }: Ligh
             key={a.id}
             onClick={(e) => { e.stopPropagation(); onJumpTo(i) }}
             className="w-[5px] h-[5px] rounded-full transition-all"
-            style={{ background: a.id === art.id ? '#c8570a' : '#48455a' }}
+            style={{ background: a.id === art.id ? '#b8714c' : '#353029' }}
             aria-label={`Go to ${a.title}`}
             aria-current={a.id === art.id ? 'true' : undefined}
           />

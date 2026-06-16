@@ -1,22 +1,23 @@
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
+import { Fraunces, Inter } from 'next/font/google'
 import './globals.css'
 import { Grain } from '@/components/Grain'
 import { Nav } from '@/components/Nav'
 import { MobileNav } from '@/components/MobileNav'
 import { SITE, SOCIAL } from '@/lib/site'
 
-const cormorant = Cormorant_Garamond({
+// Display serif — variable, tunable optical size for an art-directed feel.
+const fraunces = Fraunces({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
   style: ['normal', 'italic'],
+  axes: ['opsz', 'SOFT', 'WONK'],
   variable: '--font-cormorant',
   display: 'swap',
 })
 
-const jetbrains = JetBrains_Mono({
+// UI / metadata face — used only for nav, captions, labels, buttons.
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['300', '400', '500'],
   variable: '--font-jetbrains',
   display: 'swap',
 })
@@ -50,12 +51,12 @@ const jsonLd = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#15131c', width: 'device-width', initialScale: 1, colorScheme: 'dark',
+  themeColor: '#0b0a09', width: 'device-width', initialScale: 1, colorScheme: 'dark',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-AU" suppressHydrationWarning className={`${cormorant.variable} ${jetbrains.variable}`}>
+    <html lang="en-AU" suppressHydrationWarning className={`${fraunces.variable} ${inter.variable}`}>
       <head>
         <script
           type="application/ld+json"

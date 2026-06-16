@@ -64,7 +64,7 @@ export default function SeriesPage() {
                           placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[cover.slug]}
                         />
                         <div className="absolute inset-0 flex flex-col justify-end p-8"
-                          style={{ background: 'linear-gradient(to top, rgba(7,6,10,0.93) 0%, rgba(7,6,10,0.3) 60%, transparent 100%)' }}>
+                          style={{ background: 'linear-gradient(to top, rgba(6, 5, 4,0.93) 0%, rgba(6, 5, 4,0.3) 60%, transparent 100%)' }}>
                           <h2 className="font-serif font-light mb-2" style={{ fontSize: 'clamp(24px,3vw,40px)' }}>{name}</h2>
                           <p className="font-mono text-[12px] text-text-2 leading-[1.65] max-w-[320px] mb-3.5">{info.desc}</p>
                           <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-ember">{works.length} work{works.length !== 1 ? 's' : ''}</span>

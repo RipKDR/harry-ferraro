@@ -48,8 +48,8 @@ export function Nav() {
         aria-label="Main navigation"
         className={`fixed top-0 left-0 right-0 z-[400] flex items-center justify-between transition-all max-md:px-6 ${
           scrolled
-            ? 'px-[52px] py-[17px] bg-[rgba(21,19,28,0.97)] backdrop-blur-2xl border-b border-[#38354a]'
-            : 'px-[52px] py-7 bg-gradient-to-b from-[rgba(21,19,28,0.9)] to-transparent'
+            ? 'px-[52px] py-[17px] bg-[rgba(11,10,9,0.97)] backdrop-blur-2xl border-b border-[#2a2622]'
+            : 'px-[52px] py-7 bg-gradient-to-b from-[rgba(11,10,9,0.9)] to-transparent'
         }`}
         style={{ transitionDuration: '0.4s', transitionTimingFunction: 'cubic-bezier(0.25,0.46,0.45,0.94)' }}
       >

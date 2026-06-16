@@ -54,10 +54,10 @@ export function InquireModal({ art, onClose }: { art: Artwork; onClose: () => vo
     <div ref={containerRef} role="dialog" aria-modal="true" aria-label={`Enquire about ${art.title}`} className="modal-backdrop" onClick={onClose}>
       <div
         className="w-full max-w-[480px] animate-scale-in"
-        style={{ background: '#1c1a24', border: '1px solid #38354a' }}
+        style={{ background: '#141210', border: '1px solid #2a2622' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-9 py-7 border-b border-[#38354a] flex justify-between items-start">
+        <div className="px-9 py-7 border-b border-[#2a2622] flex justify-between items-start">
           <div>
             <p className="text-[9px] tracking-[0.2em] uppercase text-ember mb-2" style={{ fontFamily: 'var(--font-jetbrains)' }}>{art.title} / {art.year}</p>
             <h2 className="text-[28px] font-light" style={{ fontFamily: 'var(--font-cormorant)' }}>Make an enquiry</h2>

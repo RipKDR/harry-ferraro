@@ -114,7 +114,7 @@ export default function ContactPage() {
           </Reveal>
         )}
 
-        <Reveal delay={0.3} className="mt-20 pt-12 border-t border-[#38354a]">
+        <Reveal delay={0.3} className="mt-20 pt-12 border-t border-[#2a2622]">
           <p className="font-mono text-[10px] tracking-[0.18em] uppercase text-text-3 mb-6">Or find me here</p>
           <dl>
             {CONTACT_ITEMS.map(({ label, value, href }) => (

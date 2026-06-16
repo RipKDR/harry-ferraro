@@ -127,7 +127,7 @@ export default function CommissionsPage() {
             { n: '02', t: 'I paint', b: 'Once the idea and details are agreed, focused studio time. Progress shared at key stages.' },
             { n: '03', t: 'It arrives', b: 'Professionally packed and delivered when you’re happy with it.' },
           ].map(({ n, t, b }) => (
-            <div key={n} className="p-6 border border-[#38354a] bg-[#22202c]">
+            <div key={n} className="p-6 border border-[#2a2622] bg-[#1c1916]">
               <div className="font-serif text-[36px] font-light text-ember opacity-60 mb-3 italic">{n}</div>
               <div className="font-serif text-[18px] font-light mb-2">{t}</div>
               <p className="font-mono text-[12px] text-text-2 leading-[1.7]">{b}</p>
@@ -261,7 +261,7 @@ export default function CommissionsPage() {
           </Reveal>
         )}
 
-        <Reveal delay={0.2} className="mt-16 pt-8 border-t border-[#38354a]">
+        <Reveal delay={0.2} className="mt-16 pt-8 border-t border-[#2a2622]">
           <p className="font-mono text-[12px] text-text-3">
             Just want to browse first?{' '}
             <Link href="/gallery" className="text-ember hover:underline">See the gallery</Link>.

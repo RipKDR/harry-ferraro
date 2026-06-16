@@ -34,8 +34,8 @@ export async function POST(req: Request) {
           reply_to: data.email,
           subject: `New message from ${data.name}`,
           html: `
-            <div style="font-family:monospace;background:#07060a;color:#ede8df;padding:40px;max-width:600px">
-              <h2 style="font-family:serif;font-weight:300;color:#c8570a;font-size:28px;margin-bottom:24px">New Message</h2>
+            <div style="font-family:monospace;background:#060504;color:#ede8df;padding:40px;max-width:600px">
+              <h2 style="font-family:serif;font-weight:300;color:#b8714c;font-size:28px;margin-bottom:24px">New Message</h2>
               <table style="width:100%;border-collapse:collapse">
                 <tr style="border-bottom:1px solid #1e1c24">
                   <td style="padding:12px 0;color:#45424f;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;width:100px">From</td>
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
                   <td style="padding:12px 0;font-size:13px">${escapeHtml(data.email)}</td>
                 </tr>
               </table>
-              <div style="margin-top:24px;padding:20px;background:#131118;border-left:2px solid #c8570a">
+              <div style="margin-top:24px;padding:20px;background:#120f0d;border-left:2px solid #b8714c">
                 <p style="font-size:13px;line-height:1.8;color:#8a8494;white-space:pre-wrap">${escapeHtml(data.message)}</p>
               </div>
             </div>`,

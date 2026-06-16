@@ -41,7 +41,7 @@ export function SocialLinks({
           href={s.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-mono text-[10px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-colors"
+          className="font-mono text-[10px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#2a2622] text-text-3 hover:text-text hover:border-[#6e665f] transition-colors"
           aria-label={`${SITE.name} on ${s.label}`}
         >
           {s.label}
