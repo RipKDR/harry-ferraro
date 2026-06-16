@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { SITE } from '@/lib/site'
 
 const NAV_LINKS = [
   { label: 'Gallery', href: '/gallery' },
@@ -24,6 +25,7 @@ export function Nav() {
   }, [handleScroll])
 
   // Close menu on route change
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing UI to navigation is intentional
   useEffect(() => { setMenuOpen(false) }, [pathname])
 
   // Prevent body scroll when menu open
@@ -53,10 +55,10 @@ export function Nav() {
       >
         <Link
           href="/"
-          aria-label="Harry Ferraro — Home"
+          aria-label={`${SITE.name} — Home`}
           className="font-serif text-[21px] font-medium tracking-[0.02em] text-text hover:opacity-75 transition-opacity"
         >
-          Harry Ferraro<span className="text-ember">.</span>
+          Harrison Ferraro<span className="text-ember">.</span>
         </Link>
 
         {/* Desktop nav */}
@@ -112,7 +114,7 @@ export function Nav() {
           className="absolute bottom-16 text-[9px] tracking-[0.2em] uppercase text-text-3"
           style={{ fontFamily: 'var(--font-jetbrains)' }}
         >
-          Harrisonferraro99@gmail.com
+          {SITE.email}
         </div>
       </div>
     </>

@@ -4,10 +4,12 @@ import type { Metadata } from 'next'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
 import { Marquee } from '@/components/Marquee'
+import { SocialLinks } from '@/components/SocialLinks'
+import { SITE } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Harry Ferraro is a Melbourne-based figurative oil painter. Fine art with emotional intensity and technical precision.',
+  description: `${SITE.name} is a Melbourne-based figurative oil painter. Fine art with emotional intensity and technical precision.`,
 }
 
 export default function AboutPage() {
@@ -18,7 +20,7 @@ export default function AboutPage() {
       <div className="relative h-[72vh] overflow-hidden flex items-end">
         <Image
           src="/paintings/ascendant.jpg"
-          alt="Harry Ferraro studio"
+          alt="Ascendant — a figurative painting by Harrison Ferraro"
           fill
           className="object-cover"
           style={{ objectPosition: 'center 22%', filter: 'brightness(0.24) contrast(1.3) saturate(0.65)' }}
@@ -32,7 +34,7 @@ export default function AboutPage() {
         <div className="relative z-[2] px-[52px] pb-[72px] max-md:px-6 max-md:pb-[52px]">
           <h1
             className="font-light italic leading-[0.88] tracking-[-0.02em]"
-            style={{ fontFamily: "'Cormorant Garant', Georgia, serif", fontSize: 'clamp(48px,9vw,108px)' }}
+            style={{ fontFamily: "var(--font-cormorant)", fontSize: 'clamp(48px,9vw,108px)' }}
           >
             The work<br />& the why
           </h1>
@@ -45,9 +47,9 @@ export default function AboutPage() {
         <Reveal>
           <blockquote
             className="font-light leading-[1.7]"
-            style={{ fontFamily: "'Cormorant Garant', Georgia, serif", fontSize: 'clamp(20px,2.5vw,24px)' }}
+            style={{ fontFamily: "var(--font-cormorant)", fontSize: 'clamp(20px,2.5vw,24px)' }}
           >
-            "Painting is the only language I speak fluently. Everything else is translation."
+            “Painting is the only language I speak fluently. Everything else is translation.”
           </blockquote>
           <div className="mt-12 flex gap-3 flex-wrap">
             <Link href="/gallery" className="btn-ember">View Gallery</Link>
@@ -74,9 +76,10 @@ export default function AboutPage() {
               Each painting begins as a question I cannot answer in words. If I could explain it, I would not need to paint it.
             </p>
             <p className="text-[12px] text-text-3 pt-4 border-t border-[#38354a] tracking-[0.05em]">
-              Available for exhibitions, print licensing, and private commissions.<br />
-              Based in Melbourne, AU.
+              Open to commissions, exhibitions, and gallery enquiries.<br />
+              Based in Melbourne, Australia.
             </p>
+            <SocialLinks variant="inline" className="pt-2" />
           </div>
         </Reveal>
       </div>

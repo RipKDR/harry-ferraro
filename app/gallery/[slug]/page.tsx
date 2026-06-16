@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ARTWORKS, SERIES } from '@/lib/artworks'
+import { ARTWORKS, SERIES, priceLabel } from '@/lib/artworks'
 import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
 import { ArtworkActions } from '@/components/ArtworkActions'
+import { SITE } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -22,9 +23,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${art.title} — ${art.year}`,
     description: art.statement.slice(0, 160),
     openGraph: {
-      title: `${art.title} — Harry Ferraro`,
+      type: 'article',
+      title: `${art.title} — ${SITE.name}`,
       description: art.statement.slice(0, 160),
-      images: [{ url: `/paintings/${art.filename}`, width: 600, height: 900, alt: art.title }],
+      images: [{ url: `/paintings/${art.filename}`, width: 600, height: 900, alt: `${art.title} by ${SITE.name}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${art.title} — ${SITE.name}`,
+      description: art.statement.slice(0, 160),
+      images: [`/paintings/${art.filename}`],
     },
   }
 }
@@ -58,7 +66,7 @@ export default async function ArtworkPage({ params }: Props) {
         <div className="artwork-sticky" aria-label={`${art.title} painting`}>
           <Image
             src={`/paintings/${art.filename}`}
-            alt={`${art.title} by Harry Ferraro, ${art.year}. ${art.medium}.`}
+            alt={`${art.title} by ${SITE.name}, ${art.year}. ${art.medium}.`}
             width={640}
             height={900}
             className="max-w-full max-h-full object-contain p-10 max-md:p-6"
@@ -113,7 +121,7 @@ export default async function ArtworkPage({ params }: Props) {
               ['Dimensions', art.dimensions],
               ['Year', String(art.year)],
               ['Series', art.series],
-              ['Certificate', 'Included with purchase'],
+              ['Availability', priceLabel(art)],
             ].map(([k, v]) => (
               <div key={k} className="info-row">
                 <dt className="info-key">{k}</dt>
@@ -122,26 +130,7 @@ export default async function ArtworkPage({ params }: Props) {
             ))}
           </dl>
 
-          {/* Price */}
-          {art.status === 'available' ? (
-            <div className="mt-8 mb-2">
-              <div
-                className="font-serif font-light leading-none mb-1.5 text-text"
-                style={{ fontSize: '46px' }}
-              >
-                GBP {art.price.toLocaleString()}
-              </div>
-              <p className="font-mono text-[8.5px] tracking-[0.1em] text-text-3 mb-8">
-                Free UK shipping · International available · Certificate of authenticity
-              </p>
-            </div>
-          ) : (
-            <div className="mt-8 mb-8">
-              <p className="font-mono text-[11px] tracking-[0.12em] uppercase text-text-3 py-4 border-t border-[#38354a]">
-                This work has found its home.
-              </p>
-            </div>
-          )}
+          <div className="mt-8" />
 
           {/* Artist statement */}
           <blockquote

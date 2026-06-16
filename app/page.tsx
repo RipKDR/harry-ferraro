@@ -3,21 +3,21 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ARTWORKS, SERIES } from '@/lib/artworks'
+import { ARTWORKS, SERIES, priceLabel } from '@/lib/artworks'
 import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import { Marquee } from '@/components/Marquee'
-import { StatCounter } from '@/components/StatCounter'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
 import { Lightbox } from '@/components/Lightbox'
-import { PurchaseModal } from '@/components/PurchaseModal'
 import { InquireModal } from '@/components/InquireModal'
+import { SITE, SOCIAL } from '@/lib/site'
 import type { Artwork } from '@/lib/artworks'
 
 function SplashScreen({ onDone }: { onDone: () => void }) {
   const [out, setOut] = useState(false)
   useEffect(() => {
-    const t = setTimeout(() => { setOut(true); setTimeout(onDone, 850) }, 2600)
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const t = setTimeout(() => { setOut(true); setTimeout(onDone, 600) }, reduce ? 200 : 1200)
     return () => clearTimeout(t)
   }, [onDone])
 
@@ -37,12 +37,12 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
         className="splash-logo font-serif font-light tracking-[-0.01em]"
         style={{ fontSize: 'clamp(36px,7vw,72px)' }}
       >
-        Harry Ferraro<span className="text-ember">.</span>
+        Harrison Ferraro<span className="text-ember">.</span>
       </h1>
       <span
         className="splash-sub text-[10px] tracking-[0.32em] uppercase text-text-3 font-mono"
       >
-        Fine Art Studio
+        Original Fine Art · Melbourne
       </span>
       <div className="w-[120px] h-px bg-[#38354a] relative overflow-hidden mt-2">
         <div className="splash-bar-fill absolute inset-0 bg-ember" />
@@ -54,10 +54,9 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
 export default function HomePage() {
   const [splashDone, setSplashDone] = useState(false)
   const [lb, setLb] = useState<Artwork | null>(null)
-  const [buyModal, setBuyModal] = useState<Artwork | null>(null)
   const [inqModal, setInqModal] = useState<Artwork | null>(null)
 
-  const featured = ARTWORKS.slice(0, 5)
+  const featured = ARTWORKS.filter((a) => a.featured).slice(0, 5)
 
   return (
     <>
@@ -80,7 +79,7 @@ export default function HomePage() {
           <div className="absolute inset-0">
             <Image
               src="/paintings/ignition-ii.jpg"
-              alt="Ignition II — Harry Ferraro, 2024. Oil & mixed media on canvas."
+              alt="Ignition II — Harrison Ferraro, 2024. Oil & mixed media on canvas."
               fill priority
               className="object-cover"
               style={{ objectPosition: 'center 18%', filter: 'brightness(0.38) contrast(1.22) saturate(0.78)', animation: 'heroZoom 18s ease-out forwards' }}
@@ -110,7 +109,8 @@ export default function HomePage() {
             </p>
             <div className="flex gap-3 flex-wrap">
               <Link href="/gallery" className="btn-ember">View the Gallery</Link>
-              <Link href="/commissions" className="btn-ghost">Commission a Work</Link>
+              <Link href="/commissions" className="btn-ghost">Enquire About a Commission</Link>
+              <a href={SOCIAL.instagram.url} target="_blank" rel="noopener noreferrer" className="btn-ghost">Follow on Instagram</a>
             </div>
           </div>
 
@@ -126,11 +126,22 @@ export default function HomePage() {
 
         <Marquee />
 
-        {/* ─── STATS ─── */}
-        <div className="grid grid-cols-3 border-b border-[#38354a] max-sm:grid-cols-1" role="list" aria-label="Studio statistics">
-          <StatCounter value={7} suffix="+" label="Years in Practice" />
-          <StatCounter value={40} suffix="+" label="Works Sold" />
-          <StatCounter value={5} label="Active Series" />
+        {/* ─── STUDIO FACTS (no fabricated numbers) ─── */}
+        <div className="grid grid-cols-3 border-b border-[#38354a] max-sm:grid-cols-1" role="list" aria-label="About the work">
+          {[
+            ['Original Works', 'One of one — no prints, no editions'],
+            ['Oil & Mixed Media', 'Figurative painting on canvas'],
+            ['Commissions Open', 'Custom work by enquiry'],
+          ].map(([title, sub]) => (
+            <div
+              key={title}
+              role="listitem"
+              className="px-12 py-[52px] border-r border-[#38354a] last:border-r-0 max-sm:border-r-0 max-sm:border-b max-sm:last:border-b-0"
+            >
+              <div className="font-serif font-light text-text mb-2.5" style={{ fontSize: '30px' }}>{title}</div>
+              <div className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-text-3">{sub}</div>
+            </div>
+          ))}
         </div>
 
         {/* ─── SELECTED WORKS ─── */}
@@ -155,7 +166,7 @@ export default function HomePage() {
               >
                 <Image
                   src={`/paintings/${featured[0].filename}`}
-                  alt={`${featured[0].title} by Harry Ferraro`}
+                  alt={`${featured[0].title} by Harrison Ferraro`}
                   fill className="object-cover"
                   style={{ objectPosition: 'center 15%' }}
                   sizes="(max-width:768px) 100vw, 55vw"
@@ -165,7 +176,7 @@ export default function HomePage() {
                   <div className="feat-card-info">
                     <div className="font-serif text-[20px] font-light mb-1.5">{featured[0].title}</div>
                     <div className="font-mono text-[9px] tracking-[0.1em] uppercase text-text-2 mb-2">{featured[0].medium} / {featured[0].year}</div>
-                    <div className="font-mono text-[10px] tracking-[0.08em] text-ember">GBP {featured[0].price.toLocaleString()}</div>
+                    <div className="font-mono text-[10px] tracking-[0.08em] text-ember">{priceLabel(featured[0])}</div>
                   </div>
                 </div>
               </button>
@@ -181,7 +192,7 @@ export default function HomePage() {
                   >
                     <Image
                       src={`/paintings/${art.filename}`}
-                      alt={`${art.title} by Harry Ferraro`}
+                      alt={`${art.title} by Harrison Ferraro`}
                       fill className="object-cover"
                       sizes="(max-width:768px) 50vw, 25vw"
                       placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[art.slug]}
@@ -190,7 +201,7 @@ export default function HomePage() {
                       <div className="feat-card-info">
                         <div className="font-serif text-[17px] font-light mb-1">{art.title}</div>
                         <div className="font-mono text-[9px] tracking-[0.08em] uppercase text-text-2">
-                          {art.status === 'available' ? `GBP ${art.price.toLocaleString()}` : 'Sold'}
+                          {priceLabel(art)}
                         </div>
                       </div>
                     </div>
@@ -211,14 +222,14 @@ export default function HomePage() {
               className="font-serif font-light italic leading-[1.25]"
               style={{ fontSize: 'clamp(22px,4vw,48px)' }}
             >
-              "I paint women the way I experience them. As forces of nature, not objects of observation."
+              “I paint the figure the way I experience it — as a force of nature, not an object of observation.”
             </blockquote>
             <footer
               className="font-mono text-[9px] tracking-[0.26em] uppercase text-ember mt-7 flex items-center justify-center gap-4"
-              aria-label="Harry Ferraro"
+              aria-label="Harrison Ferraro"
             >
               <span className="inline-block w-6 h-px bg-[#7a3408]" aria-hidden="true" />
-              Harry Ferraro
+              Harrison Ferraro
               <span className="inline-block w-6 h-px bg-[#7a3408]" aria-hidden="true" />
             </footer>
           </Reveal>
@@ -293,11 +304,9 @@ export default function HomePage() {
             if (next) setLb(next)
           }}
           onJumpTo={(i) => { if (ARTWORKS[i]) setLb(ARTWORKS[i]) }}
-          onBuy={(a) => { setLb(null); setBuyModal(a) }}
           onInquire={(a) => { setLb(null); setInqModal(a) }}
         />
       )}
-      {buyModal && <PurchaseModal art={buyModal} onClose={() => setBuyModal(null)} />}
       {inqModal && <InquireModal art={inqModal} onClose={() => setInqModal(null)} />}
     </>
   )

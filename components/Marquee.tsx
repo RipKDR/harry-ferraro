@@ -1,7 +1,7 @@
 const ITEMS = [
   'Original fine art', 'Oil on canvas', 'Mixed media', 'Melbourne, AU',
   'Fire series', 'Wind series', 'Portraits', 'Private commissions',
-  'Harry Ferraro', 'Figurative painting', 'Since 2017', 'Available worldwide',
+  'Harrison Ferraro', 'Figurative painting', 'One of one', 'No prints, no editions',
 ]
 
 export function Marquee() {

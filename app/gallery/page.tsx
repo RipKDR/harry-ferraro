@@ -3,13 +3,12 @@
 import { useState, useMemo } from 'react'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { ARTWORKS } from '@/lib/artworks'
+import { ARTWORKS, priceLabel } from '@/lib/artworks'
 import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import type { Artwork } from '@/lib/artworks'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
 import { Lightbox } from '@/components/Lightbox'
-import { PurchaseModal } from '@/components/PurchaseModal'
 import { InquireModal } from '@/components/InquireModal'
 
 const FILTERS = ['All', 'Available', 'Fire', 'Portraits', 'Wind', 'Colour Studies'] as const
@@ -17,7 +16,6 @@ const FILTERS = ['All', 'Available', 'Fire', 'Portraits', 'Wind', 'Colour Studie
 export default function GalleryPage() {
   const [filter, setFilter] = useState<string>('All')
   const [lb, setLb] = useState<Artwork | null>(null)
-  const [buyModal, setBuyModal] = useState<Artwork | null>(null)
   const [inqModal, setInqModal] = useState<Artwork | null>(null)
 
   const shown = useMemo(() =>
@@ -103,11 +101,11 @@ export default function GalleryPage() {
                 <button
                   className="gallery-card w-full text-left"
                   onClick={() => setLb(art)}
-                  aria-label={`${art.title}, ${art.year}. ${art.status === 'available' ? `GBP ${art.price.toLocaleString()}, available` : 'Sold'}`}
+                  aria-label={`${art.title}, ${art.year}. ${art.medium}, ${art.dimensions}. ${priceLabel(art)}. Open detail view.`}
                 >
                   <Image
                     src={`/paintings/${art.filename}`}
-                    alt={`${art.title} by Harry Ferraro, ${art.year}`}
+                    alt={`${art.title} by Harrison Ferraro, ${art.year}. ${art.medium}.`}
                     width={600} height={art.dimensions.includes('×') ? parseInt(art.dimensions.split('×')[1]) * 7 : 750}
                     className="w-full"
                     sizes="(max-width:640px) 100vw, (max-width:960px) 50vw, 33vw"
@@ -116,13 +114,11 @@ export default function GalleryPage() {
                   <div className="gallery-overlay">
                     <div className="gallery-card-info">
                       <span className={`badge ${art.status === 'available' ? 'badge-available' : 'badge-sold'} mb-2.5 block`}>
-                        {art.status}
+                        {art.status === 'available' ? 'Available' : 'Sold'}
                       </span>
                       <div className="font-serif text-[19px] font-light mb-1">{art.title}</div>
-                      <div className="font-mono text-[9px] tracking-[0.1em] uppercase text-text-2 mb-1.5">{art.medium}</div>
-                      <div className="font-mono text-[10px] text-ember tracking-[0.08em]">
-                        {art.status === 'available' ? `GBP ${art.price.toLocaleString()}` : 'Sold'}
-                      </div>
+                      <div className="font-mono text-[9px] tracking-[0.1em] uppercase text-text-2">{art.year} · {art.medium}</div>
+                      <div className="font-mono text-[9px] tracking-[0.1em] uppercase text-text-3">{art.dimensions}</div>
                     </div>
                   </div>
                 </button>
@@ -144,11 +140,9 @@ export default function GalleryPage() {
           onClose={() => setLb(null)}
           onNav={navLB}
           onJumpTo={(i) => { if (shown[i]) setLb(shown[i]) }}
-          onBuy={(a) => { setLb(null); setBuyModal(a) }}
           onInquire={(a) => { setLb(null); setInqModal(a) }}
         />
       )}
-      {buyModal && <PurchaseModal art={buyModal} onClose={() => setBuyModal(null)} />}
       {inqModal && <InquireModal art={inqModal} onClose={() => setInqModal(null)} />}
     </>
   )

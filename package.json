@@ -2,12 +2,10 @@
   "dependencies": {
     "clsx": "2.1.1",
     "critters": "^0.0.23",
-    "framer-motion": "11.15.0",
     "next": "^16.1.6",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "resend": "^4.8.0",
-    "stripe": "^20.4.0",
     "tailwind-merge": "^2.6.1",
     "zod": "^3.25.76"
   },
@@ -28,7 +26,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbopack",
-    "lint": "next lint",
+    "lint": "eslint .",
     "start": "next start"
   },
   "version": "1.0.0"

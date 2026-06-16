@@ -1,23 +1,26 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
+import { SITE, SOCIAL, mailto } from '@/lib/site'
 
-type FormState = { name: string; email: string; message: string }
+type FormState = { name: string; email: string; message: string; company: string }
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
-const CONTACT_ITEMS = [
-  { label: 'Email', value: 'Harrisonferraro99@gmail.com', href: 'mailto:Harrisonferraro99@gmail.com' },
-  { label: 'Instagram', value: '@harryferraroart', href: 'https://instagram.com/harryferraroart' },
-  { label: 'Location', value: 'Melbourne, AU', href: null },
+const CONTACT_ITEMS: { label: string; value: string; href: string | null }[] = [
+  { label: 'Email', value: SITE.email, href: mailto },
+  { label: 'Instagram', value: SOCIAL.instagram.handle, href: SOCIAL.instagram.url },
+  { label: 'Facebook', value: SOCIAL.facebook.handle, href: SOCIAL.facebook.url },
+  { label: 'Location', value: SITE.location, href: null },
   { label: 'Response', value: 'Within 48 hours', href: null },
 ]
 
 export default function ContactPage() {
   const [status, setStatus] = useState<Status>('idle')
   const [errors, setErrors] = useState<Partial<FormState>>({})
-  const [form, setForm] = useState<FormState>({ name: '', email: '', message: '' })
+  const [form, setForm] = useState<FormState>({ name: '', email: '', message: '', company: '' })
 
   const up = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((f) => ({ ...f, [k]: e.target.value }))
@@ -55,9 +58,16 @@ export default function ContactPage() {
       <div className="max-w-[580px] mx-auto px-[52px] pt-[160px] pb-[160px] max-md:px-6">
         <Reveal><div className="eyebrow mb-4">Get in Touch</div></Reveal>
         <Reveal delay={0.1}>
-          <h1 className="font-serif font-light leading-[1.03] mb-16" style={{ fontSize: 'clamp(38px,6vw,72px)' }}>
+          <h1 className="font-serif font-light leading-[1.03] mb-6" style={{ fontSize: 'clamp(38px,6vw,72px)' }}>
             Say<br /><em className="italic">something.</em>
           </h1>
+        </Reveal>
+        <Reveal delay={0.15}>
+          <p className="font-mono text-[13px] text-text-2 leading-[1.8] mb-16">
+            Questions about a piece, an exhibition, or working together — all welcome.
+            Thinking about a custom work? Start a{' '}
+            <Link href="/commissions" className="text-ember hover:underline">commission enquiry</Link> instead.
+          </p>
         </Reveal>
 
         {status === 'success' ? (
@@ -85,7 +95,18 @@ export default function ContactPage() {
                 <textarea id="ct-msg" className="form-input" rows={6} value={form.message} onChange={up('message')} placeholder="What is on your mind?" aria-invalid={!!errors.message} />
                 {errors.message && <p className="form-error" role="alert">{errors.message}</p>}
               </div>
-              {status === 'error' && <p className="form-error" role="alert">Something went wrong. Try emailing directly.</p>}
+              {/* Honeypot — hidden from real users */}
+              <input
+                type="text" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                name="company" value={form.company} onChange={up('company')}
+                className="hidden"
+              />
+              {status === 'error' && (
+                <p className="form-error" role="alert">
+                  Couldn’t send just now. Please email{' '}
+                  <a href={mailto} className="underline text-ember">{SITE.email}</a> directly.
+                </p>
+              )}
               <button type="submit" disabled={status === 'loading'} className="btn-ember btn-full mt-2" style={{ opacity: status === 'loading' ? 0.65 : 1 }}>
                 {status === 'loading' ? 'Sending…' : 'Send Message'}
               </button>

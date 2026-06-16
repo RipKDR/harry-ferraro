@@ -1,11 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
-// @ts-expect-error -- Next.js handles global CSS side-effect imports in the app router
 import './globals.css'
-import { Cursor } from '@/components/Cursor'
 import { Grain } from '@/components/Grain'
 import { Nav } from '@/components/Nav'
 import { MobileNav } from '@/components/MobileNav'
+import { SITE, SOCIAL } from '@/lib/site'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -23,21 +22,31 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://harryferraro.com.au'),
-  title: { default: 'Harry Ferraro — Fine Art', template: '%s | Harry Ferraro' },
-  description: 'Original figurative oil paintings by Harry Ferraro. Emotionally intense, technically precise. Fire. Wind. Dissolution. Melbourne, Australia.',
-  keywords: ['fine art','oil painting','figurative art','Harry Ferraro','Melbourne artist','original paintings','commissions'],
-  authors: [{ name: 'Harry Ferraro', url: 'https://harryferraro.com.au' }],
-  creator: 'Harry Ferraro',
+  metadataBase: new URL(SITE.url),
+  title: { default: `${SITE.name} — Fine Art`, template: `%s | ${SITE.name}` },
+  description: `Original figurative oil paintings by ${SITE.name}. Emotionally intense, technically precise. Fire. Wind. Dissolution. ${SITE.location}.`,
+  keywords: ['fine art', 'oil painting', 'figurative art', SITE.name, 'Melbourne artist', 'original paintings', 'art commissions', 'buy original art'],
+  authors: [{ name: SITE.name, url: SITE.url }],
+  creator: SITE.name,
   openGraph: {
-    type: 'website', locale: 'en_AU', url: 'https://harryferraro.com.au',
-    siteName: 'Harry Ferraro', title: 'Harry Ferraro — Fine Art',
+    type: 'website', locale: 'en_AU', url: SITE.url,
+    siteName: SITE.name, title: `${SITE.name} — Fine Art`,
     description: 'Original figurative oil paintings. Fire. Wind. Dissolution.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Harry Ferraro Fine Art' }],
   },
-  twitter: { card: 'summary_large_image', title: 'Harry Ferraro — Fine Art', images: ['/og-image.jpg'] },
+  twitter: { card: 'summary_large_image', title: `${SITE.name} — Fine Art` },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large' } },
-  alternates: { canonical: 'https://harryferraro.com.au' },
+  alternates: { canonical: SITE.url },
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'VisualArtist',
+  name: SITE.name,
+  url: SITE.url,
+  email: SITE.email,
+  description: SITE.tagline,
+  address: { '@type': 'PostalAddress', addressLocality: 'Melbourne', addressCountry: 'AU' },
+  sameAs: [SOCIAL.instagram.url, SOCIAL.facebook.url],
 }
 
 export const viewport: Viewport = {
@@ -48,11 +57,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-AU" suppressHydrationWarning className={`${cormorant.variable} ${jetbrains.variable}`}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body>
         <a href="#main-content" className="skip-nav">Skip to main content</a>
         <Grain />
-        <Cursor />
         <Nav />
         <main id="main-content" tabIndex={-1}>{children}</main>
         <MobileNav />

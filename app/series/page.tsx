@@ -8,13 +8,11 @@ import type { Artwork, SeriesName } from '@/lib/artworks'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
 import { Lightbox } from '@/components/Lightbox'
-import { PurchaseModal } from '@/components/PurchaseModal'
 import { InquireModal } from '@/components/InquireModal'
 
 export default function SeriesPage() {
   const [active, setActive] = useState<SeriesName | null>(null)
   const [lb, setLb] = useState<Artwork | null>(null)
-  const [buyModal, setBuyModal] = useState<Artwork | null>(null)
   const [inqModal, setInqModal] = useState<Artwork | null>(null)
 
   const seriesWorks = active ? ARTWORKS.filter((a) => a.series === active) : []
@@ -99,19 +97,17 @@ export default function SeriesPage() {
                       >
                         <Image
                           src={`/paintings/${art.filename}`}
-                          alt={`${art.title} by Harry Ferraro`}
+                          alt={`${art.title} by Harrison Ferraro, ${art.year}. ${art.medium}.`}
                           width={600} height={750} className="w-full"
                           sizes="(max-width:640px) 100vw, 50vw"
                           placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[art.slug]}
                         />
                         <div className="gallery-overlay">
                           <div className="gallery-card-info">
-                            <span className={`badge ${art.status === 'available' ? 'badge-available' : 'badge-sold'} mb-2.5 block`}>{art.status}</span>
+                            <span className={`badge ${art.status === 'available' ? 'badge-available' : 'badge-sold'} mb-2.5 block`}>{art.status === 'available' ? 'Available' : 'Sold'}</span>
                             <div className="font-serif text-[20px] font-light mb-1">{art.title}</div>
-                            <div className="font-mono text-[9px] uppercase text-text-2 mb-1.5 tracking-[0.1em]">{art.medium}</div>
-                            <div className="font-mono text-[10px] text-ember">
-                              {art.status === 'available' ? `GBP ${art.price.toLocaleString()}` : 'Sold'}
-                            </div>
+                            <div className="font-mono text-[9px] uppercase text-text-2 tracking-[0.1em]">{art.year} · {art.medium}</div>
+                            <div className="font-mono text-[9px] uppercase text-text-3 tracking-[0.1em]">{art.dimensions}</div>
                           </div>
                         </div>
                       </button>
@@ -135,11 +131,9 @@ export default function SeriesPage() {
             if (next) setLb(next)
           }}
           onJumpTo={(i) => { if (seriesWorks[i]) setLb(seriesWorks[i]) }}
-          onBuy={(a) => { setLb(null); setBuyModal(a) }}
           onInquire={(a) => { setLb(null); setInqModal(a) }}
         />
       )}
-      {buyModal && <PurchaseModal art={buyModal} onClose={() => setBuyModal(null)} />}
       {inqModal && <InquireModal art={inqModal} onClose={() => setInqModal(null)} />}
     </>
   )

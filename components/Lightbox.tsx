@@ -3,8 +3,10 @@
 import { useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import type { Artwork } from '@/lib/artworks'
+import { priceLabel } from '@/lib/artworks'
 import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import { useFocusTrap } from '@/lib/useFocusTrap'
+import { SITE } from '@/lib/site'
 
 type LightboxProps = {
   art: Artwork
@@ -12,11 +14,10 @@ type LightboxProps = {
   onClose: () => void
   onNav: (dir: -1 | 1) => void
   onJumpTo: (index: number) => void
-  onBuy: (art: Artwork) => void
   onInquire: (art: Artwork) => void
 }
 
-export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire }: LightboxProps) {
+export function Lightbox({ art, all, onClose, onNav, onJumpTo, onInquire }: LightboxProps) {
   const idx = all.findIndex((a) => a.id === art.id)
   const closeBtn = useRef<HTMLButtonElement>(null)
   const touchStartX = useRef<number | null>(null)
@@ -77,7 +78,7 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire 
           <Image
             key={art.id}
             src={`/paintings/${art.filename}`}
-            alt={`${art.title} by Harry Ferraro, ${art.year}`}
+            alt={`${art.title} by ${SITE.name}, ${art.year}`}
             width={640}
             height={900}
             className="object-contain block"
@@ -156,41 +157,25 @@ export function Lightbox({ art, all, onClose, onNav, onJumpTo, onBuy, onInquire 
               </div>
             ))}
 
-            {art.status === 'available' && (
-              <>
-                <p
-                  className="text-[36px] font-light mt-5 mb-1 leading-none"
-                  style={{ fontFamily: 'var(--font-cormorant)' }}
-                >
-                  AUD {art.price.toLocaleString()}
-                </p>
-                <p
-                  className="text-[8.5px] tracking-[0.1em] text-text-3 mb-5"
-                  style={{ fontFamily: 'var(--font-jetbrains)' }}
-                >
-                  Certificate of authenticity included
-                </p>
-              </>
-            )}
+            <p
+              className="text-[26px] font-light mt-5 mb-1 leading-none text-text"
+              style={{ fontFamily: 'var(--font-cormorant)' }}
+            >
+              {priceLabel(art)}
+            </p>
+            <p
+              className="text-[8.5px] tracking-[0.1em] text-text-3 mb-5"
+              style={{ fontFamily: 'var(--font-jetbrains)' }}
+            >
+              {art.status === 'available'
+                ? 'Original · Certificate of authenticity included'
+                : 'This work has found its home'}
+            </p>
 
             <div className="mt-auto flex flex-col gap-2 pt-4">
-              {art.status === 'available' ? (
-                <>
-                  <button onClick={() => onBuy(art)} className="btn-ember btn-full text-[9px]">
-                    Purchase Original
-                  </button>
-                  <button
-                    onClick={() => onInquire(art)}
-                    className="btn-ghost btn-full text-[9px]"
-                  >
-                    Inquire
-                  </button>
-                </>
-              ) : (
-                <button onClick={() => onInquire(art)} className="btn-ghost btn-full text-[9px]">
-                  Inquire About Similar
-                </button>
-              )}
+              <button onClick={() => onInquire(art)} className="btn-ember btn-full text-[9px]">
+                {art.status === 'available' ? 'Enquire About This Work' : 'Enquire About Similar'}
+              </button>
             </div>
           </div>
         </div>

@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { SITE } from '@/lib/site'
+import { SocialLinks } from '@/components/SocialLinks'
 
 const FOOTER_NAV = [
   { label: 'Gallery', href: '/gallery' },
@@ -19,33 +21,15 @@ export function Footer() {
             href="/"
             className="font-serif text-[22px] font-medium mb-4 block hover:opacity-75 transition-opacity"
           >
-            Harry Ferraro<span className="text-ember">.</span>
+            Harrison Ferraro<span className="text-ember">.</span>
           </Link>
           <p
             className="text-[12px] text-text-2 leading-[1.75] max-w-[220px] mb-6"
             style={{ fontFamily: 'var(--font-jetbrains)' }}
           >
-            Original figurative oil paintings and mixed media works. Melbourne, AU.
+            Original figurative oil paintings and mixed media works. {SITE.locationShort}.
           </p>
-          <div className="flex gap-2.5 flex-wrap">
-            <a
-              href="https://instagram.com/harryferraroart"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-colors"
-              style={{ fontFamily: 'var(--font-jetbrains)' }}
-              aria-label="Harry Ferraro on Instagram"
-            >
-              Instagram
-            </a>
-            <Link
-              href="/contact"
-              className="text-[10px] tracking-[0.12em] uppercase px-3.5 py-2 border border-[#38354a] text-text-3 hover:text-text hover:border-[#7c768a] transition-colors"
-              style={{ fontFamily: 'var(--font-jetbrains)' }}
-            >
-              Contact
-            </Link>
-          </div>
+          <SocialLinks />
         </div>
 
         {/* Nav */}
@@ -84,22 +68,22 @@ export function Footer() {
             style={{ fontFamily: 'var(--font-jetbrains)' }}
           >
             <a
-              href="mailto:Harrisonferraro99@gmail.com"
+              href={`mailto:${SITE.email}`}
               className="block hover:text-text transition-colors"
             >
-              Harrisonferraro99@gmail.com
+              {SITE.email}
             </a>
-            <p>Melbourne, AU</p>
+            <p>{SITE.location}</p>
           </div>
           <div className="mt-8">
             <div
               className="text-[10px] tracking-[0.18em] uppercase text-text-3 mb-3"
               style={{ fontFamily: 'var(--font-jetbrains)' }}
             >
-              Commission
+              Commissions
             </div>
             <Link href="/commissions" className="btn-ghost text-[9px] tracking-[0.12em] uppercase px-4 py-2.5 inline-block">
-              Start a Project
+              Enquire
             </Link>
           </div>
         </address>
@@ -111,7 +95,7 @@ export function Footer() {
           className="text-[9px] tracking-[0.1em] uppercase text-text-3"
           style={{ fontFamily: 'var(--font-jetbrains)' }}
         >
-          © {new Date().getFullYear()} Harry Ferraro. All rights reserved.
+          © {new Date().getFullYear()} Harrison Ferraro. All rights reserved.
         </p>
         <p
           className="text-[9px] tracking-[0.1em] uppercase text-text-3"

@@ -8,7 +8,7 @@ import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 
 export const metadata: Metadata = {
   title: 'Process',
-  description: 'Inside the studio. How Harry Ferraro makes his paintings — from concept through resolution.',
+  description: 'Inside the studio. How Harrison Ferraro makes his paintings — from concept through resolution.',
 }
 
 const STEPS = [
@@ -27,7 +27,7 @@ export default function ProcessPage() {
       <div className="relative h-[55vh] overflow-hidden flex items-end" aria-label="Process — studio practice">
         <Image
           src="/paintings/tempest.jpg"
-          alt="Tempest by Harry Ferraro — studio detail"
+          alt="Tempest — a painting by Harrison Ferraro"
           fill priority className="object-cover"
           style={{ objectPosition: 'center 30%', filter: 'brightness(0.2) contrast(1.35) saturate(0.6)' }}
           sizes="100vw"
