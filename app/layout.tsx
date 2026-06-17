@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
-// @ts-expect-error -- Next.js handles global CSS side-effect imports in the app router
 import './globals.css'
 import { Cursor } from '@/components/Cursor'
 import { Grain } from '@/components/Grain'
