@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.2.11",
+    "@fontsource/jetbrains-mono": "^5.2.8",
     "@sanity/image-url": "^1.2.0",
     "@sanity/vision": "^3.99.0",
     "clsx": "2.1.1",
