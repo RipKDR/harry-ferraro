@@ -43,14 +43,11 @@ const PLACEMENTS: Placement[] = [
 const PARALLAX: Record<Depth, number> = { 1: 10, 2: 22, 3: 38 }
 // Base opacity per depth (far = dimmer, near = full)
 const BASE_OPACITY: Record<Depth, number> = { 1: 0.76, 2: 0.91, 3: 1.0 }
-// Staggered float animation delays
-const FLOAT_DELAYS = [0, 0.35, 0.7, 0.18, 0.55, 0.9, 0.28]
 
 // ─── Artwork Card ─────────────────────────────────────────────────────────────
 interface CardProps {
   artwork: Artwork
   placement: Placement
-  floatDelay: number
   smoothX: MotionValue<number>
   smoothY: MotionValue<number>
   isSelected: boolean
@@ -59,7 +56,7 @@ interface CardProps {
 }
 
 function ArtworkCard({
-  artwork, placement, floatDelay,
+  artwork, placement,
   smoothX, smoothY,
   isSelected, anySelected, onSelect,
 }: CardProps) {
@@ -256,7 +253,7 @@ function DetailPanel({ artwork, onClose, onBuy, onInquire }: DetailPanelProps) {
       role="dialog"
       aria-modal="true"
       aria-label={`${artwork.title} — artwork details`}
-      tabIndex={-1}
+      tabIndex={0}
     >
       {/* Close button */}
       <button
@@ -422,14 +419,29 @@ export function InteractiveCanvas({ artworks, onBuy, onInquire }: InteractiveCan
       rawX.set(e.clientX / rect.width)
       rawY.set((e.clientY - rect.top) / rect.height)
     },
-    [rawX, rawY],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      const touch = e.touches[0]
+      if (!touch) return
+      const rect = sectionRef.current?.getBoundingClientRect()
+      if (!rect) return
+      rawX.set(touch.clientX / rect.width)
+      rawY.set((touch.clientY - rect.top) / rect.height)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   )
 
   const handleMouseLeave = useCallback(() => {
     setCursorInside(false)
     rawX.set(0.5)
     rawY.set(0.5)
-  }, [rawX, rawY])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const selectedArtwork = artworks.find((a) => a.slug === selectedSlug) ?? null
 
@@ -445,6 +457,8 @@ export function InteractiveCanvas({ artworks, onBuy, onInquire }: InteractiveCan
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setCursorInside(true)}
       onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleMouseLeave}
       aria-label="Interactive artwork collection — hover to preview, click to explore details"
     >
       {/* ── Section header (overlaid, non-interactive) ── */}
@@ -477,7 +491,6 @@ export function InteractiveCanvas({ artworks, onBuy, onInquire }: InteractiveCan
               key={artwork.slug}
               artwork={artwork}
               placement={placement}
-              floatDelay={FLOAT_DELAYS[i % FLOAT_DELAYS.length]}
               smoothX={smoothX}
               smoothY={smoothY}
               isSelected={selectedSlug === artwork.slug}
