@@ -389,6 +389,194 @@ function DetailPanel({ artwork, onClose, onBuy, onInquire }: DetailPanelProps) {
   )
 }
 
+// ─── Mobile Carousel ─────────────────────────────────────────────────────────
+const CARD_ROTATIONS = [-3.5, 2.8, -2.1, 4.2, -1.8, 3.1, -2.6]
+
+interface MobileCarouselProps {
+  artworks: Artwork[]
+  selectedSlug: string | null
+  setSelectedSlug: (s: string | null) => void
+  onBuy: (a: Artwork) => void
+  onInquire: (a: Artwork) => void
+}
+
+function MobileCarousel({ artworks, selectedSlug, setSelectedSlug, onBuy, onInquire }: MobileCarouselProps) {
+  const [index, setIndex] = useState(0)
+  const [direction, setDirection] = useState(0)
+
+  const navigate = useCallback((dir: number) => {
+    const next = index + dir
+    if (next < 0 || next >= artworks.length) return
+    setDirection(dir)
+    setIndex(next)
+  }, [index, artworks.length])
+
+  const artwork = artworks[index]
+  const blur = BLUR_PLACEHOLDERS[artwork?.slug ?? '']
+  const selectedArtwork = artworks.find((a) => a.slug === selectedSlug) ?? null
+
+  return (
+    <section
+      className="relative overflow-hidden flex flex-col"
+      style={{ height: '100svh', minHeight: 600 }}
+      aria-label="Swipeable artwork collection — swipe to browse, tap to explore"
+    >
+      {/* Header */}
+      <div className="px-6 pt-16 pb-4 pointer-events-none" aria-hidden>
+        <p className="eyebrow mb-2">The Collection</p>
+        <h2 className="font-serif font-light text-text" style={{ fontSize: 'clamp(26px,7vw,42px)', lineHeight: 1 }}>
+          Selected Works
+        </h2>
+      </div>
+
+      {/* Swipeable card */}
+      <div className="flex-1 flex items-center justify-center px-8 overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction} initial={false}>
+          <motion.div
+            key={index}
+            custom={direction}
+            variants={{
+              enter: (dir: number) => ({
+                x: dir >= 0 ? 300 : -300,
+                opacity: 0,
+                scale: 0.88,
+                rotate: dir >= 0 ? 9 : -9,
+              }),
+              center: {
+                x: 0,
+                opacity: 1,
+                scale: 1,
+                rotate: CARD_ROTATIONS[index % CARD_ROTATIONS.length],
+              },
+              exit: (dir: number) => ({
+                x: dir >= 0 ? -300 : 300,
+                opacity: 0,
+                scale: 0.88,
+                rotate: dir >= 0 ? -9 : 9,
+              }),
+            }}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: 'spring', stiffness: 300, damping: 30, mass: 0.8 }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.18}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -65 || info.velocity.x < -400) navigate(1)
+              else if (info.offset.x > 65 || info.velocity.x > 400) navigate(-1)
+            }}
+            onClick={() => artwork && setSelectedSlug(artwork.slug)}
+            className="w-full select-none"
+            style={{ maxWidth: 300, cursor: 'pointer' }}
+          >
+            {artwork && (
+              <>
+                <div
+                  className="relative overflow-hidden"
+                  style={{ boxShadow: '0 24px 72px rgba(0,0,0,0.82), 0 8px 24px rgba(0,0,0,0.5)' }}
+                >
+                  <div
+                    className="absolute inset-0 z-10 pointer-events-none"
+                    style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 0 32px rgba(0,0,0,0.28)' }}
+                    aria-hidden
+                  />
+                  <Image
+                    src={`/paintings/${artwork.filename}`}
+                    alt={`${artwork.title} — Harry Ferraro, ${artwork.year}`}
+                    width={300}
+                    height={384}
+                    className="block w-full object-cover"
+                    style={{ aspectRatio: '3/4' }}
+                    sizes="300px"
+                    placeholder={blur ? 'blur' : 'empty'}
+                    blurDataURL={blur}
+                  />
+                  <div
+                    className="absolute inset-0 z-20 flex flex-col justify-end"
+                    style={{
+                      background:
+                        'linear-gradient(to top, rgba(5,4,14,0.96) 0%, rgba(5,4,14,0.22) 48%, transparent 70%)',
+                    }}
+                    aria-hidden
+                  >
+                    <div className="p-5">
+                      <p className="text-[8px] tracking-[0.24em] uppercase text-ember font-mono mb-[5px]">
+                        {artwork.series}
+                      </p>
+                      <p className="font-serif font-light text-text" style={{ fontSize: 19, lineHeight: 1.08 }}>
+                        {artwork.title}
+                      </p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <p className="text-[10px] text-text-3 font-mono">{artwork.year}</p>
+                        {artwork.status === 'available' && (
+                          <span className="text-[8px] tracking-widest text-ember font-mono uppercase">
+                            Available
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Available dot */}
+                  {artwork.status === 'available' && (
+                    <div className="absolute top-3 right-3 z-30 w-[7px] h-[7px] rounded-full bg-ember" aria-hidden />
+                  )}
+                </div>
+
+                <p className="text-center text-[7.5px] tracking-[0.22em] uppercase text-text-3 font-mono mt-4 opacity-50">
+                  Swipe to browse · Tap to open
+                </p>
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Dot nav */}
+      <div className="flex justify-center items-center gap-2 pb-6">
+        {artworks.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setDirection(i > index ? 1 : -1); setIndex(i) }}
+            aria-label={`View ${artworks[i].title}`}
+            className="transition-all duration-300"
+            style={{
+              width: i === index ? 18 : 6,
+              height: 6,
+              borderRadius: i === index ? 3 : '50%',
+              background: i === index ? '#c8570a' : 'rgba(255,255,255,0.18)',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* View all */}
+      <div className="flex justify-center pb-8">
+        <Link
+          href="/gallery"
+          className="font-mono text-[9px] tracking-[0.18em] uppercase text-text-3 hover:text-ember transition-colors"
+        >
+          View All Works →
+        </Link>
+      </div>
+
+      {/* Detail panel (same component) */}
+      <AnimatePresence>
+        {selectedArtwork && (
+          <DetailPanel
+            key={selectedArtwork.slug}
+            artwork={selectedArtwork}
+            onClose={() => setSelectedSlug(null)}
+            onBuy={(a) => { setSelectedSlug(null); onBuy(a) }}
+            onInquire={(a) => { setSelectedSlug(null); onInquire(a) }}
+          />
+        )}
+      </AnimatePresence>
+    </section>
+  )
+}
+
 // ─── Main exported component ──────────────────────────────────────────────────
 interface InteractiveCanvasProps {
   artworks: Artwork[]
@@ -400,6 +588,14 @@ export function InteractiveCanvas({ artworks, onBuy, onInquire }: InteractiveCan
   const sectionRef = useRef<HTMLDivElement>(null)
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [cursorInside, setCursorInside] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   // Normalised mouse position: 0 = left/top edge, 1 = right/bottom edge
   const rawX = useMotionValue(0.5)
@@ -448,6 +644,18 @@ export function InteractiveCanvas({ artworks, onBuy, onInquire }: InteractiveCan
   const toggleSelect = useCallback((slug: string) => {
     setSelectedSlug((prev) => (prev === slug ? null : slug))
   }, [])
+
+  if (isMobile) {
+    return (
+      <MobileCarousel
+        artworks={artworks}
+        selectedSlug={selectedSlug}
+        setSelectedSlug={setSelectedSlug}
+        onBuy={onBuy}
+        onInquire={onInquire}
+      />
+    )
+  }
 
   return (
     <section
