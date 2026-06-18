@@ -7,7 +7,7 @@ export default defineConfig({
   name: 'harry-ferraro-studio',
   title: 'Harry Ferraro — Studio CMS',
 
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'miv2pxun',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
 
   plugins: [

@@ -1,3 +1,8 @@
+/** Returns the correct image src — either a Sanity CDN URL or a local /paintings/ path. */
+export function artworkSrc(filename: string): string {
+  return filename.startsWith('https://') ? filename : `/paintings/${filename}`
+}
+
 export type Artwork = {
   id: number
   slug: string

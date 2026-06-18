@@ -1,17 +1,24 @@
 import type { NextConfig } from 'next'
 
-const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || ''
+const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+
+const sanityConnectSrc = sanityProjectId
+  ? `https://${sanityProjectId}.api.sanity.io https://${sanityProjectId}.apicdn.sanity.io wss://${sanityProjectId}.api.sanity.io`
+  : ''
+
+const sanityImgSrc = sanityProjectId ? 'https://cdn.sanity.io' : ''
+const sanityFontSrc = sanityProjectId ? 'https://cdn.sanity.io' : ''
 
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com;
   style-src 'self' 'unsafe-inline';
-  font-src 'self' https://cdn.sanity.io;
-  img-src 'self' data: blob: https://*.stripe.com https://cdn.sanity.io;
-  connect-src 'self' https://api.resend.com https://api.stripe.com https://${sanityProjectId}.api.sanity.io https://${sanityProjectId}.apicdn.sanity.io wss://${sanityProjectId}.api.sanity.io;
+  font-src 'self' ${sanityFontSrc};
+  img-src 'self' data: blob: https://*.stripe.com ${sanityImgSrc};
+  connect-src 'self' https://api.resend.com https://api.stripe.com ${sanityConnectSrc};
   frame-src https://js.stripe.com https://hooks.stripe.com;
   worker-src blob:;
-`.replace(/\n/g, ' ').trim()
+`.replace(/\s+/g, ' ').trim()
 
 const nextConfig: NextConfig = {
   images: {

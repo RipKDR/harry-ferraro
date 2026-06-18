@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { SERIES } from '@/lib/artworks'
+import { SERIES, artworkSrc } from '@/lib/artworks'
 import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import { Marquee } from '@/components/Marquee'
 import { StatCounter } from '@/components/StatCounter'
@@ -257,7 +257,7 @@ export default function HomeClient({ artworks }: { artworks: Artwork[] }) {
                     aria-label={`${name} series — ${works.length} works`}
                   >
                     <Image
-                      src={`/paintings/${cover.filename}`}
+                      src={artworkSrc(cover.filename)}
                       alt={name}
                       width={800}
                       height={600}

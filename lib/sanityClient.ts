@@ -4,11 +4,10 @@ import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
 import { ARTWORKS as staticArtworks } from './artworks'
 import type { Artwork } from './artworks'
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'miv2pxun'
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 const apiVersion = '2024-01-01'
 
-// Only create the client if a project ID is configured
 export const sanityClient = projectId
   ? createClient({
       projectId,
@@ -24,7 +23,6 @@ export function urlFor(source: SanityImageSource) {
   return builder?.image(source) ?? null
 }
 
-// Fetch artworks from Sanity, falling back to static data if not configured
 export async function getArtworks(): Promise<Artwork[]> {
   if (!sanityClient) return staticArtworks
 
@@ -57,16 +55,13 @@ export async function getArtworks(): Promise<Artwork[]> {
         statement,
         "filename": coalesce(
           localFilename,
-          image.asset->originalFilename
+          image.asset->url
         )
       }`,
     )
 
     if (data && data.length > 0) {
-      // Filter to valid entries only
-      return data.filter(
-        (a) => a.slug && a.title && a.filename,
-      ) as Artwork[]
+      return data.filter((a) => a.slug && a.title && a.filename) as Artwork[]
     }
   } catch (err) {
     console.warn('[Sanity] Failed to fetch artworks, using static data:', err)

@@ -13,6 +13,7 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Artwork } from '@/lib/artworks'
+import { artworkSrc } from '@/lib/artworks'
 import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -136,7 +137,7 @@ function ArtworkCard({
           />
 
           <Image
-            src={`/paintings/${artwork.filename}`}
+            src={artworkSrc(artwork.filename)}
             alt={`${artwork.title} — Harry Ferraro, ${artwork.year}`}
             width={placement.w}
             height={aspectH}
@@ -296,7 +297,7 @@ function DetailPanel({ artwork, onClose, onBuy, onInquire }: DetailPanelProps) {
           style={{ aspectRatio: '4/5', background: 'var(--surface)' }}
         >
           <Image
-            src={`/paintings/${artwork.filename}`}
+            src={artworkSrc(artwork.filename)}
             alt={`${artwork.title} by Harry Ferraro`}
             fill
             className="object-cover"
@@ -482,7 +483,7 @@ function MobileCarousel({ artworks, selectedSlug, setSelectedSlug, onBuy, onInqu
                     aria-hidden
                   />
                   <Image
-                    src={`/paintings/${artwork.filename}`}
+                    src={artworkSrc(artwork.filename)}
                     alt={`${artwork.title} — Harry Ferraro, ${artwork.year}`}
                     width={300}
                     height={384}
@@ -612,8 +613,8 @@ export function InteractiveCanvas({ artworks, onBuy, onInquire }: InteractiveCan
     (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = sectionRef.current?.getBoundingClientRect()
       if (!rect) return
-      rawX.set(e.clientX / rect.width)
-      rawY.set((e.clientY - rect.top) / rect.height)
+      rawX.set(Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)))
+      rawY.set(Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height)))
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -625,8 +626,8 @@ export function InteractiveCanvas({ artworks, onBuy, onInquire }: InteractiveCan
       if (!touch) return
       const rect = sectionRef.current?.getBoundingClientRect()
       if (!rect) return
-      rawX.set(touch.clientX / rect.width)
-      rawY.set((touch.clientY - rect.top) / rect.height)
+      rawX.set(Math.min(1, Math.max(0, (touch.clientX - rect.left) / rect.width)))
+      rawY.set(Math.min(1, Math.max(0, (touch.clientY - rect.top) / rect.height)))
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
