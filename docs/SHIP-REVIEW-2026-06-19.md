@@ -81,4 +81,6 @@ Route smoke (fresh `next start` required after build):
 
 ## Sign-off
 
-**SHIP WITH NOTES** — suitable for production portfolio launch. Follow-up: real dimensions on artworks, optional WebXR later, analytics when ready.
+**SHIP WITH NOTES** — suitable for production portfolio launch.
+
+**Shipped 2026-06-19:** `main` @ `f606e61` on `RipKDR/harry-ferraro`. Vercel production verified: `/who-i-am`, `/preview`, homepage copy (portfolio-first). GitHub→Vercel auto-deploy active; CLI deploy skipped (no local Vercel token).
