@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ARTWORKS, SERIES, artworkMetaItems, getArtwork } from '@/lib/artworks'
+import { ARTWORKS, SERIES, formatArtworkMeta, getArtwork } from '@/lib/artworks'
 import { SITE } from '@/lib/site'
 import { Footer } from '@/components/Footer'
+import { ArtFrame } from '@/components/ArtFrame'
 import { ArtworkActions } from '@/components/ArtworkActions'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -37,8 +38,16 @@ export default async function ArtworkPage({ params }: Props) {
   const artwork = getArtwork(slug)
   if (!artwork) notFound()
 
-  const related = ARTWORKS.filter((item) => item.series === artwork.series && item.slug !== artwork.slug).slice(0, 3)
+  const currentIndex = ARTWORKS.findIndex((item) => item.slug === artwork.slug)
+  const nextArtwork = ARTWORKS[(currentIndex + 1) % ARTWORKS.length]
   const series = SERIES[artwork.series]
+
+  const captionLines = [
+    formatArtworkMeta(artwork.year),
+    formatArtworkMeta(artwork.medium),
+    formatArtworkMeta(artwork.dimensions),
+  ].filter((value): value is string => Boolean(value))
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'VisualArtwork',
@@ -54,70 +63,71 @@ export default async function ArtworkPage({ params }: Props) {
     <div className="page-enter">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <div className="site-shell px-5 pt-28 md:px-12 lg:px-[4.5rem]">
-        <Link href="/gallery" className="inline-flex items-center gap-2 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-text-3 transition-colors hover:text-oxide">
-          <span aria-hidden="true">←</span> Work index
-        </Link>
-      </div>
-
-      <article className="site-shell grid min-h-[calc(100dvh-7rem)] gap-0 pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,32rem)]">
-        <div className="relative flex min-h-[72vh] items-center justify-center border-y border-[var(--border)] bg-[#050403] p-5 lg:sticky lg:top-24 lg:h-[calc(100dvh-6rem)] lg:border-r lg:p-10" aria-label={`${artwork.title} artwork image`}>
-          <Image
-            src={artwork.image}
-            alt={artwork.alt}
-            width={1100}
-            height={1400}
-            priority
-            className="max-h-full w-auto max-w-full object-contain shadow-[0_24px_140px_rgba(0,0,0,.62)]"
-            sizes="(max-width:1024px) 100vw, 62vw"
-          />
+      <article className="site-shell lg:grid lg:grid-cols-[58%_42%] lg:items-start">
+        {/* Left — sticky image panel on desktop, stacked top on mobile */}
+        <div className="relative h-[60vh] w-full overflow-hidden bg-[#050403] lg:sticky lg:top-0 lg:h-[100dvh]" aria-label={`${artwork.title} artwork image`}>
+          <ArtFrame className="h-full">
+            <Image
+              src={artwork.image}
+              alt={artwork.alt}
+              fill
+              priority
+              className="object-cover"
+              style={{ objectPosition: 'center' }}
+              sizes="(max-width:1024px) 100vw, 58vw"
+            />
+          </ArtFrame>
         </div>
 
-        <div className="section-pad-tight lg:py-12">
-          <Link href="/series" className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-text-3 transition-colors hover:text-oxide">
-            {artwork.series}
+        {/* Right — scrolling content column */}
+        <div className="section-pad-tight lg:px-[clamp(2rem,4vw,4.5rem)] lg:py-[clamp(5rem,9vw,8rem)]">
+          <Link href="/gallery" className="inline-flex items-center gap-2 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-text-3 transition-colors hover:text-oxide">
+            <span aria-hidden="true">←</span> Work index
           </Link>
 
-          <h1 className="mt-5 font-serif text-[clamp(4rem,7vw,7.6rem)] leading-[0.78] tracking-[-0.085em]">{artwork.title}</h1>
-          <p className="mt-7 font-mono text-[0.88rem] leading-8 text-text-2">{artwork.description}</p>
+          <p className="eyebrow mb-5 mt-10">{artwork.series}</p>
 
-          {artworkMetaItems(artwork).length > 0 && (
-            <dl aria-label="Artwork details" className="my-9">
-              {artworkMetaItems(artwork).map(([label, value]) => (
-                <div key={label} className="info-row">
-                  <dt className="info-key">{label}</dt>
-                  <dd className="info-val max-w-[15rem]">{value}</dd>
-                </div>
+          <h1 className="font-serif text-[clamp(3rem,5vw,7rem)] leading-[0.82] tracking-[-0.07em]">{artwork.title}</h1>
+
+          {captionLines.length > 0 && (
+            <div className="mt-7 space-y-1.5">
+              {captionLines.map((line) => (
+                <p key={line} className="font-mono text-[0.72rem] leading-6 tracking-[0.04em] text-text-3">{line}</p>
               ))}
-            </dl>
+            </div>
           )}
 
-          <div className="statement-panel mb-8">
+          {artwork.description && (
+            <p className="mt-8 max-w-[36rem] font-mono text-[0.88rem] leading-8 text-text-2">{artwork.description}</p>
+          )}
+
+          <div className="statement-panel my-10">
             <p className="mb-3 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-oxide">Series note</p>
             <p className="font-mono text-[0.82rem] leading-7 text-text-2">{series.description}</p>
           </div>
 
           <ArtworkActions artwork={artwork} />
 
-          {related.length > 0 && (
-            <section className="mt-12" aria-labelledby="related-heading">
-              <div className="divider mb-6" />
-              <h2 id="related-heading" className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-text-3">Related works</h2>
-              <div className="grid grid-cols-3 gap-2">
-                {related.map((item) => (
-                  <Link key={item.slug} href={`/gallery/${item.slug}`} className="group block overflow-hidden bg-[#050403]" aria-label={`View ${item.title}`}>
-                    <Image
-                      src={item.image}
-                      alt={item.alt}
-                      width={260}
-                      height={340}
-                      className="aspect-[3/4] w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                    />
-                  </Link>
-                ))}
+          <div className="mt-14">
+            <div className="divider mb-6" />
+            <Link href={`/gallery/${nextArtwork.slug}`} className="group flex items-center gap-5" aria-label={`Next work: ${nextArtwork.title}`}>
+              <div className="relative h-[5.5rem] w-[4.4rem] shrink-0 overflow-hidden bg-[#050403]">
+                <Image
+                  src={nextArtwork.image}
+                  alt={nextArtwork.alt}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                  sizes="80px"
+                />
               </div>
-            </section>
-          )}
+              <div>
+                <p className="font-mono text-[0.58rem] uppercase tracking-[0.2em] text-text-3">Next work</p>
+                <p className="mt-2 font-serif text-[clamp(1.8rem,3vw,2.6rem)] leading-none tracking-[-0.04em] text-text transition-colors group-hover:text-oxide">
+                  {nextArtwork.title} <span aria-hidden="true" className="text-oxide">→</span>
+                </p>
+              </div>
+            </Link>
+          </div>
         </div>
       </article>
 

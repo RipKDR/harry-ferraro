@@ -10,6 +10,21 @@ import { Reveal } from '@/components/Reveal'
 
 const FILTERS = ['All', ...Object.keys(SERIES)] as const
 
+// Intrinsic dimensions probed from /public/paintings. Files that are not yet on
+// disk fall back to varied portrait ratios so the masonry still staggers honestly
+// rather than collapsing into a uniform grid.
+const DIMS: Record<string, { w: number; h: number }> = {
+  'ignition-i': { w: 2268, h: 2835 },
+  'ignition-ii': { w: 640, h: 900 },
+  'crimson-study': { w: 600, h: 900 },
+  ascendant: { w: 1000, h: 1320 },
+  tempest: { w: 1000, h: 1500 },
+  radiance: { w: 1000, h: 1180 },
+  dissolution: { w: 900, h: 1400 },
+}
+
+const FALLBACK_DIM = { w: 1000, h: 1280 }
+
 export default function GalleryPage() {
   const [filter, setFilter] = useState<string>('All')
 
@@ -36,49 +51,70 @@ export default function GalleryPage() {
         </div>
       </header>
 
-      <div className="sticky top-[5.2rem] z-30 border-b border-[var(--border)] bg-[rgba(8,7,6,0.86)] backdrop-blur-2xl">
-        <div className="site-shell flex gap-2 overflow-x-auto px-5 py-3 md:px-12 lg:px-[4.5rem]" aria-label="Filter paintings" style={{ scrollbarWidth: 'none' }}>
-          {FILTERS.map((filterName) => (
-            <button
-              key={filterName}
-              type="button"
-              aria-pressed={filter === filterName}
-              onClick={() => setFilter(filterName)}
-              className={`shrink-0 border px-4 py-2 font-mono text-[0.62rem] uppercase tracking-[0.18em] transition-all ${
-                filter === filterName
-                  ? 'border-oxide bg-oxide text-[#080706]'
-                  : 'border-[var(--border)] text-text-3 hover:border-[var(--border-strong)] hover:text-text-2'
-              }`}
-            >
-              {filterName}
-            </button>
-          ))}
+      <div className="sticky top-[5.2rem] z-30 border-b border-[var(--border)] bg-[rgba(8,7,6,0.72)] backdrop-blur-xl">
+        <div className="site-shell flex items-center gap-6 overflow-x-auto px-5 py-4 md:px-12 lg:px-[4.5rem]" aria-label="Filter paintings" style={{ scrollbarWidth: 'none' }}>
+          {FILTERS.map((filterName) => {
+            const active = filter === filterName
+            return (
+              <button
+                key={filterName}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setFilter(filterName)}
+                className={`shrink-0 border-b pb-1 font-mono text-[0.62rem] uppercase tracking-[0.2em] transition-colors duration-200 ${
+                  active
+                    ? 'border-oxide text-oxide'
+                    : 'border-transparent text-text-3 hover:text-text-2'
+                }`}
+              >
+                {filterName}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       <section className="section-pad site-shell" aria-label="Painting grid">
-        <div className="grid gap-x-5 gap-y-16 sm:grid-cols-2 xl:grid-cols-3">
+        <p className="mb-12 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-text-3">
+          {shown.length} painting{shown.length === 1 ? '' : 's'}
+        </p>
+
+        <div className="columns-1 gap-x-6 sm:columns-2 xl:columns-3">
           {shown.map((artwork, index) => {
-            const meta = [formatArtworkMeta(artwork.year), formatArtworkMeta(artwork.medium), formatArtworkMeta(artwork.dimensions)].filter(Boolean).join(' · ')
+            const dim = DIMS[artwork.slug] ?? FALLBACK_DIM
+            const year = formatArtworkMeta(artwork.year)
             const indexLabel = String(index + 1).padStart(2, '0')
             return (
-              <Reveal key={artwork.slug} delayMs={(index % 3) * 80}>
-                <Link href={`/gallery/${artwork.slug}`} className={`work-tile group block ${index % 3 === 1 ? 'xl:translate-y-14' : index % 3 === 2 ? 'xl:-translate-y-6' : ''}`}>
-                  <article>
-                    <ArtFrame>
-                      <div className="relative overflow-hidden" style={{ aspectRatio: index % 3 === 0 ? '4 / 5' : '3 / 4' }}>
-                        <Image src={artwork.image} alt={artwork.alt} fill className="art-image object-cover" sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 33vw" />
+              <Reveal key={artwork.slug} delayMs={(index % 3) * 90} className="mb-10 break-inside-avoid">
+                <Link href={`/gallery/${artwork.slug}`} className="group block">
+                  <ArtFrame>
+                    <div className="relative overflow-hidden">
+                      <Image
+                        src={artwork.image}
+                        alt={artwork.alt}
+                        width={dim.w}
+                        height={dim.h}
+                        className="h-auto w-full brightness-100 transition-[filter] duration-200 group-hover:brightness-[0.72]"
+                        sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 33vw"
+                      />
+
+                      <span className="pointer-events-none absolute right-3 top-3 font-mono text-[0.52rem] tracking-[0.2em] text-oxide opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        {indexLabel}
+                      </span>
+
+                      <div
+                        className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-4 pt-8 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                        style={{ background: 'linear-gradient(to top, rgba(8,7,6,0.84), rgba(8,7,6,0))' }}
+                      >
+                        {year && (
+                          <p className="font-mono text-[0.52rem] uppercase tracking-[0.2em] text-text-3">{year}</p>
+                        )}
+                        <h2 className="mt-1 font-serif text-[clamp(1.6rem,2.5vw,2.8rem)] leading-none tracking-[-0.04em] text-text">
+                          {artwork.title}
+                        </h2>
                       </div>
-                    </ArtFrame>
-                    <div className="mt-4 flex items-start justify-between gap-4 border-t border-[var(--border)] pt-4">
-                      <div>
-                        <p className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-text-3">{artwork.series}</p>
-                        <h2 className="mt-2 font-serif text-[clamp(2.2rem,4vw,4rem)] leading-none tracking-[-0.06em]">{artwork.title}</h2>
-                        {meta && <p className="mt-3 font-mono text-[0.72rem] leading-6 text-text-3">{meta}</p>}
-                      </div>
-                      <span className="font-mono text-[0.62rem] tracking-[0.2em] text-oxide">{indexLabel}</span>
                     </div>
-                  </article>
+                  </ArtFrame>
                 </Link>
               </Reveal>
             )

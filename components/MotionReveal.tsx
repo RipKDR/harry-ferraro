@@ -1,78 +1,54 @@
 'use client'
 
-import { motion, useInView, Variants } from 'framer-motion'
-import { useRef, ReactNode } from 'react'
+import { motion, useInView, useReducedMotion } from 'motion/react'
+import { useRef, type ReactNode } from 'react'
 
-const easeOutExpo = [0.16, 1, 0.3, 1] as const
-
-const variants: Record<string, Variants> = {
-  fadeUp: {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0 },
-  },
-  fadeIn: {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-  },
-  scaleIn: {
-    hidden: { opacity: 0, scale: 0.96 },
-    visible: { opacity: 1, scale: 1 },
-  },
-  clipReveal: {
-    hidden: { clipPath: 'inset(100% 0 0 0)' },
-    visible: { clipPath: 'inset(0% 0 0 0)' },
-  },
-  slideLeft: {
-    hidden: { opacity: 0, x: 40 },
-    visible: { opacity: 1, x: 0 },
-  },
-  slideRight: {
-    hidden: { opacity: 0, x: -40 },
-    visible: { opacity: 1, x: 0 },
-  },
-}
+const EASE_EXPO = [0.16, 1, 0.3, 1] as const
 
 type MotionRevealProps = {
   children: ReactNode
-  variant?: keyof typeof variants
   delay?: number
-  duration?: number
   className?: string
-  once?: boolean
-  amount?: number
   as?: 'div' | 'span' | 'section' | 'article' | 'header' | 'footer'
 }
 
+const TAGS = {
+  div: motion.div,
+  span: motion.span,
+  section: motion.section,
+  article: motion.article,
+  header: motion.header,
+  footer: motion.footer,
+} as const
+
 export function MotionReveal({
   children,
-  variant = 'fadeUp',
   delay = 0,
-  duration = 0.7,
   className = '',
-  once = true,
-  amount = 0.08,
   as = 'div',
 }: MotionRevealProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once, amount })
-  const Tag = as
+  const ref = useRef<HTMLElement>(null)
+  const reduceMotion = useReducedMotion()
+  const inView = useInView(ref, { once: true, margin: '-8% 0px' })
+  const Component = TAGS[as]
+
+  if (reduceMotion) {
+    return (
+      <Component ref={ref as never} className={className}>
+        {children}
+      </Component>
+    )
+  }
 
   return (
-    <Tag ref={ref as any}>
-      <motion.div
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        variants={variants[variant]}
-        transition={{
-          duration,
-          delay,
-          ease: easeOutExpo,
-        }}
-        className={className}
-        style={{ willChange: 'transform, opacity' }}
-      >
-        {children}
-      </motion.div>
-    </Tag>
+    <Component
+      ref={ref as never}
+      className={className}
+      initial={{ opacity: 0, y: 28, filter: 'blur(6px)' }}
+      animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : undefined}
+      transition={{ duration: 0.9, delay, ease: EASE_EXPO }}
+    >
+      {children}
+    </Component>
   )
 }

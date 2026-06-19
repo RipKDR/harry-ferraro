@@ -1,7 +1,78 @@
+'use client'
+
+import { useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { motion, useInView, useReducedMotion } from 'motion/react'
 import { ARTWORKS, SERIES, type SeriesName } from '@/lib/artworks'
 import { Footer } from '@/components/Footer'
+
+const EASE_EXPO = [0.16, 1, 0.3, 1] as const
+
+function SeriesSection({ name, description }: { name: SeriesName; description: string }) {
+  const reduce = useReducedMotion()
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-10% 0px' })
+
+  const works = ARTWORKS.filter((artwork) => artwork.series === name)
+  if (works.length === 0) return null
+
+  const titleInitial = reduce ? false : { clipPath: 'inset(100% 0 0 0)', opacity: 0.2 }
+  const titleAnimate = reduce ? undefined : { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1 }
+
+  return (
+    <div ref={ref} className="border-b border-[var(--border)] py-[clamp(3.5rem,7vw,7rem)] lg:flex lg:items-start lg:gap-16">
+      {/* Sticky title column on desktop */}
+      <div className="lg:sticky lg:top-24 lg:w-[280px] lg:shrink-0 lg:self-start">
+        <p className="mb-5 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-oxide">
+          {works.length} work{works.length === 1 ? '' : 's'}
+        </p>
+        <motion.h2
+          initial={titleInitial}
+          animate={inView ? titleAnimate : titleInitial}
+          transition={{ duration: 1, ease: EASE_EXPO }}
+          className="font-serif text-[clamp(3.2rem,6vw,8rem)] leading-[0.84] tracking-[-0.07em]"
+        >
+          {name}
+        </motion.h2>
+        <p className="mt-6 max-w-[24rem] font-mono text-[0.84rem] leading-7 text-text-2">{description}</p>
+      </div>
+
+      {/* Horizontal scroll rail */}
+      <div
+        className="mt-10 flex gap-6 overflow-x-auto pb-4 lg:mt-0 lg:flex-1"
+        style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
+        aria-label={`${name} paintings`}
+      >
+        {works.map((artwork, index) => (
+          <motion.div
+            key={artwork.slug}
+            initial={reduce ? false : { opacity: 0, y: 28 }}
+            animate={inView ? (reduce ? undefined : { opacity: 1, y: 0 }) : reduce ? undefined : { opacity: 0, y: 28 }}
+            transition={{ duration: 0.8, ease: EASE_EXPO, delay: reduce ? 0 : 0.2 + index * 0.09 }}
+            className="shrink-0"
+            style={{ scrollSnapAlign: 'start', width: 'min(72vw, 380px)' }}
+          >
+            <Link href={`/gallery/${artwork.slug}`} className="work-tile group block">
+              <div className="relative overflow-hidden bg-[#050403]" style={{ aspectRatio: '3 / 4' }}>
+                <Image
+                  src={artwork.image}
+                  alt={artwork.alt}
+                  fill
+                  className="art-image object-cover"
+                  sizes="(max-width:1024px) 72vw, 380px"
+                />
+              </div>
+              <h3 className="mt-4 font-serif text-[clamp(1.6rem,2.4vw,2.4rem)] leading-none tracking-[-0.04em]">
+                {artwork.title}
+              </h3>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function SeriesPage() {
   const entries = Object.entries(SERIES) as Array<[SeriesName, { description: string }]>
@@ -20,36 +91,12 @@ export default function SeriesPage() {
         </div>
       </section>
 
-      <section className="section-pad site-shell">
-        <div className="grid gap-16">
-          {entries.map(([name, info], index) => {
-            const works = ARTWORKS.filter((artwork) => artwork.series === name)
-            const cover = works[0]
-            if (!cover) return null
-            return (
-              <section key={name} className={`grid gap-6 lg:grid-cols-[0.8fr_1.2fr] ${index % 2 ? 'lg:grid-cols-[1.2fr_0.8fr]' : ''}`}>
-                <div className={`${index % 2 ? 'lg:order-2' : ''}`}>
-                  <div className="relative overflow-hidden bg-[#050403]" style={{ aspectRatio: '4 / 5' }}>
-                    <Image src={cover.image} alt={cover.alt} fill className="art-image object-cover" sizes="(max-width:1024px) 100vw, 44vw" />
-                  </div>
-                </div>
-                <div className="flex flex-col justify-end border-t border-[var(--border)] pt-6 lg:pb-8">
-                  <p className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-oxide">{works.length} work{works.length === 1 ? '' : 's'}</p>
-                  <h2 className="font-serif text-[clamp(3rem,7vw,7.8rem)] leading-[0.82] tracking-[-0.08em]">{name}</h2>
-                  <p className="mt-6 max-w-[40rem] font-mono text-[0.86rem] leading-8 text-text-2">{info.description}</p>
-                  <div className="mt-8 flex flex-wrap gap-2">
-                    {works.map((artwork) => (
-                      <Link key={artwork.slug} href={`/gallery/${artwork.slug}`} className="border border-[var(--border)] px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.15em] text-text-2 transition-colors hover:border-oxide hover:text-text">
-                        {artwork.title}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )
-          })}
-        </div>
+      <section className="section-pad site-shell !py-0">
+        {entries.map(([name, info]) => (
+          <SeriesSection key={name} name={name} description={info.description} />
+        ))}
       </section>
+
       <Footer />
     </div>
   )

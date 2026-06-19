@@ -1,75 +1,81 @@
 'use client'
 
-import { motion, useInView, Variants } from 'framer-motion'
-import { useRef, ReactNode } from 'react'
+import { motion, useInView, useReducedMotion, type Variants } from 'motion/react'
+import { useRef } from 'react'
 
-const easeOutExpo = [0.16, 1, 0.3, 1] as const
+const EASE_EXPO = [0.16, 1, 0.3, 1] as const
 
-const wordVariants: Variants = {
+const group: Variants = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.06,
-    },
+  show: {
+    transition: { staggerChildren: 0.09, delayChildren: 0.04 },
   },
 }
 
-const letterVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
+const groupItem: Variants = {
+  hidden: { y: 32, opacity: 0 },
+  show: {
     y: 0,
-    transition: {
-      duration: 0.5,
-      ease: easeOutExpo,
-    },
+    opacity: 1,
+    transition: { duration: 0.85, ease: EASE_EXPO },
   },
 }
 
 type TextRevealProps = {
-  children: string
+  text: string
+  groupSize?: number
   className?: string
-  delay?: number
   as?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div'
-  splitBy?: 'words' | 'chars'
+}
+
+function chunk(words: string[], size: number): string[] {
+  const out: string[] = []
+  for (let i = 0; i < words.length; i += size) {
+    out.push(words.slice(i, i + size).join(' '))
+  }
+  return out
 }
 
 export function TextReveal({
-  children,
+  text,
+  groupSize = 5,
   className = '',
-  delay = 0,
   as: Tag = 'div',
-  splitBy = 'words',
 }: TextRevealProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, amount: 0.5 })
+  const reduceMotion = useReducedMotion()
+  const inView = useInView(ref, { once: true, margin: '-8% 0px' })
+  const groups = chunk(text.split(/\s+/).filter(Boolean), Math.max(1, groupSize))
 
-  const parts = splitBy === 'words'
-    ? children.split(' ')
-    : children.split('')
+  if (reduceMotion) {
+    return (
+      <Tag ref={ref as never} className={className}>
+        {text}
+      </Tag>
+    )
+  }
 
   return (
-    <div ref={ref}>
-      <Tag className={className} aria-label={children}>
-        <motion.span
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          variants={wordVariants}
-          transition={{ delay }}
-          className="inline-flex flex-wrap"
-        >
-          {parts.map((part, i) => (
-            <motion.span
-              key={i}
-              variants={letterVariants}
-              className="inline-block"
-              style={{ marginRight: splitBy === 'words' ? '0.25em' : '0' }}
-            >
-              {part === ' ' ? '\u00A0' : part}
+    <Tag ref={ref as never} className={className} aria-label={text}>
+      <motion.span
+        aria-hidden="true"
+        variants={group}
+        initial="hidden"
+        animate={inView ? 'show' : 'hidden'}
+        className="inline"
+      >
+        {groups.map((g, i) => (
+          <span
+            key={i}
+            className="inline-block overflow-hidden align-bottom"
+            style={{ marginRight: i < groups.length - 1 ? '0.28em' : 0 }}
+          >
+            <motion.span variants={groupItem} className="inline-block">
+              {g}
             </motion.span>
-          ))}
-        </motion.span>
-      </Tag>
-    </div>
+          </span>
+        ))}
+      </motion.span>
+    </Tag>
   )
 }

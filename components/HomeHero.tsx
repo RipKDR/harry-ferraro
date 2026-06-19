@@ -39,6 +39,13 @@ const heroItem = {
   },
 }
 
+const titleLines = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.18, delayChildren: 0.04 },
+  },
+}
+
 const titleItem = {
   hidden: { opacity: 0.15, clipPath: 'inset(100% 0% 0% 0%)' },
   show: {
@@ -89,9 +96,12 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
       className="site-shell relative min-h-[100dvh] overflow-hidden border-b border-[var(--border)]"
       aria-label="Hero"
     >
-      <div className="hero-orb hero-orb-a" aria-hidden="true" />
-      <div className="hero-orb hero-orb-b" aria-hidden="true" />
-      <div className="hero-sweep" aria-hidden="true" />
+      <p
+        className="pointer-events-none absolute top-[4.5rem] right-6 z-20 hidden origin-right font-mono text-[0.52rem] uppercase tracking-[0.32em] text-text-3 lg:block lg:rotate-90"
+        aria-hidden="true"
+      >
+        {hero.title}
+      </p>
 
       <div className="absolute inset-y-0 right-0 w-full lg:w-[62%]">
         <ArtFrame className="absolute inset-3 md:inset-5 lg:inset-6 lg:left-0">
@@ -118,7 +128,7 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
       </div>
 
       <motion.div
-        className="relative z-10 flex min-h-[100dvh] flex-col justify-end px-5 pb-14 pt-36 md:px-12 lg:w-[64%] lg:px-[4.5rem] lg:pb-20"
+        className="relative z-10 flex min-h-[100dvh] flex-col justify-end px-5 pb-20 pt-36 text-left md:px-12 lg:w-[64%] lg:px-[4.5rem]"
         style={{ y: reduceMotion ? 0 : copyY, opacity: reduceMotion ? 1 : copyOpacity }}
       >
         <motion.div variants={reduceMotion ? undefined : heroContainer} initial="hidden" animate="show">
@@ -126,10 +136,19 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
             Melbourne · oil on canvas
           </motion.p>
           <motion.h1
-            variants={reduceMotion ? undefined : titleItem}
-            className="max-w-[64rem] font-serif text-[clamp(4.8rem,13vw,14rem)] font-light leading-[0.76] tracking-[-0.085em]"
+            variants={reduceMotion ? undefined : titleLines}
+            className="max-w-[85vw] font-serif text-[clamp(4.8rem,13vw,14rem)] font-light leading-[0.76] tracking-[-0.085em] lg:max-w-[64rem]"
           >
-            Harrison<br />Ferraro
+            {['Harrison', 'Ferraro'].map((word) => (
+              <span key={word} className="block overflow-hidden">
+                <motion.span
+                  variants={reduceMotion ? undefined : titleItem}
+                  className="inline-block"
+                >
+                  {word}
+                </motion.span>
+              </span>
+            ))}
           </motion.h1>
           <motion.p
             variants={reduceMotion ? undefined : heroItem}
@@ -144,11 +163,17 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
             <Link href="/gallery" className="btn-ink">See the paintings</Link>
             <Link href="/who-i-am" className="btn-line">Who I am</Link>
           </motion.div>
-          <motion.p variants={reduceMotion ? undefined : heroItem} className="mt-14 font-mono text-[0.58rem] uppercase tracking-[0.34em] text-text-3">
-            Scroll
-          </motion.p>
         </motion.div>
       </motion.div>
+
+      <motion.div
+        aria-hidden="true"
+        className="absolute bottom-14 left-[4.5rem] z-20 hidden w-px bg-oxide lg:block"
+        initial={reduceMotion ? false : { height: 0 }}
+        animate={reduceMotion ? undefined : { height: 56 }}
+        style={reduceMotion ? { height: 56 } : undefined}
+        transition={{ duration: 1.4, delay: 1.1, ease: heroEase }}
+      />
     </section>
   )
 }

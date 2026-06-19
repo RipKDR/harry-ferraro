@@ -14,7 +14,6 @@ const NAV_LINKS = [
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -24,17 +23,6 @@ export function Nav() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
-    if (!menuOpen) return undefined
-    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setMenuOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-    }
-  }, [menuOpen])
-
   const active = (href: string) => pathname === href || pathname.startsWith(`${href}/`) || (href === '/who-i-am' && pathname === '/about')
   const immersivePreview = /^\/preview\/[^/]+$/.test(pathname)
 
@@ -42,7 +30,8 @@ export function Nav() {
 
   return (
     <>
-      <nav aria-label="Main navigation" className="fixed left-0 right-0 top-0 z-[400] px-4 pt-4 md:px-8">
+      {/* Desktop nav (>= lg): top centered bar */}
+      <nav aria-label="Main navigation" className="fixed left-0 right-0 top-0 z-[400] hidden px-4 pt-4 md:px-8 lg:block">
         <div className={`mx-auto grid max-w-[1560px] grid-cols-[1fr_auto_1fr] items-center border px-4 py-3 transition-all duration-500 ${
           scrolled
             ? 'border-[rgba(234,225,213,0.24)] bg-[rgba(7,6,7,0.88)] backdrop-blur-2xl'
@@ -52,7 +41,7 @@ export function Nav() {
             Harrison Ferraro
           </Link>
 
-          <div className="desktop-nav flex items-center justify-center" role="list">
+          <div className="flex items-center justify-center" role="list">
             {NAV_LINKS.map(({ label, href }) => (
               <Link key={href} href={href} role="listitem" className={`nav-link ${active(href) ? 'active' : ''}`}>
                 {label}
@@ -60,34 +49,23 @@ export function Nav() {
             ))}
           </div>
 
-          <div className="desktop-nav justify-self-end">
+          <div className="justify-self-end">
             <Link href="/commissions" className={`nav-link cta ${pathname.startsWith('/commissions') ? 'active' : ''}`}>Enquire</Link>
           </div>
-
-          <button
-            type="button"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            onClick={() => setMenuOpen((value) => !value)}
-            className={`hamburger-btn justify-self-end ${menuOpen ? 'hamburger-open' : ''}`}
-          >
-            <span className="hamburger-line" />
-            <span className="hamburger-line" style={{ width: '16px' }} />
-            <span className="hamburger-line" />
-          </button>
         </div>
       </nav>
 
-      <div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu" className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
-        <nav className="flex flex-col items-center gap-1">
-          {[{ label: 'Home', href: '/' }, ...NAV_LINKS, { label: 'Enquire', href: '/commissions' }].map(({ label, href }) => (
-            <Link key={href} href={href} onClick={() => setMenuOpen(false)} className={`mobile-menu-link ${pathname === href ? 'active' : ''}`}>
-              {label}
-            </Link>
-          ))}
-        </nav>
-      </div>
+      {/* Mobile nav (< lg): bottom-pinned bar */}
+      <nav aria-label="Main navigation" className="mobile-bottom-nav lg:hidden">
+        {NAV_LINKS.map(({ label, href }) => (
+          <Link key={href} href={href} className={`mobile-bottom-link ${active(href) ? 'active' : ''}`}>
+            {label}
+          </Link>
+        ))}
+        <Link href="/commissions" className={`mobile-bottom-link cta ${pathname.startsWith('/commissions') ? 'active' : ''}`}>
+          Enquire
+        </Link>
+      </nav>
     </>
   )
 }

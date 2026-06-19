@@ -1,12 +1,20 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ARTIST_INTRO, ARTIST_STATEMENT, POSITIONING, SITE } from '@/lib/site'
-import { ARTWORKS, getFeaturedArtworks, formatArtworkMeta } from '@/lib/artworks'
+import { ARTWORKS, getFeaturedArtworks } from '@/lib/artworks'
 import { ArtFrame } from '@/components/ArtFrame'
 import { Footer } from '@/components/Footer'
 import { HomeHero } from '@/components/HomeHero'
 import { PracticeMarquee } from '@/components/PracticeMarquee'
 import { Reveal } from '@/components/Reveal'
+
+const TILE_LAYOUT = [
+  { col: 'md:col-span-7', offset: '', ratio: '4 / 5' },
+  { col: 'md:col-span-5', offset: 'md:translate-y-24', ratio: '3 / 4' },
+  { col: 'md:col-span-12', offset: 'md:-translate-y-8', ratio: '16 / 7' },
+  { col: 'md:col-span-4', offset: 'md:translate-y-16', ratio: '4 / 5' },
+  { col: 'md:col-span-8', offset: '', ratio: '3 / 4' },
+] as const
 
 export default function HomePage() {
   const featured = getFeaturedArtworks()
@@ -33,22 +41,29 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-12">
+        <div className="mt-16 grid gap-8 md:grid-cols-12 md:gap-x-10 md:gap-y-0">
           {featured.slice(0, 5).map((artwork, index) => {
-            const meta = [formatArtworkMeta(artwork.year), formatArtworkMeta(artwork.medium)].filter(Boolean).join(' · ')
+            const layout = TILE_LAYOUT[index] ?? TILE_LAYOUT[TILE_LAYOUT.length - 1]
             return (
-              <Reveal key={artwork.slug} delayMs={index * 90} className={`${index === 0 ? 'md:col-span-7' : index === 1 ? 'md:col-span-5 md:translate-y-20' : index === 2 ? 'md:col-span-4' : index === 3 ? 'md:col-span-5 md:-translate-y-8' : 'md:col-span-3 md:translate-y-16'}`}>
-                <Link href={`/gallery/${artwork.slug}`} className="work-tile group block">
+              <Reveal key={artwork.slug} delayMs={index * 90} className={layout.col}>
+                <Link href={`/gallery/${artwork.slug}`} className={`group block ${layout.offset}`.trim()}>
                   <article>
                     <ArtFrame>
-                      <div className="relative overflow-hidden" style={{ aspectRatio: index === 0 ? '4 / 5' : index === 1 ? '3 / 4' : '4 / 5' }}>
-                        <Image src={artwork.image} alt={artwork.alt} fill sizes="(max-width:768px) 100vw, 50vw" className="art-image object-cover" />
+                      <div className="relative overflow-hidden" style={{ aspectRatio: layout.ratio }}>
+                        <Image
+                          src={artwork.image}
+                          alt={artwork.alt}
+                          fill
+                          sizes="(max-width:768px) 100vw, 50vw"
+                          className="object-cover brightness-100 transition-[filter] duration-300 ease-out md:group-hover:brightness-[0.72]"
+                        />
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-[linear-gradient(0deg,rgba(8,7,6,0.82),transparent)] opacity-100 transition-opacity duration-[220ms] md:opacity-0 md:group-hover:opacity-100" />
+                        <div className="pointer-events-none absolute bottom-0 left-0 p-5 opacity-100 transition-opacity duration-[220ms] md:opacity-0 md:group-hover:opacity-100">
+                          <p className="font-mono text-[0.52rem] uppercase tracking-[0.28em] text-text-3">{artwork.series}</p>
+                          <h3 className="mt-2 font-serif text-[clamp(1.8rem,2.5vw,3rem)] leading-[0.9] tracking-[-0.05em] text-[#f4eadc]">{artwork.title}</h3>
+                        </div>
                       </div>
                     </ArtFrame>
-                    <div className="mt-4 flex items-start justify-between gap-4 border-t border-[var(--border)] pt-4">
-                      <h3 className="font-serif text-[clamp(1.9rem,3vw,3.3rem)] leading-none tracking-[-0.055em]">{artwork.title}</h3>
-                      <p className="max-w-[12rem] text-right font-mono text-[0.62rem] uppercase leading-5 tracking-[0.17em] text-text-3">{meta || artwork.series}</p>
-                    </div>
                   </article>
                 </Link>
               </Reveal>
@@ -57,7 +72,13 @@ export default function HomePage() {
         </div>
 
         <div className="mt-28 flex justify-end">
-          <Link href="/gallery" className="btn-line">View full work index</Link>
+          <Link
+            href="/gallery"
+            className="group relative inline-flex items-center gap-2 font-serif text-[1.4rem] italic text-text-2 transition-colors duration-200 hover:text-text after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-current after:transition-[width] after:duration-300 after:ease-out hover:after:w-full"
+          >
+            View full work index
+            <span aria-hidden="true" className="not-italic">→</span>
+          </Link>
         </div>
       </Reveal>
 

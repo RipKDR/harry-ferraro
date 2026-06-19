@@ -55,7 +55,7 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   inset: 0;
   pointer-events: none;
   z-index: 9000;
-  opacity: 0.11;
+  opacity: 0.085;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
 }
@@ -73,6 +73,39 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   opacity: 1;
   transform: none;
   filter: none;
+}
+
+/* --- Design system: clip reveals, magnetic hover, scroll line --- */
+.clip-reveal {
+  clip-path: inset(100% 0 0 0);
+  opacity: 0.2;
+  transition:
+    clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.clip-reveal-visible {
+  clip-path: inset(0% 0 0 0);
+  opacity: 1;
+}
+.magnetic-btn {
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.text-reveal-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.scroll-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  z-index: 9999;
+  background: linear-gradient(90deg, var(--oxide), var(--oxide-2));
+  transform-origin: 0%;
 }
 
 .hero-rise {
@@ -273,13 +306,13 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   right: .72rem;
   bottom: .35rem;
   height: 1px;
-  background: var(--oxide-2);
+  background: var(--oxide);
   transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .35s var(--ease-soft);
+  transform-origin: right;
+  transition: transform .36s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-link:hover, .nav-link.active { color: var(--text); }
-.nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
+.nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: left; }
 .nav-link.cta { color: var(--oxide-2); }
 
 .hamburger-btn { display: none; flex-direction: column; gap: 5px; padding: .7rem; border: 1px solid var(--border); background: rgba(240,231,220,.035); color: var(--text); }
@@ -339,12 +372,62 @@ select.form-input option { background: #15120f; }
 .skip-nav { position: fixed; left: 1rem; top: 1rem; z-index: 9999; transform: translateY(-150%); background: var(--paper); color: #080706; padding: .7rem 1rem; font-size: .8rem; transition: transform .25s var(--ease-soft); }
 .skip-nav:focus { transform: none; }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
   .desktop-nav { display: none; }
-  .hamburger-btn { display: flex; }
   .section-pad { padding-left: 1.25rem; padding-right: 1.25rem; }
   .section-pad-tight { padding-left: 1.25rem; padding-right: 1.25rem; }
+  /* Reserve space for the bottom-pinned mobile nav */
+  body { padding-bottom: calc(52px + env(safe-area-inset-bottom)); }
 }
+
+/* Bottom-pinned mobile navigation (< lg) */
+.mobile-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 420;
+  height: calc(52px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: stretch;
+  background: rgba(8, 7, 6, 0.94);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border-top: 1px solid var(--border);
+}
+.mobile-bottom-link {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 0.35rem;
+  color: var(--text-3);
+  font-family: var(--font-jetbrains);
+  font-size: 0.58rem;
+  line-height: 1.05;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.3s var(--ease-soft);
+}
+.mobile-bottom-link.active { color: var(--oxide); }
+.mobile-bottom-link.cta {
+  flex: 0 0 auto;
+  padding: 0 1rem;
+  color: var(--oxide-2);
+  border-left: 1px solid var(--border);
+}
+/* Ensure the bottom bar never wins source-order over lg:hidden at desktop */
+@media (min-width: 1024px) {
+  .mobile-bottom-nav { display: none; }
+}
+
+/* Custom cursor: hide native cursor only while the Cursor component is mounted/active */
+body.cursor-active,
+body.cursor-active a,
+body.cursor-active button,
+body.cursor-active [role="button"] { cursor: none; }
 
 .preview-route:has(.wall-preview-root) main {
   padding: 0;

@@ -1,12 +1,16 @@
 'use client'
 
+import { useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import type { Artwork } from '@/lib/artworks'
+
+const EASE_EXPO = [0.16, 1, 0.3, 1] as const
 
 type LightboxProps = {
   art: Artwork
-  all: Artwork[]
+  all?: Artwork[]
   onClose: () => void
   onNav?: (dir: -1 | 1) => void
   onJumpTo?: (index: number) => void
@@ -14,23 +18,107 @@ type LightboxProps = {
   onInquire?: (art: Artwork) => void
 }
 
-export function Lightbox({ art, onClose }: LightboxProps) {
+export function Lightbox({ art, all, onClose, onNav }: LightboxProps) {
+  const reduce = useReducedMotion()
+  const hasNav = Boolean(onNav && all && all.length > 1)
+
+  const handleKey = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (!hasNav || !onNav) return
+      if (event.key === 'ArrowLeft') onNav(-1)
+      if (event.key === 'ArrowRight') onNav(1)
+    },
+    [onClose, onNav, hasNav]
+  )
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', handleKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [handleKey])
+
   return (
-    <div role="dialog" aria-modal="true" aria-label={art.title} className="modal-backdrop" onClick={onClose}>
-      <div className="modal-sheet" onClick={(event) => event.stopPropagation()}>
-        <div className="modal-sheet-header">
-          <div>
-            <p className="font-mono text-[0.65rem] uppercase tracking-[0.22em] text-oxide">Painting</p>
-            <h2 className="mt-2 font-serif text-[2.4rem] leading-none tracking-[-0.045em]">{art.title}</h2>
+    <AnimatePresence>
+      <motion.div
+        key="lightbox"
+        role="dialog"
+        aria-modal="true"
+        aria-label={art.title}
+        onClick={onClose}
+        className="fixed inset-0 z-[700] flex items-center justify-center bg-black p-4 sm:p-8"
+        initial={reduce ? { opacity: 0 } : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.28, ease: EASE_EXPO }}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-5 top-5 z-10 font-mono text-[0.9rem] text-text-2 transition-colors hover:text-text"
+        >
+          ✕
+        </button>
+
+        {hasNav && (
+          <>
+            <button
+              type="button"
+              onClick={(event) => { event.stopPropagation(); onNav?.(-1) }}
+              aria-label="Previous painting"
+              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 px-3 py-2 font-mono text-[1.2rem] text-text-3 transition-colors hover:text-text"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              onClick={(event) => { event.stopPropagation(); onNav?.(1) }}
+              aria-label="Next painting"
+              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 px-3 py-2 font-mono text-[1.2rem] text-text-3 transition-colors hover:text-text"
+            >
+              →
+            </button>
+          </>
+        )}
+
+        <motion.div
+          onClick={(event) => event.stopPropagation()}
+          className="flex max-h-full max-w-full flex-col items-center"
+          initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+          animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+          exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+          transition={{ duration: 0.32, ease: EASE_EXPO }}
+        >
+          <Image
+            src={art.image}
+            alt={art.alt}
+            width={1100}
+            height={1400}
+            priority
+            className="max-h-[82vh] w-auto max-w-full object-contain"
+            sizes="90vw"
+          />
+          <div className="mt-5 flex w-full items-center justify-center gap-4 px-2 text-center">
+            <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-text-3">{art.series}</p>
+            <span aria-hidden="true" className="text-text-3">·</span>
+            <Link
+              href={`/gallery/${art.slug}`}
+              onClick={(event) => event.stopPropagation()}
+              className="font-serif text-[1.4rem] leading-none tracking-[-0.03em] text-text transition-colors hover:text-oxide"
+            >
+              {art.title}
+            </Link>
           </div>
-          <button type="button" className="modal-close-btn" onClick={onClose} aria-label="Close">×</button>
-        </div>
-        <div className="modal-sheet-body">
-          <Image src={art.image} alt={art.alt} width={700} height={900} className="mb-6 h-auto w-full" />
-          <p className="mb-6 font-mono text-[0.82rem] leading-7 text-text-2">{art.description}</p>
-          <Link href={`/gallery/${art.slug}`} className="btn-ink btn-full text-center">Open artwork page</Link>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }

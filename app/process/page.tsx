@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
+import { Reveal } from '@/components/Reveal'
 
 export const metadata = {
   title: 'Process',
@@ -30,19 +31,38 @@ export default function ProcessPage() {
       </section>
 
       <section className="section-pad site-shell">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-          {STEPS.map(([number, title, body]) => (
-            <div key={number} className="statement-panel">
-              <p className="font-serif text-[3.6rem] leading-none text-oxide opacity-75">{number}</p>
-              <h2 className="mt-7 font-serif text-[2.1rem] leading-none tracking-[-0.055em]">{title}</h2>
-              <p className="mt-4 font-mono text-[0.78rem] leading-7 text-text-2">{body}</p>
-            </div>
+        <ol className="relative">
+          {STEPS.map(([number, title, body], index) => (
+            <li
+              key={number}
+              className="relative flex flex-col gap-4 border-t border-[var(--border)] py-12 first:border-t-0 first:pt-0 md:flex-row md:items-start md:gap-10"
+            >
+              <Reveal
+                delayMs={index * 90}
+                className="font-serif text-[clamp(3.4rem,7vw,5rem)] leading-none text-oxide opacity-60 md:w-[7rem] md:shrink-0"
+              >
+                {number}
+              </Reveal>
+              <Reveal delayMs={index * 90 + 60} className="md:flex-1">
+                <h2 className="font-serif text-[clamp(2.2rem,4vw,3.2rem)] leading-none tracking-[-0.055em]">{title}</h2>
+                <p className="mt-4 max-w-[44rem] font-mono text-[0.86rem] leading-8 text-text-2">{body}</p>
+              </Reveal>
+            </li>
           ))}
-        </div>
+        </ol>
+      </section>
 
-        <div className="mt-12 flex flex-wrap gap-3">
-          <Link href="/commissions" className="btn-ink">Start a conversation</Link>
-          <Link href="/who-i-am" className="btn-line">Who I am</Link>
+      <section className="section-pad-tight site-shell">
+        <div className="border border-[var(--border)] bg-[var(--surface)] px-6 py-14 md:px-14 md:py-20">
+          <Reveal>
+            <h2 className="max-w-[34rem] font-serif text-[clamp(2.4rem,5vw,3rem)] leading-[0.95] tracking-[-0.06em]">
+              Every commission is discussed directly.
+            </h2>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link href="/commissions" className="btn-ink">Start a conversation</Link>
+              <Link href="/who-i-am" className="btn-line">Who I am</Link>
+            </div>
+          </Reveal>
         </div>
       </section>
       <Footer />
