@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { SITE } from '@/lib/site'
+import { EMAIL_FROM, escapeHtml } from '@/lib/email'
 
 const schema = z.object({
   name: z.string().min(2).max(80),
@@ -8,8 +9,6 @@ const schema = z.object({
   message: z.string().min(10).max(3000),
   company: z.string().max(0).optional().default(''), // honeypot — must be empty
 })
-
-const FROM = process.env.CONTACT_FROM ?? 'Harrison Ferraro <onboarding@resend.dev>'
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
         method: 'POST',
         headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: FROM,
+          from: EMAIL_FROM,
           to: [SITE.email],
           reply_to: data.email,
           subject: `New message from ${data.name}`,
@@ -63,10 +62,4 @@ export async function POST(req: Request) {
     console.error('Contact API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string
-  ))
 }

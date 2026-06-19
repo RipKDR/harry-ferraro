@@ -20,7 +20,7 @@ type F = {
   company: string // honeypot
 }
 
-type Attachment = { filename: string; content: string }
+type Attachment = { filename: string; mimeType: string; content: string }
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 const ARTWORK_TYPES = ['Portrait', 'Figurative', 'Abstract / colour study', 'Other (describe below)']
@@ -54,14 +54,14 @@ export default function CommissionsPage() {
     setFileError(null)
     const file = e.target.files?.[0]
     if (!file) { setAttachment(null); return }
-    if (!file.type.startsWith('image/')) { setFileError('Please choose an image file.'); return }
-    if (file.size > MAX_IMAGE_BYTES) { setFileError('Image must be under 4 MB.'); return }
+    if (!file.type.startsWith('image/')) { setAttachment(null); setFileError('Please choose an image file.'); return }
+    if (file.size > MAX_IMAGE_BYTES) { setAttachment(null); setFileError('Image must be under 4 MB.'); return }
     const reader = new FileReader()
     reader.onload = () => {
       const result = String(reader.result)
-      setAttachment({ filename: file.name, content: result.split(',')[1] ?? '' })
+      setAttachment({ filename: file.name, mimeType: file.type, content: result.split(',')[1] ?? '' })
     }
-    reader.onerror = () => setFileError('Could not read that file. Try another.')
+    reader.onerror = () => { setAttachment(null); setFileError('Could not read that file. Try another.') }
     reader.readAsDataURL(file)
   }
 

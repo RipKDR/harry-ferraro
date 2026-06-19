@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { SITE } from '@/lib/site'
+import { EMAIL_FROM, escapeHtml, safeFilename } from '@/lib/email'
 
 const schema = z.object({
   name: z.string().min(2).max(80),
@@ -15,12 +16,16 @@ const schema = z.object({
   consent: z.literal(true),
   company: z.string().max(0).optional().default(''), // honeypot — must be empty
   attachment: z
-    .object({ filename: z.string().max(200), content: z.string().max(7_000_000) })
+    .object({
+      filename: z.string().min(1).max(200),
+      // Declared type must be an image; combined with the client image-only check.
+      mimeType: z.string().regex(/^image\/[a-z0-9.+-]+$/i),
+      // Base64 only (the client strips the data-URL prefix). ~5 MB ceiling.
+      content: z.string().regex(/^[A-Za-z0-9+/=\s]+$/).max(7_000_000),
+    })
     .nullable()
     .optional(),
 })
-
-const FROM = process.env.CONTACT_FROM ?? 'Harrison Ferraro <onboarding@resend.dev>'
 
 const row = (k: string, v: string) => `
   <tr style="border-bottom:1px solid #1e1c24">
@@ -44,7 +49,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.RESEND_API_KEY
     if (apiKey) {
       const payload: Record<string, unknown> = {
-        from: FROM,
+        from: EMAIL_FROM,
         to: [SITE.email],
         reply_to: data.email,
         subject: `Commission enquiry from ${data.name} — ${data.budget}`,
@@ -70,7 +75,11 @@ export async function POST(req: Request) {
       }
 
       if (data.attachment?.content) {
-        payload.attachments = [{ filename: data.attachment.filename, content: data.attachment.content }]
+        payload.attachments = [{
+          filename: safeFilename(data.attachment.filename),
+          content: data.attachment.content,
+          content_type: data.attachment.mimeType,
+        }]
       }
 
       const res = await fetch('https://api.resend.com/emails', {
@@ -89,10 +98,4 @@ export async function POST(req: Request) {
     console.error('Commission API error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string
-  ))
 }
