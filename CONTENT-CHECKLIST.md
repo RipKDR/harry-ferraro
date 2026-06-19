@@ -5,7 +5,7 @@ placeholders**. None of it is real catalogue data. Replace the items below and
 the site is launch-ready. Nothing here requires touching the layout or code
 structure — almost everything lives in two files.
 
-> Why placeholders? Your Instagram and Facebook posts are behind login and
+> Why placeholders? Your Instagram and Facebook posts are behind a login and
 > can't be pulled automatically. I created clean, clearly-marked placeholders so
 > the site is functional today. Swap in the real material when you have it.
 
