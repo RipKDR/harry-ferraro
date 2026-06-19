@@ -5,7 +5,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
     <div className="min-h-screen flex items-center justify-center px-6 text-center">
       <div>
         <p
-          className="text-[9px] tracking-[0.2em] uppercase text-ember mb-4"
+          className="text-[9px] tracking-[0.2em] uppercase text-oxide mb-4"
           style={{ fontFamily: 'var(--font-jetbrains)' }}
         >
           Something went wrong

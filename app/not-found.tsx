@@ -1,25 +1,21 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: '404 — Not Found' }
+export const metadata: Metadata = { title: '404 | Not Found' }
 
 export default function NotFound() {
   return (
-    <div className="not-found-wrap">
-      <div
-        className="font-serif font-light text-ember mb-4 leading-none"
-        style={{ fontSize: 'clamp(80px,18vw,180px)', opacity: 0.12 }}
-        aria-hidden
-      >
+    <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+      <div className="mb-4 font-serif text-[clamp(5rem,18vw,13rem)] font-light leading-none text-oxide opacity-15" aria-hidden>
         404
       </div>
-      <h1 className="font-serif font-light text-[36px] mb-4">This page doesn&apos;t exist.</h1>
-      <p className="font-mono text-[13px] text-text-2 mb-10 max-w-[340px] leading-[1.8]">
-        The work may have been moved or sold. Return to the gallery to browse available pieces.
+      <h1 className="font-serif text-[clamp(2.4rem,6vw,5rem)] font-light leading-none tracking-[-0.05em]">This page does not exist.</h1>
+      <p className="mb-10 mt-5 max-w-[25rem] font-mono text-[0.86rem] leading-8 text-text-2">
+        The page may have moved. Return to the gallery or start a commission enquiry.
       </p>
-      <div className="flex gap-3">
-        <Link href="/gallery" className="btn-ember">View Gallery</Link>
-        <Link href="/" className="btn-ghost">Go Home</Link>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Link href="/gallery" className="btn-ember">View gallery</Link>
+        <Link href="/" className="btn-ghost">Go home</Link>
       </div>
     </div>
   )

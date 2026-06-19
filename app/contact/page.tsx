@@ -1,50 +1,47 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { SITE, SOCIAL_LINKS } from '@/lib/site'
 import { Footer } from '@/components/Footer'
-import { Reveal } from '@/components/Reveal'
 
-type FormState = { name: string; email: string; message: string }
-type Status = 'idle' | 'loading' | 'success' | 'error'
-
-const CONTACT_ITEMS = [
-  { label: 'Email', value: 'Harrisonferraro99@gmail.com', href: 'mailto:Harrisonferraro99@gmail.com' },
-  { label: 'Instagram', value: '@harryferraroart', href: 'https://instagram.com/harryferraroart' },
-  { label: 'Location', value: 'Melbourne, AU', href: null },
-  { label: 'Response', value: 'Within 48 hours', href: null },
-]
+type FormState = { name: string; email: string; message: string; company: string }
+type Status = 'idle' | 'loading' | 'success' | 'error' | 'not-configured'
 
 export default function ContactPage() {
-  const [status, setStatus] = useState<Status>('idle')
+  const [form, setForm] = useState<FormState>({ name: '', email: '', message: '', company: '' })
   const [errors, setErrors] = useState<Partial<FormState>>({})
-  const [form, setForm] = useState<FormState>({ name: '', email: '', message: '' })
+  const [status, setStatus] = useState<Status>('idle')
 
-  const up = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm((f) => ({ ...f, [k]: e.target.value }))
-    setErrors((err) => ({ ...err, [k]: undefined }))
+  const update = (key: keyof FormState) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((current) => ({ ...current, [key]: event.target.value }))
+    setErrors((current) => ({ ...current, [key]: undefined }))
   }
 
-  const validate = (): boolean => {
-    const e: Partial<FormState> = {}
-    if (!form.name.trim() || form.name.length < 2) e.name = 'Please enter your name'
-    if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = 'Please enter a valid email'
-    if (!form.message.trim() || form.message.length < 10) e.message = 'Message must be at least 10 characters'
-    setErrors(e)
-    return Object.keys(e).length === 0
+  const validate = () => {
+    const next: Partial<FormState> = {}
+    if (form.name.trim().length < 2) next.name = 'Enter your name.'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = 'Enter a valid email.'
+    if (form.message.trim().length < 10) next.message = 'Write at least 10 characters.'
+    setErrors(next)
+    return Object.keys(next).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const fallbackHref = `mailto:${SITE.email}?subject=${encodeURIComponent('Website enquiry')}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault()
     if (!validate()) return
     setStatus('loading')
     try {
-      const res = await fetch('/api/contact', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
-      setStatus('success')
+      if (response.ok) return setStatus('success')
+      if (response.status === 503) return setStatus('not-configured')
+      setStatus('error')
     } catch {
       setStatus('error')
     }
@@ -52,64 +49,70 @@ export default function ContactPage() {
 
   return (
     <div className="page-enter">
-      <div className="max-w-[580px] mx-auto px-[52px] pt-[160px] pb-[160px] max-md:px-6">
-        <Reveal><div className="eyebrow mb-4">Get in Touch</div></Reveal>
-        <Reveal delay={0.1}>
-          <h1 className="font-serif font-light leading-[1.03] mb-16" style={{ fontSize: 'clamp(38px,6vw,72px)' }}>
-            Say<br /><em className="italic">something.</em>
-          </h1>
-        </Reveal>
+      <section className="section-pad site-shell pt-36 md:pt-44">
+        <p className="eyebrow mb-5">Contact</p>
+        <div className="grid gap-12 lg:grid-cols-[0.82fr_1.18fr]">
+          <div>
+            <h1 className="font-serif text-[clamp(3.8rem,9vw,10rem)] leading-[0.8] tracking-[-0.085em]">
+              Studio contact, artwork questions, press, or collaboration.
+            </h1>
+            <p className="mt-7 max-w-[36rem] font-mono text-[0.86rem] leading-8 text-text-2">
+              Send a note if you want to ask about a painting, talk about a commission, discuss an exhibition, or contact Harrison directly.
+            </p>
+            <Link href="/commissions" className="btn-ink mt-8">Start a conversation</Link>
 
-        {status === 'success' ? (
-          <Reveal>
-            <div className="success-box">
-              <h2 className="font-serif font-light text-[32px] mb-4">Message sent.</h2>
-              <p className="font-mono text-[14px] text-text-2 leading-[1.8]">I will get back to you within 48 hours.</p>
+            <dl className="mt-12">
+              <div className="info-row"><dt className="info-key">Email</dt><dd className="info-val"><a href={`mailto:${SITE.email}`} className="hover:text-oxide">{SITE.email}</a></dd></div>
+              <div className="info-row"><dt className="info-key">Location</dt><dd className="info-val">{SITE.location}</dd></div>
+              {SOCIAL_LINKS.map((link) => (
+                <div className="info-row" key={link.href}>
+                  <dt className="info-key">{link.label}</dt>
+                  <dd className="info-val"><a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:text-oxide">{link.handle}</a></dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          {status === 'success' ? (
+            <div className="success-box" role="status">
+              <h2 className="font-serif text-[3rem] leading-none tracking-[-0.055em]">Message sent.</h2>
+              <p className="mt-4 font-mono text-[0.86rem] leading-8 text-text-2">Harrison will reply using the email address you provided.</p>
             </div>
-          </Reveal>
-        ) : (
-          <Reveal delay={0.2}>
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-              <div>
-                <label className="form-label" htmlFor="ct-name">Name</label>
-                <input id="ct-name" className="form-input" value={form.name} onChange={up('name')} placeholder="Your name" aria-invalid={!!errors.name} />
-                {errors.name && <p className="form-error" role="alert">{errors.name}</p>}
-              </div>
-              <div>
-                <label className="form-label" htmlFor="ct-email">Email</label>
-                <input id="ct-email" type="email" className="form-input" value={form.email} onChange={up('email')} placeholder="your@email.com" aria-invalid={!!errors.email} />
-                {errors.email && <p className="form-error" role="alert">{errors.email}</p>}
-              </div>
-              <div>
-                <label className="form-label" htmlFor="ct-msg">Message</label>
-                <textarea id="ct-msg" className="form-input" rows={6} value={form.message} onChange={up('message')} placeholder="What is on your mind?" aria-invalid={!!errors.message} />
-                {errors.message && <p className="form-error" role="alert">{errors.message}</p>}
-              </div>
-              {status === 'error' && <p className="form-error" role="alert">Something went wrong. Try emailing directly.</p>}
-              <button type="submit" disabled={status === 'loading'} className="btn-ember btn-full mt-2" style={{ opacity: status === 'loading' ? 0.65 : 1 }}>
-                {status === 'loading' ? 'Sending…' : 'Send Message'}
-              </button>
-            </form>
-          </Reveal>
-        )}
+          ) : (
+            <form onSubmit={submit} className="statement-panel" noValidate>
+              <input className="sr-only" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form.company} onChange={update('company')} name="company" />
+              <div className="space-y-5">
+                <Field label="Name" id="contact-name" error={errors.name}><input id="contact-name" className="form-input" value={form.name} onChange={update('name')} autoComplete="name" /></Field>
+                <Field label="Email" id="contact-email" error={errors.email}><input id="contact-email" type="email" className="form-input" value={form.email} onChange={update('email')} autoComplete="email" /></Field>
+                <Field label="Message" id="contact-message" error={errors.message}><textarea id="contact-message" className="form-input" rows={8} value={form.message} onChange={update('message')} /></Field>
 
-        <Reveal delay={0.3} className="mt-20 pt-12 border-t border-[#38354a]">
-          <p className="font-mono text-[10px] tracking-[0.18em] uppercase text-text-3 mb-6">Or find me here</p>
-          <dl>
-            {CONTACT_ITEMS.map(({ label, value, href }) => (
-              <div key={label} className="info-row">
-                <dt className="info-key">{label}</dt>
-                <dd className="info-val">
-                  {href ? (
-                    <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="hover:text-ember transition-colors">{value}</a>
-                  ) : value}
-                </dd>
+                {status === 'error' && <p className="form-error" role="alert">The form could not be sent. Use the fallback email link below.</p>}
+                {status === 'not-configured' && (
+                  <div className="border border-oxide bg-[rgba(182,93,44,.08)] p-5" role="alert">
+                    <p className="mb-4 font-mono text-[0.82rem] leading-7 text-text-2">Email delivery is not configured yet. Use direct email for now.</p>
+                    <a href={fallbackHref} className="btn-line">Send using email app</a>
+                  </div>
+                )}
+
+                <button type="submit" disabled={status === 'loading'} className="btn-ink btn-full" style={{ opacity: status === 'loading' ? 0.65 : 1 }}>
+                  {status === 'loading' ? 'Sending...' : 'Send message'}
+                </button>
               </div>
-            ))}
-          </dl>
-        </Reveal>
-      </div>
+            </form>
+          )}
+        </div>
+      </section>
       <Footer />
+    </div>
+  )
+}
+
+function Field({ label, id, error, children }: { label: string; id: string; error?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="form-label" htmlFor={id}>{label}</label>
+      {children}
+      {error && <p className="form-error" role="alert">{error}</p>}
     </div>
   )
 }

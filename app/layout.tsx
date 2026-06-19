@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
-import { Cursor } from '@/components/Cursor'
 import { Grain } from '@/components/Grain'
+import { Vignette } from '@/components/Vignette'
 import { Nav } from '@/components/Nav'
-import { MobileNav } from '@/components/MobileNav'
+import { SITE, POSITIONING } from '@/lib/site'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -22,42 +22,53 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://harryferraro.com.au'),
-  title: { default: 'Harry Ferraro — Fine Art', template: '%s | Harry Ferraro' },
-  description: 'Original figurative oil paintings by Harry Ferraro. Emotionally intense, technically precise. Fire. Wind. Dissolution. Melbourne, Australia.',
-  keywords: ['fine art','oil painting','figurative art','Harry Ferraro','Melbourne artist','original paintings','commissions'],
-  authors: [{ name: 'Harry Ferraro', url: 'https://harryferraro.com.au' }],
-  creator: 'Harry Ferraro',
+  metadataBase: new URL(SITE.siteUrl),
+  title: { default: 'Harrison Ferraro | Painter', template: '%s | Harrison Ferraro' },
+  description: `${POSITIONING} Portfolio and studio enquiries by Harrison Ferraro.`,
+  keywords: ['Harrison Ferraro', 'Melbourne painter', 'figurative oil paintings', 'expressive portrait painting', 'Australian visual artist'],
+  authors: [{ name: SITE.artistName, url: SITE.siteUrl }],
+  creator: SITE.artistName,
+  alternates: { canonical: SITE.siteUrl },
   openGraph: {
-    type: 'website', locale: 'en_AU', url: 'https://harryferraro.com.au',
-    siteName: 'Harry Ferraro', title: 'Harry Ferraro — Fine Art',
-    description: 'Original figurative oil paintings. Fire. Wind. Dissolution.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Harry Ferraro Fine Art' }],
+    type: 'website',
+    locale: 'en_AU',
+    url: SITE.siteUrl,
+    siteName: SITE.artistName,
+    title: 'Harrison Ferraro | Painter',
+    description: POSITIONING,
+    images: [{ url: '/paintings/ignition-ii.jpg', width: 1200, height: 1500, alt: 'Figurative painting by Harrison Ferraro' }],
   },
-  twitter: { card: 'summary_large_image', title: 'Harry Ferraro — Fine Art', images: ['/og-image.jpg'] },
+  twitter: { card: 'summary_large_image', title: 'Harrison Ferraro | Painter', description: POSITIONING, images: ['/paintings/ignition-ii.jpg'] },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large' } },
-  alternates: { canonical: 'https://harryferraro.com.au' },
 }
 
-import { ScrollProgress } from '@/components/ScrollProgress'
-
 export const viewport: Viewport = {
-  themeColor: '#0f0d16', width: 'device-width', initialScale: 1, colorScheme: 'dark',
+  themeColor: '#080706',
+  width: 'device-width',
+  initialScale: 1,
+  colorScheme: 'dark',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const personJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: SITE.artistName,
+    url: SITE.siteUrl,
+    sameAs: [SITE.instagramUrl, SITE.facebookUrl],
+    jobTitle: 'Painter',
+    address: { '@type': 'PostalAddress', addressLocality: 'Melbourne', addressCountry: 'AU' },
+  }
+
   return (
     <html lang="en-AU" suppressHydrationWarning className={`${cormorant.variable} ${jetbrains.variable}`}>
-      <head>
-      </head>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
         <a href="#main-content" className="skip-nav">Skip to main content</a>
-        <ScrollProgress />
         <Grain />
-        <Cursor />
+        <Vignette />
         <Nav />
         <main id="main-content" tabIndex={-1}>{children}</main>
-        <MobileNav />
       </body>
     </html>
   )

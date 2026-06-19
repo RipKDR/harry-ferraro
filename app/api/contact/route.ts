@@ -1,59 +1,57 @@
 import { NextResponse } from 'next/server'
-import { z } from 'zod'
-
-const schema = z.object({
-  name: z.string().min(2).max(80),
-  email: z.string().email(),
-  message: z.string().min(10).max(2000),
-})
+import { SITE } from '@/lib/site'
+import { contactInquirySchema, escapeHtml, rowsHtml } from '@/lib/inquiry'
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const data = schema.parse(body)
+    const data = contactInquirySchema.parse(body)
 
-    // Send via Resend if API key is set
     const apiKey = process.env.RESEND_API_KEY
-    if (apiKey) {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Harry Ferraro Studio <noreply@harryferraro.com.au>',
-          to: ['Harrisonferraro99@gmail.com'],
-          reply_to: data.email,
-          subject: `New message from ${data.name}`,
-          html: `
-            <div style="font-family:monospace;background:#07060a;color:#ede8df;padding:40px;max-width:600px">
-              <h2 style="font-family:serif;font-weight:300;color:#c8570a;font-size:28px;margin-bottom:24px">
-                New Contact Message
-              </h2>
-              <table style="width:100%;border-collapse:collapse">
-                <tr style="border-bottom:1px solid #1e1c24">
-                  <td style="padding:12px 0;color:#45424f;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;width:100px">From</td>
-                  <td style="padding:12px 0;font-size:13px">${data.name}</td>
-                </tr>
-                <tr style="border-bottom:1px solid #1e1c24">
-                  <td style="padding:12px 0;color:#45424f;font-size:11px;text-transform:uppercase;letter-spacing:0.1em">Email</td>
-                  <td style="padding:12px 0;font-size:13px">${data.email}</td>
-                </tr>
-              </table>
-              <div style="margin-top:24px;padding:20px;background:#131118;border-left:2px solid #c8570a">
-                <p style="font-size:13px;line-height:1.8;color:#8a8494;white-space:pre-wrap">${data.message}</p>
-              </div>
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Email service is not configured', mailto: `mailto:${SITE.email}` },
+        { status: 503 },
+      )
+    }
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: process.env.RESEND_FROM_EMAIL || 'Harrison Ferraro Studio <onboarding@resend.dev>',
+        to: [process.env.CONTACT_TO_EMAIL || SITE.email],
+        reply_to: data.email,
+        subject: `Website enquiry from ${data.name}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;background:#080706;color:#f0e7dc;padding:32px;max-width:680px">
+            <h1 style="font-family:Georgia,serif;font-weight:400;color:#f0e7dc;font-size:30px;margin:0 0 24px">Website enquiry</h1>
+            <table style="width:100%;border-collapse:collapse">
+              ${rowsHtml([
+                ['Name', data.name],
+                ['Email', data.email],
+              ])}
+            </table>
+            <div style="margin-top:24px;padding:20px;background:#15120f;border-left:2px solid #b65d2c">
+              <p style="font-size:14px;line-height:1.8;color:#f0e7dc;white-space:pre-wrap;margin:0">${escapeHtml(data.message)}</p>
             </div>
-          `,
-        }),
-      })
-      if (!res.ok) console.error('Resend error:', await res.text())
+          </div>
+        `,
+      }),
+    })
+
+    if (!res.ok) {
+      const text = await res.text()
+      console.error('Resend contact error:', text)
+      return NextResponse.json({ error: 'Email delivery failed' }, { status: 502 })
     }
 
     return NextResponse.json({ ok: true })
   } catch (err) {
-    if (err instanceof z.ZodError) {
+    if (err && typeof err === 'object' && 'issues' in err) {
       return NextResponse.json({ error: 'Invalid input', issues: err.issues }, { status: 422 })
     }
     console.error('Contact API error:', err)

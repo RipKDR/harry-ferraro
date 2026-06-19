@@ -4,6 +4,7 @@
 .next/
 node_modules/
 out/
+*.tsbuildinfo
 *.log
 .DS_Store
 Thumbs.db

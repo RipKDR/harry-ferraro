@@ -1,14 +1,15 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const NAV_LINKS = [
-  { label: 'Gallery', href: '/gallery' },
+  { label: 'Work', href: '/gallery' },
   { label: 'Series', href: '/series' },
+  { label: 'Who I am', href: '/who-i-am' },
   { label: 'Process', href: '/process' },
-  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 export function Nav() {
@@ -16,104 +17,76 @@ export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
 
-  const handleScroll = useCallback(() => setScrolled(window.scrollY > 60), [])
-
   useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 48)
+    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [handleScroll])
+  }, [])
 
-  // Close menu on route change
-  useEffect(() => { setMenuOpen(false) }, [pathname])
-
-  // Prevent body scroll when menu open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
+    if (!menuOpen) return undefined
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setMenuOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
   }, [menuOpen])
 
-  // Keyboard trap
-  useEffect(() => {
-    if (!menuOpen) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false) }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [menuOpen])
+  const active = (href: string) => pathname === href || pathname.startsWith(`${href}/`) || (href === '/who-i-am' && pathname === '/about')
+  const immersivePreview = /^\/preview\/[^/]+$/.test(pathname)
+
+  if (immersivePreview) return null
 
   return (
     <>
-  <nav
-        aria-label="Main navigation"
-        className={`fixed top-[2px] left-0 right-0 z-[400] flex items-center justify-between transition-all max-md:px-6 ${
+      <nav aria-label="Main navigation" className="fixed left-0 right-0 top-0 z-[400] px-4 pt-4 md:px-8">
+        <div className={`mx-auto grid max-w-[1560px] grid-cols-[1fr_auto_1fr] items-center border px-4 py-3 transition-all duration-500 ${
           scrolled
-            ? 'py-[17px] bg-surface-glass backdrop-blur-2xl border-b border-border'
-            : 'py-7 bg-gradient-to-b from-[rgba(15,13,22,0.9)] to-transparent'
-        }`}
-        style={{ paddingLeft: 'var(--page-pad)', paddingRight: 'var(--page-pad)', transitionDuration: '0.4s', transitionTimingFunction: 'cubic-bezier(0.25,0.46,0.45,0.94)' }}
-      >
-        <Link
-          href="/"
-          aria-label="Harry Ferraro — Home"
-          className="font-serif text-[21px] font-medium tracking-[0.02em] text-text hover:tracking-[0.06em] transition-all duration-500"
-        >
-          Harry Ferraro<span className="text-ember">.</span>
-        </Link>
+            ? 'border-[rgba(234,225,213,0.24)] bg-[rgba(7,6,7,0.88)] backdrop-blur-2xl'
+            : 'border-[rgba(234,225,213,0.14)] bg-[rgba(7,6,7,0.58)] backdrop-blur-xl'
+        }`}>
+          <Link href="/" aria-label="Harrison Ferraro home" className="justify-self-start font-mono text-[0.68rem] uppercase tracking-[0.26em] text-text transition-colors hover:text-oxide">
+            Harrison Ferraro
+          </Link>
 
-        {/* Desktop nav */}
-        <div className="desktop-nav flex items-center gap-0" role="list">
-          {NAV_LINKS.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              role="listitem"
-              className={`nav-link ${pathname.startsWith(href) ? 'active' : ''}`}
-            >
-              {label}
-            </Link>
-          ))}
-          <Link href="/commissions" className="nav-link cta">Commission</Link>
+          <div className="desktop-nav flex items-center justify-center" role="list">
+            {NAV_LINKS.map(({ label, href }) => (
+              <Link key={href} href={href} role="listitem" className={`nav-link ${active(href) ? 'active' : ''}`}>
+                {label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="desktop-nav justify-self-end">
+            <Link href="/commissions" className={`nav-link cta ${pathname.startsWith('/commissions') ? 'active' : ''}`}>Enquire</Link>
+          </div>
+
+          <button
+            type="button"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen((value) => !value)}
+            className={`hamburger-btn justify-self-end ${menuOpen ? 'hamburger-open' : ''}`}
+          >
+            <span className="hamburger-line" />
+            <span className="hamburger-line" style={{ width: '16px' }} />
+            <span className="hamburger-line" />
+          </button>
         </div>
-
-        {/* Hamburger */}
-        <button
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
-          onClick={() => setMenuOpen((v) => !v)}
-          className={`hamburger-btn hidden max-md:flex flex-col gap-[5px] p-2 z-[450] relative ${menuOpen ? 'hamburger-open' : ''}`}
-        >
-          <span className="hamburger-line" />
-          <span className="hamburger-line" style={{ width: '16px' }} />
-          <span className="hamburger-line" />
-        </button>
       </nav>
 
-      {/* Mobile full-screen menu */}
-      <div
-        id="mobile-menu"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
-        className={`mobile-menu ${menuOpen ? 'open' : ''}`}
-      >
-        <nav className="flex flex-col items-center gap-2">
-          {[{ label: 'Home', href: '/' }, ...NAV_LINKS, { label: 'Commissions', href: '/commissions' }, { label: 'Contact', href: '/contact' }].map(({ label, href }, i) => (
-            <Link
-              key={href}
-              href={href}
-              className="mobile-menu-link"
-              style={{ transitionDelay: menuOpen ? `${i * 0.04}s` : '0s', opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'none' : 'translateY(12px)', transition: 'opacity 0.4s, transform 0.4s' }}
-            >
+      <div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu" className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
+        <nav className="flex flex-col items-center gap-1">
+          {[{ label: 'Home', href: '/' }, ...NAV_LINKS, { label: 'Enquire', href: '/commissions' }].map(({ label, href }) => (
+            <Link key={href} href={href} onClick={() => setMenuOpen(false)} className={`mobile-menu-link ${pathname === href ? 'active' : ''}`}>
               {label}
             </Link>
           ))}
         </nav>
-        <div
-          className="absolute bottom-16 text-[9px] tracking-[0.2em] uppercase text-text-3"
-          style={{ fontFamily: 'var(--font-jetbrains)' }}
-        >
-          Harrisonferraro99@gmail.com
-        </div>
       </div>
     </>
   )

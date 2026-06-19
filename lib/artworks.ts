@@ -4,88 +4,140 @@ export function artworkSrc(filename: string): string {
 }
 
 export type Artwork = {
-  id: number
   slug: string
   title: string
-  year: number
-  medium: string
-  dimensions: string
+  image: string
+  alt: string
+  year: number | null
+  medium: string | null
+  dimensions: string | null
   series: SeriesName
-  price: number
-  status: 'available' | 'sold'
-  statement: string
-  filename: string
+  description: string
+  featured: boolean
+  socialPostUrl?: string
 }
 
-export type SeriesName = 'Fire' | 'Wind' | 'Portraits' | 'Colour Studies'
+export type SeriesName = 'Figure studies' | 'Fire and smoke' | 'Colour rupture' | 'Movement studies'
 
 export const ARTWORKS: Artwork[] = [
   {
-    id: 1, slug: 'ignition-ii', title: 'Ignition II', year: 2024,
-    medium: 'Oil & mixed media on canvas', dimensions: '80 × 110 cm',
-    series: 'Fire', price: 4800, status: 'available',
-    statement: 'The cigarette is not about smoking. It is about the moment before — the held breath, the struck match, the decision to burn. She does not light it for comfort. She lights it to remember she can.',
-    filename: 'ignition-ii.jpg',
+    slug: 'ignition-i',
+    title: 'Ignition I',
+    image: '/paintings/ignition-i.jpg',
+    alt: 'A figurative painting showing a woman holding a lit cigarette in a dark studio setting.',
+    year: null,
+    medium: null,
+    dimensions: null,
+    series: 'Fire and smoke',
+    description: 'A charged portrait built around smoke, shadow, and the small violence of a flame.',
+    featured: true,
   },
   {
-    id: 2, slug: 'ignition-i', title: 'Ignition I', year: 2024,
-    medium: 'Oil on canvas', dimensions: '70 × 100 cm',
-    series: 'Fire', price: 3800, status: 'available',
-    statement: 'The flame throws orange across grey like a scream in a quiet room. Everything around her is ash and texture. She is the only warm thing. The cross at her throat — not religion. Armour.',
-    filename: 'ignition-i.jpg',
+    slug: 'ignition-ii',
+    title: 'Ignition II',
+    image: '/paintings/ignition-ii.jpg',
+    alt: 'An expressive portrait of a woman lit by the orange glow of a cigarette, surrounded by dark brushwork.',
+    year: null,
+    medium: null,
+    dimensions: null,
+    series: 'Fire and smoke',
+    description: 'A portrait where light does the speaking. The figure sits between control and collapse, with the flame holding the centre of the painting.',
+    featured: true,
   },
   {
-    id: 3, slug: 'crimson-study', title: 'Crimson Study', year: 2024,
-    medium: 'Acrylic & ink on canvas', dimensions: '60 × 90 cm',
-    series: 'Portraits', price: 3200, status: 'available',
-    statement: 'Red has always been the loudest silence. She looks back at something just outside the frame that only she can see. The splatter is not chaos. It is punctuation.',
-    filename: 'crimson-study.jpg',
+    slug: 'crimson-study',
+    title: 'Crimson Study',
+    image: '/paintings/crimson-study.jpg',
+    alt: 'A crimson-toned expressive portrait with loose red and black marks around the figure.',
+    year: null,
+    medium: null,
+    dimensions: null,
+    series: 'Figure studies',
+    description: 'A red, unsettled figure study. The work leans into pressure, gaze, and the feeling of being seen before you are ready.',
+    featured: true,
   },
   {
-    id: 4, slug: 'ascendant', title: 'Ascendant', year: 2023,
-    medium: 'Acrylic on canvas', dimensions: '60 × 90 cm',
-    series: 'Wind', price: 2900, status: 'available',
-    statement: 'Looking up when the world presses down. The teal bleeds in like memory — specific, unavoidable. Joy as resistance. The brushstrokes are intentionally loose because control would betray her.',
-    filename: 'ascendant.jpg',
+    slug: 'ascendant',
+    title: 'Ascendant',
+    image: '/paintings/ascendant.jpg',
+    alt: 'A black, white, and teal portrait of a woman looking upward with wind-like brushwork around her hair.',
+    year: null,
+    medium: null,
+    dimensions: null,
+    series: 'Movement studies',
+    description: 'A lifted face, loose marks, and weather moving through the body.',
+    featured: true,
   },
   {
-    id: 5, slug: 'tempest', title: 'Tempest', year: 2023,
-    medium: 'Watercolour & ink on board', dimensions: '50 × 75 cm',
-    series: 'Wind', price: 2400, status: 'available',
-    statement: 'Black ink over sepia. Hair moving like it remembers being storm. She is not looking at you. She is deciding.',
-    filename: 'tempest.jpg',
+    slug: 'tempest',
+    title: 'Tempest',
+    image: '/paintings/tempest.jpg',
+    alt: 'A dark expressive portrait with windblown hair and rough gestural mark-making.',
+    year: null,
+    medium: null,
+    dimensions: null,
+    series: 'Movement studies',
+    description: 'A figure caught in motion. Hair, posture, and marks pull the work toward storm rather than stillness.',
+    featured: true,
   },
   {
-    id: 6, slug: 'dissolution', title: 'Dissolution', year: 2023,
-    medium: 'Oil on canvas', dimensions: '70 × 100 cm',
-    series: 'Colour Studies', price: 2200, status: 'sold',
-    statement: 'Yellow is not cheerful. Grief and colour cannot be separated — they bleed into the same drain. One eye visible. One tear.',
-    filename: 'dissolution.jpg',
+    slug: 'radiance',
+    title: 'Radiance',
+    image: '/paintings/radiance.jpg',
+    alt: 'A bright expressive portrait with blue and black gestural marks around a smiling figure.',
+    year: null,
+    medium: null,
+    dimensions: null,
+    series: 'Movement studies',
+    description: 'A lighter work without losing weight. It carries movement, softness, and a release of pressure.',
+    featured: false,
   },
   {
-    id: 7, slug: 'radiance', title: 'Radiance', year: 2024,
-    medium: 'Oil on canvas', dimensions: '80 × 110 cm',
-    series: 'Wind', price: 4200, status: 'sold',
-    statement: 'Joy painted with the same weight as grief, because they are the same weight. The brushwork loosens at the edges — she is becoming movement, becoming weather.',
-    filename: 'radiance.jpg',
+    slug: 'dissolution',
+    title: 'Dissolution',
+    image: '/paintings/dissolution.jpg',
+    alt: 'A colourful vertical face study with yellow, green, red, and blue paint marks.',
+    year: null,
+    medium: null,
+    dimensions: null,
+    series: 'Colour rupture',
+    description: 'A colour-heavy face study. The image feels fractured, bright, and uncomfortable in the right way.',
+    featured: false,
   },
 ]
 
-export const SERIES: Record<SeriesName, { desc: string; accent: string }> = {
-  Fire: {
-    desc: 'Portraits lit from within. Fire as biography — not destruction, but illumination. The flame is a mirror held at exactly the right angle.',
-    accent: '#c8570a',
+export const SERIES: Record<SeriesName, { description: string }> = {
+  'Figure studies': {
+    description: 'Faces and bodies held close enough for expression, posture, and gaze to do the work.',
   },
-  Wind: {
-    desc: 'Movement as emotion. These paintings explore freedom and its cost — the moment the body stops performing composure and becomes weather.',
-    accent: '#1a7a8a',
+  'Fire and smoke': {
+    description: 'Paintings built around ignition, breath, smoke, and the charged second before a room changes.',
   },
-  Portraits: {
-    desc: 'The face as landscape. Ink bleeds into paint the same way identity bleeds into expectation. These are not likenesses. They are states.',
-    accent: '#8a1a2a',
+  'Colour rupture': {
+    description: 'Colour-forward studies where the palette becomes the pressure point.',
   },
-  'Colour Studies': {
-    desc: 'Grief in palette form. Colour is not decoration here — it is the thing being felt. Yellow is not cheerful. Teal is not calm.',
-    accent: '#4a7a3a',
+  'Movement studies': {
+    description: 'Figures shaped by wind, motion, loosened brushwork, and a body refusing stillness.',
   },
+}
+
+export function getArtwork(slug: string) {
+  return ARTWORKS.find((artwork) => artwork.slug === slug)
+}
+
+export function getFeaturedArtworks() {
+  return ARTWORKS.filter((artwork) => artwork.featured)
+}
+
+export function formatArtworkMeta(value: string | number | null) {
+  return value === null || value === '' ? null : String(value)
+}
+
+export function artworkMetaItems(artwork: Artwork) {
+  return [
+    ['Year', formatArtworkMeta(artwork.year)],
+    ['Medium', formatArtworkMeta(artwork.medium)],
+    ['Dimensions', formatArtworkMeta(artwork.dimensions)],
+    ['Series', artwork.series],
+  ].filter((item): item is [string, string] => Boolean(item[1]))
 }

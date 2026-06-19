@@ -1,46 +1,121 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useMemo, useState } from 'react'
+import { SITE } from '@/lib/site'
+import { ARTWORKS } from '@/lib/artworks'
 import { Footer } from '@/components/Footer'
-import { Reveal } from '@/components/Reveal'
 
-type F = { name: string; email: string; description: string; budget: string; timeline: string; references: string }
-type Status = 'idle' | 'loading' | 'success' | 'error'
+type FormState = {
+  name: string
+  email: string
+  phone: string
+  socialHandle: string
+  artworkType: string
+  preferredSize: string
+  scaleNotes: string
+  timeline: string
+  description: string
+  references: string
+  consent: boolean
+  company: string
+}
+
+type Status = 'idle' | 'loading' | 'success' | 'error' | 'not-configured'
+
+const initialForm: FormState = {
+  name: '',
+  email: '',
+  phone: '',
+  socialHandle: '',
+  artworkType: '',
+  preferredSize: '',
+  scaleNotes: '',
+  timeline: '',
+  description: '',
+  references: '',
+  consent: false,
+  company: '',
+}
+
+const STEPS = [
+  ['01', 'What', 'Send the person, idea, room, scale, timing, and references.'],
+  ['02', 'Fit', 'Harrison checks whether it suits the work and what needs clearing up.'],
+  ['03', 'Agreement', 'Scope, revision points, delivery, usage, and timeline are confirmed in writing.'],
+  ['04', 'Making', 'Painting starts once the scope is clear. Progress updates are agreed case by case.'],
+]
 
 export default function CommissionsPage() {
-  const [status, setStatus] = useState<Status>('idle')
-  const [errors, setErrors] = useState<Partial<F>>({})
-  const [form, setForm] = useState<F>({ name: '', email: '', description: '', budget: '', timeline: '', references: '' })
+  return (
+    <Suspense fallback={<CommissionsFallback />}>
+      <CommissionsContent />
+    </Suspense>
+  )
+}
 
-  const up = (k: keyof F) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm((f) => ({ ...f, [k]: e.target.value }))
-    setErrors((err) => ({ ...err, [k]: undefined }))
+function CommissionsFallback() {
+  return (
+    <div className="page-enter">
+      <section className="section-pad site-shell min-h-screen pt-36 md:pt-44">
+        <p className="eyebrow mb-5">Studio enquiry</p>
+        <h1 className="font-serif text-[clamp(3.5rem,8vw,9rem)] leading-[0.86] tracking-[-0.07em]">Loading enquiry form.</h1>
+      </section>
+    </div>
+  )
+}
+
+function CommissionsContent() {
+  const searchParams = useSearchParams()
+  const requestedArtwork = useMemo(() => ARTWORKS.find((artwork) => artwork.slug === searchParams.get('artwork')), [searchParams])
+  const [form, setForm] = useState<FormState>(() => ({
+    ...initialForm,
+    artworkType: requestedArtwork ? `Related to ${requestedArtwork.title}` : '',
+  }))
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({})
+  const [status, setStatus] = useState<Status>('idle')
+
+  const update = (key: keyof FormState) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const value = event.target instanceof HTMLInputElement && event.target.type === 'checkbox'
+      ? event.target.checked
+      : event.target.value
+    setForm((current) => ({ ...current, [key]: value }))
+    setErrors((current) => ({ ...current, [key]: undefined }))
   }
 
   const validate = () => {
-    const e: Partial<F> = {}
-    if (form.name.length < 2) e.name = 'Please enter your name'
-    if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = 'Valid email required'
-    if (form.description.length < 20) e.description = 'Please describe the work you have in mind (at least 20 characters)'
-    if (!form.budget) e.budget = 'Please select a budget range'
-    if (!form.timeline) e.timeline = 'Please select a timeline'
-    setErrors(e)
-    return Object.keys(e).length === 0
+    const next: Partial<Record<keyof FormState, string>> = {}
+    if (form.name.trim().length < 2) next.name = 'Enter your name.'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = 'Enter a valid email.'
+    if (!form.artworkType) next.artworkType = 'Choose an enquiry type.'
+    if (!form.preferredSize) next.preferredSize = 'Choose a size or scale.'
+    if (!form.timeline) next.timeline = 'Choose a timeline.'
+    if (form.description.trim().length < 20) next.description = 'Give at least a short brief.'
+    if (!form.consent) next.consent = 'Consent is required so Harrison can reply.'
+    setErrors(next)
+    return Object.keys(next).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const fallbackHref = `mailto:${SITE.email}?subject=${encodeURIComponent('Studio enquiry')}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nSocial: ${form.socialHandle}\nType: ${form.artworkType}\nPreferred size: ${form.preferredSize}\nScale/range notes: ${form.scaleNotes}\nTimeline: ${form.timeline}\nReferences: ${form.references}\n\nIdea:\n${form.description}`)}`
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault()
     if (!validate()) return
     setStatus('loading')
     try {
-      const res = await fetch('/api/commission', {
+      const response = await fetch('/api/commission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error()
-      setStatus('success')
+      if (response.ok) {
+        setStatus('success')
+        return
+      }
+      if (response.status === 503) {
+        setStatus('not-configured')
+        return
+      }
+      setStatus('error')
     } catch {
       setStatus('error')
     }
@@ -48,106 +123,125 @@ export default function CommissionsPage() {
 
   return (
     <div className="page-enter">
-      <div className="max-w-[840px] mx-auto px-[52px] pt-[160px] pb-[160px] max-md:px-6">
-
-        <Reveal><div className="eyebrow mb-4">Commission a Work</div></Reveal>
-        <Reveal delay={0.1}>
-          <h1 className="font-serif font-light leading-[1.03] mb-5" style={{ fontSize: 'clamp(38px,6vw,72px)' }}>
-            Something made<br /><em className="italic">only for you</em>
+      <section className="section-pad site-shell border-b border-[var(--border)] pt-36 md:pt-44">
+        <p className="eyebrow mb-5">Studio enquiry</p>
+        <div className="grid gap-10 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+          <h1 className="font-serif text-[clamp(3.8rem,9vw,10rem)] leading-[0.8] tracking-[-0.085em]">
+            Tell me who or what the painting needs to hold.
           </h1>
-        </Reveal>
-        <Reveal delay={0.15}>
-          <p className="font-mono text-[14px] text-text-2 leading-[1.85] max-w-[520px] mb-16">
-            Commissions are taken selectively. I work closely with each collector to understand not just what you want to see, but what you want to <em>feel</em>. I will respond within 48 hours.
+          <p className="max-w-[40rem] font-mono text-[0.86rem] leading-8 text-text-2">
+            Use this form for original work, selected commissions, studio contact, exhibitions, or collaboration. This starts a conversation. The site does not list prices or run checkout.
           </p>
-        </Reveal>
+        </div>
+      </section>
 
-        {/* How it works */}
-        <Reveal delay={0.2} className="grid grid-cols-3 gap-5 mb-16 max-sm:grid-cols-1">
-          {[
-            { n: '01', t: 'We talk', b: 'A conversation about the work you want to live with.' },
-            { n: '02', t: 'I paint', b: '6–12 weeks of focused studio work. Progress shared at key stages.' },
-            { n: '03', t: 'It arrives', b: 'Professionally packed and delivered with certificate of authenticity.' },
-          ].map(({ n, t, b }) => (
-            <div key={n} className="p-6 border border-[#38354a] bg-[#22202c]">
-              <div className="font-serif text-[36px] font-light text-ember opacity-60 mb-3 italic">{n}</div>
-              <div className="font-serif text-[18px] font-light mb-2">{t}</div>
-              <p className="font-mono text-[12px] text-text-2 leading-[1.7]">{b}</p>
+      <section className="section-pad-tight site-shell border-b border-[var(--border)]">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" aria-label="Enquiry process">
+          {STEPS.map(([number, title, body]) => (
+            <div key={number} className="statement-panel">
+              <p className="font-serif text-[2.8rem] leading-none text-oxide opacity-75">{number}</p>
+              <h2 className="mt-5 font-serif text-[2rem] leading-none tracking-[-0.055em]">{title}</h2>
+              <p className="mt-4 font-mono text-[0.78rem] leading-7 text-text-2">{body}</p>
             </div>
           ))}
-        </Reveal>
+        </div>
+      </section>
 
+      <section className="section-pad site-shell">
         {status === 'success' ? (
-          <Reveal>
-            <div className="success-box">
-              <h2 className="font-serif font-light text-[32px] mb-4">Received.</h2>
-              <p className="font-mono text-[14px] text-text-2 leading-[1.8]">
-                I will review your inquiry and be in touch within 48 hours.
-              </p>
-            </div>
-          </Reveal>
+          <div className="success-box" role="status">
+            <h2 className="font-serif text-[3.4rem] leading-none tracking-[-0.055em]">Enquiry sent.</h2>
+            <p className="mt-4 font-mono text-[0.86rem] leading-8 text-text-2">Harrison will review it and reply using the contact details you provided.</p>
+          </div>
         ) : (
-          <Reveal delay={0.3}>
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-              <div className="grid grid-cols-2 gap-5 max-sm:grid-cols-1">
-                <div>
-                  <label className="form-label" htmlFor="cm-name">Your Name</label>
-                  <input id="cm-name" className="form-input" value={form.name} onChange={up('name')} placeholder="Full name" aria-invalid={!!errors.name} />
-                  {errors.name && <p className="form-error" role="alert">{errors.name}</p>}
-                </div>
-                <div>
-                  <label className="form-label" htmlFor="cm-email">Email</label>
-                  <input id="cm-email" type="email" className="form-input" value={form.email} onChange={up('email')} placeholder="your@email.com" aria-invalid={!!errors.email} />
-                  {errors.email && <p className="form-error" role="alert">{errors.email}</p>}
-                </div>
-              </div>
+          <form onSubmit={submit} className="statement-panel" noValidate>
+            <input className="sr-only" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form.company} onChange={update('company')} name="company" />
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <Field label="Name" id="name" error={errors.name}><input id="name" className="form-input" value={form.name} onChange={update('name')} autoComplete="name" /></Field>
+              <Field label="Email" id="email" error={errors.email}><input id="email" type="email" className="form-input" value={form.email} onChange={update('email')} autoComplete="email" /></Field>
+              <Field label="Phone optional" id="phone"><input id="phone" className="form-input" value={form.phone} onChange={update('phone')} autoComplete="tel" /></Field>
+              <Field label="Instagram or Facebook optional" id="social"><input id="social" className="form-input" value={form.socialHandle} onChange={update('socialHandle')} placeholder="@handle or profile URL" /></Field>
+            </div>
+
+            <div className="mt-5 grid gap-5 md:grid-cols-2">
+              <Field label="Enquiry type" id="artworkType" error={errors.artworkType}>
+                <select id="artworkType" className="form-input" value={form.artworkType} onChange={update('artworkType')}>
+                  <option value="">Select type</option>
+                  <option>Original artwork enquiry</option>
+                  <option>Portrait or figure commission</option>
+                  <option>Piece inspired by an existing work</option>
+                  <option>Exhibition, press, or collaboration</option>
+                  <option>Related to {requestedArtwork?.title || 'a specific artwork'}</option>
+                </select>
+              </Field>
+              <Field label="Preferred size or scale" id="preferredSize" error={errors.preferredSize}>
+                <select id="preferredSize" className="form-input" value={form.preferredSize} onChange={update('preferredSize')}>
+                  <option value="">Select scale</option>
+                  <option>Small work</option>
+                  <option>Medium work</option>
+                  <option>Large work</option>
+                  <option>Oversized work</option>
+                  <option>Not sure yet</option>
+                </select>
+              </Field>
+              <Field label="Scale / range notes optional" id="scaleNotes">
+                <input id="scaleNotes" className="form-input" value={form.scaleNotes} onChange={update('scaleNotes')} placeholder="Anything Harrison should know about scope, room, or constraints" />
+              </Field>
+              <Field label="Timeline" id="timeline" error={errors.timeline}>
+                <select id="timeline" className="form-input" value={form.timeline} onChange={update('timeline')}>
+                  <option value="">Select timeline</option>
+                  <option>Flexible</option>
+                  <option>1 to 2 months</option>
+                  <option>3 to 6 months</option>
+                  <option>Specific date, details in brief</option>
+                </select>
+              </Field>
+            </div>
+
+            <div className="mt-5 space-y-5">
+              <Field label="Description of idea" id="description" error={errors.description}>
+                <textarea id="description" className="form-input" rows={7} value={form.description} onChange={update('description')} placeholder="Subject, feeling, colours, room, story, references, who it is for, and anything the work should avoid." />
+              </Field>
+
+              <Field label="Reference links or notes optional" id="references">
+                <textarea id="references" className="form-input" rows={3} value={form.references} onChange={update('references')} placeholder="Paste public URLs or describe reference images." />
+              </Field>
 
               <div>
-                <label className="form-label" htmlFor="cm-desc">What do you have in mind?</label>
-                <textarea id="cm-desc" className="form-input" rows={5} value={form.description} onChange={up('description')} placeholder="Subject, mood, setting, emotional tone. The more specific the better." aria-invalid={!!errors.description} />
-                {errors.description && <p className="form-error" role="alert">{errors.description}</p>}
+                <label className="flex items-start gap-3 font-mono text-[0.78rem] leading-6 text-text-2">
+                  <input type="checkbox" checked={form.consent} onChange={update('consent')} className="mt-1" />
+                  <span>I consent to being contacted about this enquiry using the details I provided.</span>
+                </label>
+                {errors.consent && <p className="form-error" role="alert">{errors.consent}</p>}
               </div>
 
-              <div>
-                <label className="form-label" htmlFor="cm-ref">References — artists or images you love (optional)</label>
-                <input id="cm-ref" className="form-input" value={form.references} onChange={up('references')} placeholder="URLs, artist names, or describe the feeling" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-5 max-sm:grid-cols-1">
-                <div>
-                  <label className="form-label" htmlFor="cm-budget">Budget Range</label>
-                  <select id="cm-budget" className="form-input" value={form.budget} onChange={up('budget')} aria-invalid={!!errors.budget}>
-                    <option value="">Select budget</option>
-                    <option>GBP 1,500 – 3,000</option>
-                    <option>GBP 3,000 – 5,000</option>
-                    <option>GBP 5,000 – 10,000</option>
-                    <option>GBP 10,000+</option>
-                  </select>
-                  {errors.budget && <p className="form-error" role="alert">{errors.budget}</p>}
+              {status === 'error' && <p className="form-error" role="alert">The form could not be sent. Use the fallback email link below.</p>}
+              {status === 'not-configured' && (
+                <div className="border border-oxide bg-[rgba(182,93,44,.08)] p-5" role="alert">
+                  <p className="mb-4 font-mono text-[0.82rem] leading-7 text-text-2">Email delivery is not configured yet. Use direct email for now.</p>
+                  <a href={fallbackHref} className="btn-line">Send using email app</a>
                 </div>
-                <div>
-                  <label className="form-label" htmlFor="cm-timeline">Timeline</label>
-                  <select id="cm-timeline" className="form-input" value={form.timeline} onChange={up('timeline')} aria-invalid={!!errors.timeline}>
-                    <option value="">Select timeline</option>
-                    <option>Flexible, 3+ months</option>
-                    <option>2 to 3 months</option>
-                    <option>1 to 2 months</option>
-                    <option>Under 4 weeks (rush fee applies)</option>
-                  </select>
-                  {errors.timeline && <p className="form-error" role="alert">{errors.timeline}</p>}
-                </div>
-              </div>
+              )}
 
-              {status === 'error' && <p className="form-error" role="alert">Something went wrong. Please email me directly at Harrisonferraro99@gmail.com</p>}
-
-              <button type="submit" disabled={status === 'loading'} className="btn-ember btn-full mt-2" style={{ opacity: status === 'loading' ? 0.65 : 1 }}>
-                {status === 'loading' ? 'Sending…' : 'Send Commission Inquiry'}
+              <button type="submit" disabled={status === 'loading'} className="btn-ink btn-full" style={{ opacity: status === 'loading' ? 0.65 : 1 }}>
+                {status === 'loading' ? 'Sending...' : 'Send enquiry'}
               </button>
-            </form>
-          </Reveal>
+            </div>
+          </form>
         )}
-      </div>
+      </section>
       <Footer />
+    </div>
+  )
+}
+
+function Field({ label, id, error, children }: { label: string; id: string; error?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="form-label" htmlFor={id}>{label}</label>
+      {children}
+      {error && <p className="form-error" role="alert">{error}</p>}
     </div>
   )
 }

@@ -1,155 +1,92 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import type { Metadata } from 'next'
-import { ARTWORKS } from '@/lib/artworks'
-import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
-import type { Artwork } from '@/lib/artworks'
+import Link from 'next/link'
+import { ARTWORKS, SERIES, formatArtworkMeta } from '@/lib/artworks'
+import { ArtFrame } from '@/components/ArtFrame'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
-import { Lightbox } from '@/components/Lightbox'
-import { PurchaseModal } from '@/components/PurchaseModal'
-import { InquireModal } from '@/components/InquireModal'
 
-const FILTERS = ['All', 'Available', 'Fire', 'Portraits', 'Wind', 'Colour Studies'] as const
+const FILTERS = ['All', ...Object.keys(SERIES)] as const
 
 export default function GalleryPage() {
   const [filter, setFilter] = useState<string>('All')
-  const [lb, setLb] = useState<Artwork | null>(null)
-  const [buyModal, setBuyModal] = useState<Artwork | null>(null)
-  const [inqModal, setInqModal] = useState<Artwork | null>(null)
 
-  const shown = useMemo(() =>
-    ARTWORKS.filter((a) => {
-      if (filter === 'All') return true
-      if (filter === 'Available') return a.status === 'available'
-      return a.series === filter
-    }),
-    [filter]
-  )
-
-  const navLB = (dir: -1 | 1) => {
-    if (!lb) return
-    const i = shown.findIndex((a) => a.id === lb.id)
-    const next = shown[i + dir]
-    if (next) setLb(next)
-  }
+  const shown = useMemo(() => {
+    return ARTWORKS.filter((artwork) => filter === 'All' || artwork.series === filter)
+  }, [filter])
 
   return (
-    <>
-      <div className="page-enter">
-        {/* Header */}
-        <header className="pt-[140px] px-[52px] pb-11 border-b border-[#38354a] max-md:px-6">
-          <div className="flex justify-between items-end mb-7">
-            <Reveal>
-              <h1 className="font-serif font-light tracking-[-0.02em]" style={{ fontSize: 'clamp(44px,7vw,88px)' }}>Gallery</h1>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-text-3">
-                {shown.length} / {ARTWORKS.length} works
-              </span>
-            </Reveal>
-          </div>
-          <Reveal delay={0.15}>
-            <p className="font-mono text-[13px] text-text-2 leading-[1.8] max-w-[520px]">
-              Original works in oil, acrylic, and mixed media. Each piece is unique — no prints, no editions.
+    <div className="page-enter">
+      <header className="section-pad site-shell border-b border-[var(--border)] pt-36 md:pt-44">
+        <p className="eyebrow mb-5">Work index</p>
+        <div className="grid gap-8 lg:grid-cols-[1fr_0.58fr] lg:items-end">
+          <h1 className="font-serif text-[clamp(4.8rem,14vw,15rem)] leading-[0.76] tracking-[-0.09em]">
+            Paintings.
+          </h1>
+          <div className="flex flex-col gap-4 lg:items-end lg:pb-3">
+            <p className="max-w-[34rem] font-mono text-[0.86rem] leading-8 text-text-2">
+              A portfolio index of current and recent figurative works. Details stay minimal so the painting stays in front.
             </p>
-          </Reveal>
-        </header>
+            <Link href="/preview" className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-oxide transition-colors hover:text-text">
+              Try wall preview →
+            </Link>
+          </div>
+        </div>
+      </header>
 
-        {/* Filters */}
-        <div
-          className="flex overflow-x-auto border-b border-[#38354a] scrollbar-none"
-          role="tablist"
-          aria-label="Filter artworks"
-          style={{ scrollbarWidth: 'none' }}
-        >
-          {FILTERS.map((f) => (
+      <div className="sticky top-[5.2rem] z-30 border-b border-[var(--border)] bg-[rgba(8,7,6,0.86)] backdrop-blur-2xl">
+        <div className="site-shell flex gap-2 overflow-x-auto px-5 py-3 md:px-12 lg:px-[4.5rem]" aria-label="Filter paintings" style={{ scrollbarWidth: 'none' }}>
+          {FILTERS.map((filterName) => (
             <button
-              key={f}
-              role="tab"
-              aria-selected={filter === f}
-              onClick={() => setFilter(f)}
-              className="font-mono text-[9px] tracking-[0.16em] uppercase px-5 py-[18px] border-b-2 whitespace-nowrap flex-shrink-0 transition-all"
-              style={{
-                color: filter === f ? '#f2ede5' : '#7c768a',
-                borderBottomColor: filter === f ? '#c8570a' : 'transparent',
-                fontFamily: 'var(--font-jetbrains)',
-              }}
+              key={filterName}
+              type="button"
+              aria-pressed={filter === filterName}
+              onClick={() => setFilter(filterName)}
+              className={`shrink-0 border px-4 py-2 font-mono text-[0.62rem] uppercase tracking-[0.18em] transition-all ${
+                filter === filterName
+                  ? 'border-oxide bg-oxide text-[#080706]'
+                  : 'border-[var(--border)] text-text-3 hover:border-[var(--border-strong)] hover:text-text-2'
+              }`}
             >
-              {f}
+              {filterName}
             </button>
           ))}
         </div>
-
-        {/* Masonry grid */}
-        {shown.length > 0 ? (
-          <div
-            className="px-[52px] pt-[5px] pb-[160px] max-md:px-5"
-            style={{ columns: 'var(--cols, 3)', gap: '5px', columnFill: 'balance' }}
-          >
-            <style>{`
-              @media (max-width: 640px) { [style*="--cols"] { --cols: 1 } }
-              @media (min-width: 641px) and (max-width: 960px) { [style*="--cols"] { --cols: 2 } }
-              @media (min-width: 961px) { [style*="--cols"] { --cols: 3 } }
-            `}</style>
-            {shown.map((art, i) => (
-              <div
-                key={art.id}
-                className="gallery-item break-inside-avoid mb-[5px]"
-                style={{ display: 'block', animationDelay: `${i * 0.04}s` }}
-              >
-                <button
-                  className="gallery-card w-full text-left"
-                  onClick={() => setLb(art)}
-                  aria-label={`${art.title}, ${art.year}. ${art.status === 'available' ? `GBP ${art.price.toLocaleString()}, available` : 'Sold'}`}
-                >
-                  <Image
-                    src={`/paintings/${art.filename}`}
-                    alt={`${art.title} by Harry Ferraro, ${art.year}`}
-                    width={600} height={art.dimensions.includes('×') ? parseInt(art.dimensions.split('×')[1]) * 7 : 750}
-                    className="w-full"
-                    sizes="(max-width:640px) 100vw, (max-width:960px) 50vw, 33vw"
-                    placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[art.slug]}
-                  />
-                  <div className="gallery-overlay">
-                    <div className="gallery-card-info">
-                      <span className={`badge ${art.status === 'available' ? 'badge-available' : 'badge-sold'} mb-2.5 block`}>
-                        {art.status}
-                      </span>
-                      <div className="font-serif text-[19px] font-light mb-1">{art.title}</div>
-                      <div className="font-mono text-[9px] tracking-[0.1em] uppercase text-text-2 mb-1.5">{art.medium}</div>
-                      <div className="font-mono text-[10px] text-ember tracking-[0.08em]">
-                        {art.status === 'available' ? `GBP ${art.price.toLocaleString()}` : 'Sold'}
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="px-[52px] py-24 text-center max-md:px-6">
-            <p className="font-mono text-text-3 text-[13px]">No works match this filter.</p>
-          </div>
-        )}
-
-        <Footer />
       </div>
 
-      {lb && (
-        <Lightbox
-          art={lb} all={shown}
-          onClose={() => setLb(null)}
-          onNav={navLB}
-          onJumpTo={(i) => { if (shown[i]) setLb(shown[i]) }}
-          onBuy={(a) => { setLb(null); setBuyModal(a) }}
-          onInquire={(a) => { setLb(null); setInqModal(a) }}
-        />
-      )}
-      {buyModal && <PurchaseModal art={buyModal} onClose={() => setBuyModal(null)} />}
-      {inqModal && <InquireModal art={inqModal} onClose={() => setInqModal(null)} />}
-    </>
+      <section className="section-pad site-shell" aria-label="Painting grid">
+        <div className="grid gap-x-5 gap-y-16 sm:grid-cols-2 xl:grid-cols-3">
+          {shown.map((artwork, index) => {
+            const meta = [formatArtworkMeta(artwork.year), formatArtworkMeta(artwork.medium), formatArtworkMeta(artwork.dimensions)].filter(Boolean).join(' · ')
+            const indexLabel = String(index + 1).padStart(2, '0')
+            return (
+              <Reveal key={artwork.slug} delayMs={(index % 3) * 80}>
+                <Link href={`/gallery/${artwork.slug}`} className={`work-tile group block ${index % 3 === 1 ? 'xl:translate-y-14' : index % 3 === 2 ? 'xl:-translate-y-6' : ''}`}>
+                  <article>
+                    <ArtFrame>
+                      <div className="relative overflow-hidden" style={{ aspectRatio: index % 3 === 0 ? '4 / 5' : '3 / 4' }}>
+                        <Image src={artwork.image} alt={artwork.alt} fill className="art-image object-cover" sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 33vw" />
+                      </div>
+                    </ArtFrame>
+                    <div className="mt-4 flex items-start justify-between gap-4 border-t border-[var(--border)] pt-4">
+                      <div>
+                        <p className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-text-3">{artwork.series}</p>
+                        <h2 className="mt-2 font-serif text-[clamp(2.2rem,4vw,4rem)] leading-none tracking-[-0.06em]">{artwork.title}</h2>
+                        {meta && <p className="mt-3 font-mono text-[0.72rem] leading-6 text-text-3">{meta}</p>}
+                      </div>
+                      <span className="font-mono text-[0.62rem] tracking-[0.2em] text-oxide">{indexLabel}</span>
+                    </div>
+                  </article>
+                </Link>
+              </Reveal>
+            )
+          })}
+        </div>
+      </section>
+
+      <Footer />
+    </div>
   )
 }

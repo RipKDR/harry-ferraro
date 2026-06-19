@@ -1,40 +1,35 @@
 'use client'
 
-import { useEffect, useRef, ReactNode, ElementType } from 'react'
+import type { ReactNode } from 'react'
+import { motion, useReducedMotion, type HTMLMotionProps } from 'motion/react'
 
 type RevealProps = {
   children: ReactNode
-  delay?: number
   className?: string
-  as?: ElementType
-}
+  delayMs?: number
+  as?: 'div' | 'section' | 'article'
+} & Pick<HTMLMotionProps<'div'>, 'id' | 'aria-label' | 'aria-labelledby' | 'aria-hidden'>
 
-export function Reveal({ children, delay = 0, className = '', as: Tag = 'div' }: RevealProps) {
-  const ref = useRef<HTMLElement>(null)
+const TAGS = {
+  div: motion.div,
+  section: motion.section,
+  article: motion.article,
+} as const
 
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('visible')
-          io.unobserve(el)
-        }
-      },
-      { threshold: 0.08 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
+export function Reveal({ children, className = '', delayMs = 0, as = 'div', ...rest }: RevealProps) {
+  const reduceMotion = useReducedMotion()
+  const Component = TAGS[as]
 
   return (
-    <Tag
-      ref={ref}
-      className={`reveal ${className}`}
-      style={delay ? { transitionDelay: `${delay}s` } : undefined}
+    <Component
+      className={className}
+      initial={reduceMotion ? false : { opacity: 0, y: 28, filter: 'blur(6px)' }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '0px 0px -8% 0px', amount: 0.12 }}
+      transition={{ duration: 1.1, delay: delayMs / 1000, ease: [0.32, 0.72, 0, 1] }}
+      {...rest}
     >
       {children}
-    </Tag>
+    </Component>
   )
 }

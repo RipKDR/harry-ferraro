@@ -1,129 +1,55 @@
-# Harry Ferraro — Fine Art Portfolio
+# Harry Ferraro — artist portfolio
 
-Production-ready Next.js 15 portfolio website. Deployable to Vercel in < 5 minutes.
+Next.js App Router site for **Harrison Ferraro** (Melbourne, figurative oil). Portfolio and enquiry — not a shop.
 
 ## Stack
 
-- **Next.js 15** — App Router, TypeScript, Server Components
-- **Tailwind CSS v3** — utility styling
-- **Framer Motion** — scroll animations, page transitions (ready to add)
-- **next/image** — automatic WebP/AVIF optimization, responsive srcsets
-- **Google Fonts** — Cormorant Garant + JetBrains Mono
+- **Next.js 16** — App Router, TypeScript, static generation
+- **Motion** — hero choreography and scroll reveals
+- **Tailwind CSS v3**
+- **Resend** — optional email for contact / commission APIs
+- **Vercel** — hosting
 
 ## Features
 
-- Animated splash screen
-- Full-screen hero with parallax-style zoom
-- Masonry gallery with filter system
-- Lightbox with keyboard navigation (← → Esc)
-- Purchase intent modal + Inquiry modal
-- Animated stat counters (IntersectionObserver)
-- Scroll-triggered reveal animations
-- Custom cursor with lerp smoothing
-- Grain texture overlay
-- Marquee ticker
-- Series page (browse by series)
-- Process / Studio page (5-step breakdown)
-- About page
-- Commissions intake form
-- Contact form
-- Mobile-first responsive design
-- Bottom mobile navigation
-- SEO metadata + OpenGraph + Twitter cards
-- AVIF/WebP image optimization
+- Editorial home hero, work index, series, process
+- **Who I am** — portfolio narrative
+- **Wall preview** — phone camera + drag/pinch placement (`/preview`, `/preview/[slug]`)
+- Commission & contact forms (Zod + honeypot)
+- SEO metadata, sitemap, security headers (CSP)
 
-## Quick Deploy to Vercel
+No public prices, Stripe, or checkout.
 
-### Option 1: Vercel CLI (fastest)
-
-```bash
-npm install -g vercel
-cd harry-ferraro
-npm install
-vercel
-```
-
-### Option 2: GitHub → Vercel (recommended for ongoing updates)
-
-1. Push this folder to a new GitHub repo
-2. Go to [vercel.com/new](https://vercel.com/new)
-3. Import your repo
-4. Vercel auto-detects Next.js — click Deploy
-5. Done. ~60 seconds.
-
-## Local Development
+## Local development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000). Wall preview needs HTTPS in production (or localhost for dev).
 
-## Customisation Checklist
+## Quality gate
 
-- [ ] Replace `@harryferraroart` in `app/contact/page.tsx` with real Instagram handle
-- [ ] Add real Instagram URL in `components/Footer.tsx`
-- [ ] Add `public/og-image.jpg` (1200×630px) for social sharing previews
-- [ ] Update `harryferraro.com` URL in `app/layout.tsx` metadata
-- [ ] When ready for real payments: integrate Stripe Checkout via `/api/checkout/route.ts`
-- [ ] For contact forms that actually send emails: add Resend or Nodemailer to the form handlers
-- [ ] Add more paintings to `public/paintings/` and update `lib/artworks.ts`
-
-## Adding New Paintings
-
-1. Add the image file to `public/paintings/` (JPEG, 600–1200px wide, < 500KB)
-2. Add a new entry to `lib/artworks.ts`:
-
-```ts
-{
-  id: 8,
-  slug: 'new-painting',
-  title: 'New Painting',
-  year: 2025,
-  medium: 'Oil on canvas',
-  dimensions: '70 × 100 cm',
-  series: 'Fire', // Fire | Wind | Portraits | Colour Studies
-  price: 3500,
-  status: 'available', // available | sold
-  statement: 'The statement about this work.',
-  filename: 'new-painting.jpg',
-  aspectRatio: '600/900',
-}
-```
-
-## Email Integration (Production)
-
-Install Resend:
 ```bash
-npm install resend
+npm run typecheck && npm run lint && npm run build
 ```
 
-Then create `app/api/contact/route.ts`:
-```ts
-import { Resend } from 'resend'
+## Deploy (Vercel)
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+1. Push to `main` on GitHub (`RipKDR/harry-ferraro`).
+2. Import repo on [vercel.com/new](https://vercel.com/new) or use existing project.
+3. Set environment variables: `RESEND_API_KEY`, and any vars referenced in `app/api/contact` and `app/api/commission`.
+4. Deploy. Confirm `lib/site.ts` `siteUrl` matches your production domain.
 
-export async function POST(req: Request) {
-  const { name, email, message } = await req.json()
-  await resend.emails.send({
-    from: 'noreply@harryferraro.com',
-    to: 'Harrisonferraro99@gmail.com',
-    subject: `Contact from ${name}`,
-    text: message,
-    replyTo: email,
-  })
-  return Response.json({ ok: true })
-}
-```
+## Adding paintings
 
-Add `RESEND_API_KEY` to your Vercel environment variables.
+1. Add JPEG to `public/paintings/`.
+2. Add entry in `lib/artworks.ts` (slug, title, series, description, `featured`, etc.).
+3. Rebuild — static paths regenerate for gallery and preview.
 
-## Performance
+## Docs
 
-- Images: AVIF/WebP via next/image, lazy-loaded below fold
-- Fonts: preconnect + display=swap, no layout shift
-- Hero image: priority loaded, no LCP penalty
-- CSS: minimal, no unused Tailwind via content scanning
-- No client-side routing overhead beyond what Next.js provides
+- `docs/intent/harrison-portfolio.md` — creative brief (fork B)
+- `docs/intent/motion-stack.md` — animation choices
+- `docs/SHIP-REVIEW-2026-06-19.md` — pre-ship review
