@@ -42,19 +42,19 @@ export function Nav() {
 
   return (
     <>
-      <nav
+  <nav
         aria-label="Main navigation"
-        className={`fixed top-0 left-0 right-0 z-[400] flex items-center justify-between transition-all max-md:px-6 ${
+        className={`fixed top-[2px] left-0 right-0 z-[400] flex items-center justify-between transition-all max-md:px-6 ${
           scrolled
-            ? 'px-[52px] py-[17px] bg-[rgba(21,19,28,0.97)] backdrop-blur-2xl border-b border-[#38354a]'
-            : 'px-[52px] py-7 bg-gradient-to-b from-[rgba(21,19,28,0.9)] to-transparent'
+            ? 'py-[17px] bg-surface-glass backdrop-blur-2xl border-b border-border'
+            : 'py-7 bg-gradient-to-b from-[rgba(15,13,22,0.9)] to-transparent'
         }`}
-        style={{ transitionDuration: '0.4s', transitionTimingFunction: 'cubic-bezier(0.25,0.46,0.45,0.94)' }}
+        style={{ paddingLeft: 'var(--page-pad)', paddingRight: 'var(--page-pad)', transitionDuration: '0.4s', transitionTimingFunction: 'cubic-bezier(0.25,0.46,0.45,0.94)' }}
       >
         <Link
           href="/"
           aria-label="Harry Ferraro — Home"
-          className="font-serif text-[21px] font-medium tracking-[0.02em] text-text hover:opacity-75 transition-opacity"
+          className="font-serif text-[21px] font-medium tracking-[0.02em] text-text hover:tracking-[0.06em] transition-all duration-500"
         >
           Harry Ferraro<span className="text-ember">.</span>
         </Link>

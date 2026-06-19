@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
-// @ts-expect-error -- Next.js handles global CSS side-effect imports in the app router
 import './globals.css'
 import { Cursor } from '@/components/Cursor'
 import { Grain } from '@/components/Grain'
@@ -40,8 +39,10 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://harryferraro.com.au' },
 }
 
+import { ScrollProgress } from '@/components/ScrollProgress'
+
 export const viewport: Viewport = {
-  themeColor: '#15131c', width: 'device-width', initialScale: 1, colorScheme: 'dark',
+  themeColor: '#0f0d16', width: 'device-width', initialScale: 1, colorScheme: 'dark',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <a href="#main-content" className="skip-nav">Skip to main content</a>
+        <ScrollProgress />
         <Grain />
         <Cursor />
         <Nav />
