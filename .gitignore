@@ -11,3 +11,8 @@ Thumbs.db
 
 .vercel
 .env*.local
+
+# local agent / vector tooling (not project source)
+agentdb.rvf
+agentdb.rvf.lock
+ruvector.db
