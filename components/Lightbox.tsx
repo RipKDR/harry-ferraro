@@ -107,7 +107,7 @@ export function Lightbox({ art, all, onClose, onNav }: LightboxProps) {
             sizes="90vw"
           />
           <div className="mt-5 flex w-full items-center justify-center gap-4 px-2 text-center">
-            <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-text-3">{art.series}</p>
+            <p className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-text-3">{art.series}</p>
             <span aria-hidden="true" className="text-text-3">·</span>
             <Link
               href={`/gallery/${art.slug}`}

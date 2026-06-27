@@ -81,7 +81,7 @@ export default async function ArtworkPage({ params }: Props) {
 
         {/* Right — scrolling content column */}
         <div className="section-pad-tight lg:px-[clamp(2rem,4vw,4.5rem)] lg:py-[clamp(5rem,9vw,8rem)]">
-          <Link href="/gallery" className="inline-flex items-center gap-2 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-text-3 transition-colors hover:text-oxide">
+          <Link href="/gallery" className="inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-text-3 transition-colors hover:text-oxide">
             <span aria-hidden="true">←</span> Work index
           </Link>
 
@@ -102,7 +102,7 @@ export default async function ArtworkPage({ params }: Props) {
           )}
 
           <div className="statement-panel my-10">
-            <p className="mb-3 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-oxide">Series note</p>
+            <p className="mb-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-oxide">Series note</p>
             <p className="font-mono text-[0.82rem] leading-7 text-text-2">{series.description}</p>
           </div>
 
@@ -121,7 +121,7 @@ export default async function ArtworkPage({ params }: Props) {
                 />
               </div>
               <div>
-                <p className="font-mono text-[0.58rem] uppercase tracking-[0.2em] text-text-3">Next work</p>
+                <p className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-text-3">Next work</p>
                 <p className="mt-2 font-serif text-[clamp(1.8rem,3vw,2.6rem)] leading-none tracking-[-0.04em] text-text transition-colors group-hover:text-oxide">
                   {nextArtwork.title} <span aria-hidden="true" className="text-oxide">→</span>
                 </p>

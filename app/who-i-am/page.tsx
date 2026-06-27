@@ -95,7 +95,7 @@ export default function WhoIAmPage() {
           <div className="grid gap-12">
             {ABOUT.map(([number, title, body], index) => (
               <Reveal key={title} as="section" delayMs={index * 150} className="border-l border-oxide pl-5">
-                <p className="mb-3 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-oxide">{number}</p>
+                <p className="mb-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-oxide">{number}</p>
                 <h3 className="font-serif text-[2.6rem] leading-none tracking-[-0.055em]">{title}</h3>
                 <p className="mt-3 max-w-[40rem] font-mono text-[0.86rem] leading-8 text-text-2">{body}</p>
               </Reveal>

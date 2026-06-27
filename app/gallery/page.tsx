@@ -44,7 +44,7 @@ export default function GalleryPage() {
             <p className="max-w-[34rem] font-mono text-[0.86rem] leading-8 text-text-2">
               A portfolio index of current and recent figurative works. Details stay minimal so the painting stays in front.
             </p>
-            <Link href="/preview" className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-oxide transition-colors hover:text-text">
+            <Link href="/preview" className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-oxide transition-colors hover:text-text">
               Try wall preview →
             </Link>
           </div>
@@ -61,7 +61,7 @@ export default function GalleryPage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(filterName)}
-                className={`shrink-0 border-b pb-1 font-mono text-[0.62rem] uppercase tracking-[0.2em] transition-colors duration-200 ${
+                className={`shrink-0 border-b pb-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] transition-colors duration-200 ${
                   active
                     ? 'border-oxide text-oxide'
                     : 'border-transparent text-text-3 hover:text-text-2'
@@ -75,7 +75,7 @@ export default function GalleryPage() {
       </div>
 
       <section className="section-pad site-shell" aria-label="Painting grid">
-        <p className="mb-12 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-text-3">
+        <p className="mb-12 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-text-3">
           {shown.length} painting{shown.length === 1 ? '' : 's'}
         </p>
 
@@ -98,7 +98,7 @@ export default function GalleryPage() {
                         sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 33vw"
                       />
 
-                      <span className="pointer-events-none absolute right-3 top-3 font-mono text-[0.52rem] tracking-[0.2em] text-oxide opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      <span className="pointer-events-none absolute right-3 top-3 font-mono text-[0.72rem] tracking-[0.2em] text-oxide opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                         {indexLabel}
                       </span>
 
@@ -107,7 +107,7 @@ export default function GalleryPage() {
                         style={{ background: 'linear-gradient(to top, rgba(8,7,6,0.84), rgba(8,7,6,0))' }}
                       >
                         {year && (
-                          <p className="font-mono text-[0.52rem] uppercase tracking-[0.2em] text-text-3">{year}</p>
+                          <p className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-text-3">{year}</p>
                         )}
                         <h2 className="mt-1 font-serif text-[clamp(1.6rem,2.5vw,2.8rem)] leading-none tracking-[-0.04em] text-text">
                           {artwork.title}

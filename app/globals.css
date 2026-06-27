@@ -206,7 +206,9 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   overflow: hidden;
   border-radius: 0;
   background: #050403;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35);
+  /* Dark inner hairline + faint paper-toned hairline (was duplicated inline on
+     every ArtFrame instance — now single-sourced here). */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(234, 225, 213, 0.10);
 }
 
 .page-enter { animation: pageIn 0.7s var(--ease-heavy) both; }
@@ -225,6 +227,18 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
     transform: none !important;
     filter: none !important;
   }
+  /* Motion components ship hidden initial states as inline styles on SSR
+     (useReducedMotion resolves only after hydration). Force them visible
+     immediately so reduced-motion users never see blank content. */
+  [style*="opacity:0"],
+  [style*="opacity: 0"] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  [style*="clip-path:inset(100%"] {
+    clip-path: none !important;
+  }
   .hero-kenburns,
   .hero-sweep,
   .hero-orb,
@@ -232,6 +246,20 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   .hero-title-mask {
     animation: none !important;
   }
+}
+
+/* No-JS fallback: motion components render content hidden (opacity:0, blurred,
+   clipped) on the server. Without JS those stay invisible forever. The <html>
+   starts as .no-js and an inline script swaps it to .js before paint — so these
+   rescues only apply when JavaScript is truly unavailable. */
+.no-js [style*="opacity:0"],
+.no-js [style*="opacity: 0"] {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+.no-js [style*="clip-path:inset(100%"] {
+  clip-path: none !important;
 }
 
 .site-shell { width: min(100%, 1720px); margin: 0 auto; }
@@ -263,7 +291,7 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   border-radius: 0;
   padding: .88rem 1.15rem .88rem 1.35rem;
   font-family: var(--font-jetbrains);
-  font-size: .66rem;
+  font-size: .7rem;
   letter-spacing: .2em;
   text-transform: uppercase;
   transition: transform .5s var(--ease-soft), border-color .5s var(--ease-soft), background .5s var(--ease-soft), color .5s var(--ease-soft), opacity .3s;
@@ -294,7 +322,7 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   padding: .65rem .72rem;
   color: var(--text-3);
   font-family: var(--font-jetbrains);
-  font-size: .62rem;
+  font-size: .7rem;
   letter-spacing: .18em;
   text-transform: uppercase;
   transition: color .35s var(--ease-soft);
@@ -338,7 +366,7 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
 .mobile-menu-link { display: block; padding: .1rem 0; color: var(--text-2); font-family: var(--font-cormorant); font-size: clamp(2.4rem, 12vw, 5.8rem); font-weight: 300; letter-spacing: -.06em; transition: color .3s var(--ease-soft), transform .3s var(--ease-soft); }
 .mobile-menu-link:hover, .mobile-menu-link.active { color: var(--text); transform: translateX(.35rem); }
 
-.form-label { display: block; margin-bottom: .65rem; color: var(--text-3); font-family: var(--font-jetbrains); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; }
+.form-label { display: block; margin-bottom: .65rem; color: var(--text-3); font-family: var(--font-jetbrains); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; }
 .form-input {
   width: 100%;
   min-height: 3.35rem;
@@ -357,7 +385,7 @@ select.form-input option { background: #15120f; }
 .form-error { margin-top: .45rem; color: #ff9b8b; font-size: .72rem; line-height: 1.5; }
 .success-box { border: 1px solid rgba(182,93,44,.5); background: rgba(182,93,44,.08); padding: clamp(1.5rem, 4vw, 3rem); }
 .info-row { display: flex; justify-content: space-between; gap: 1.5rem; border-bottom: 1px solid var(--border); padding: 1rem 0; }
-.info-key { color: var(--text-3); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; }
+.info-key { color: var(--text-3); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; }
 .info-val { color: var(--text); font-size: .82rem; text-align: right; }
 .divider { height: 1px; background: var(--border); }
 
@@ -405,9 +433,9 @@ select.form-input option { background: #15120f; }
   padding: 0 0.35rem;
   color: var(--text-3);
   font-family: var(--font-jetbrains);
-  font-size: 0.58rem;
+  font-size: 0.7rem;
   line-height: 1.05;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   transition: color 0.3s var(--ease-soft);
 }
@@ -479,7 +507,7 @@ body.cursor-active [role="button"] { cursor: none; }
   backdrop-filter: blur(12px);
   padding: .55rem .85rem;
   font-family: var(--font-jetbrains);
-  font-size: .58rem;
+  font-size: .7rem;
   letter-spacing: .16em;
   text-transform: uppercase;
   color: var(--text);
@@ -577,7 +605,7 @@ body.cursor-active [role="button"] { cursor: none; }
   border: 1px solid var(--border);
   background: rgba(12,10,9,.72);
   font-family: var(--font-jetbrains);
-  font-size: .58rem;
+  font-size: .7rem;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--text-2);
@@ -596,7 +624,7 @@ body.cursor-active [role="button"] { cursor: none; }
 .wall-preview-disclaimer {
   margin-top: .45rem;
   font-family: var(--font-jetbrains);
-  font-size: .54rem;
+  font-size: .72rem;
   line-height: 1.5;
   color: var(--text-3);
 }

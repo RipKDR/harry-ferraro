@@ -97,7 +97,7 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
       aria-label="Hero"
     >
       <p
-        className="pointer-events-none absolute top-[4.5rem] right-6 z-20 hidden origin-right font-mono text-[0.52rem] uppercase tracking-[0.32em] text-text-3 lg:block lg:rotate-90"
+        className="pointer-events-none absolute top-[4.5rem] right-6 z-20 hidden origin-right font-mono text-[0.72rem] uppercase tracking-[0.32em] text-text-3 lg:block lg:rotate-90"
         aria-hidden="true"
       >
         {hero.title}
@@ -124,7 +124,7 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
             </motion.div>
           </div>
         </ArtFrame>
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#080706_0%,rgba(8,7,6,.94)_28%,rgba(8,7,6,.18)_58%,rgba(8,7,6,.76)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,var(--bg)_0%,rgba(8,7,6,.94)_28%,rgba(8,7,6,.18)_58%,rgba(8,7,6,.76)_100%)]" />
       </div>
 
       <motion.div
@@ -152,11 +152,11 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
           </motion.h1>
           <motion.p
             variants={reduceMotion ? undefined : heroItem}
-            className="mt-9 max-w-[49rem] font-serif text-[clamp(1.9rem,3.9vw,4.6rem)] leading-[0.94] tracking-[-0.055em] text-[#eee3d5]"
+            className="mt-9 max-w-[49rem] font-serif text-[clamp(1.9rem,3.9vw,4.6rem)] leading-[0.94] tracking-[-0.055em] text-text"
           >
             {positioning}
           </motion.p>
-          <motion.p variants={reduceMotion ? undefined : heroItem} className="mt-7 max-w-[35rem] font-mono text-[0.88rem] leading-8 text-text-2">
+          <motion.p variants={reduceMotion ? undefined : heroItem} className="mt-7 max-w-[35rem] font-mono text-[0.9rem] leading-8 text-text-2">
             {intro}
           </motion.p>
           <motion.div variants={reduceMotion ? undefined : heroItem} className="mt-10 flex flex-wrap gap-3">

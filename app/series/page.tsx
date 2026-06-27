@@ -24,7 +24,7 @@ function SeriesSection({ name, description }: { name: SeriesName; description: s
     <div ref={ref} className="border-b border-[var(--border)] py-[clamp(3.5rem,7vw,7rem)] lg:flex lg:items-start lg:gap-16">
       {/* Sticky title column on desktop */}
       <div className="lg:sticky lg:top-24 lg:w-[280px] lg:shrink-0 lg:self-start">
-        <p className="mb-5 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-oxide">
+        <p className="mb-5 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-oxide">
           {works.length} work{works.length === 1 ? '' : 's'}
         </p>
         <motion.h2

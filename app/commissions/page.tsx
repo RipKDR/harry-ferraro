@@ -31,6 +31,20 @@ const PROCESS = [
 
 const INPUT_CLASS = 'w-full appearance-none border-0 border-b border-[var(--border)] bg-transparent py-3 font-mono text-[0.95rem] text-text outline-none transition-colors duration-300 focus:border-oxide placeholder:text-text-3'
 
+// Field id map + focus order so the first invalid field receives focus on a
+// failed submit (WCAG 3.3.1 / 4.1.3 — errors are announced and reachable).
+const ERROR_FIELD_IDS = { name: 'c-name', email: 'c-email', subject: 'c-subject', message: 'c-message' } as const
+const ERROR_FIELD_ORDER = ['name', 'email', 'subject', 'message'] as const
+
+function focusFirstError(errs: Partial<Record<keyof FormState, string>>) {
+  for (const key of ERROR_FIELD_ORDER) {
+    if (errs[key]) {
+      document.getElementById(ERROR_FIELD_IDS[key])?.focus()
+      return
+    }
+  }
+}
+
 export default function CommissionsPage() {
   return (
     <Suspense fallback={<CommissionsFallback />}>
@@ -76,19 +90,21 @@ function CommissionsContent() {
     setErrors((current) => ({ ...current, [key]: undefined }))
   }
 
-  const validate = () => {
+  const validate = (): Partial<Record<keyof FormState, string>> => {
     const next: Partial<Record<keyof FormState, string>> = {}
     if (form.name.trim().length < 2) next.name = 'Enter your name.'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = 'Enter a valid email.'
     if (!form.subject) next.subject = 'Choose a subject.'
     if (form.message.trim().length < 20) next.message = 'Give at least a short brief.'
     setErrors(next)
-    return Object.keys(next).length === 0
+    return next
   }
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
-    if (!validate()) {
+    const errs = validate()
+    if (Object.keys(errs).length > 0) {
+      focusFirstError(errs)
       shake()
       return
     }
@@ -172,10 +188,10 @@ function CommissionsContent() {
                 <input id="c-name" className={INPUT_CLASS} value={form.name} onChange={update('name')} autoComplete="name" />
               </BareField>
               <BareField label="Email" id="c-email" error={errors.email}>
-                <input id="c-email" type="email" className={INPUT_CLASS} value={form.email} onChange={update('email')} autoComplete="email" />
+                <input id="c-email" type="email" className={INPUT_CLASS} value={form.email} onChange={update('email')} autoComplete="email" spellCheck={false} />
               </BareField>
               <BareField label="Subject" id="c-subject" error={errors.subject}>
-                <select id="c-subject" className={INPUT_CLASS} value={form.subject} onChange={update('subject')}>
+                <select id="c-subject" className={INPUT_CLASS} value={form.subject} onChange={update('subject')} autoComplete="off">
                   <option value="">Select subject</option>
                   {SUBJECTS.map(([value, labelText]) => (
                     <option key={value} value={value}>{labelText}</option>
@@ -183,7 +199,7 @@ function CommissionsContent() {
                 </select>
               </BareField>
               <BareField label="Message" id="c-message" error={errors.message}>
-                <textarea id="c-message" className={`${INPUT_CLASS} min-h-[120px] resize-none`} rows={5} value={form.message} onChange={update('message')} placeholder="Subject, feeling, room, scale, timing, and anything the work should avoid." />
+                <textarea id="c-message" className={`${INPUT_CLASS} min-h-[120px] resize-none`} rows={5} value={form.message} onChange={update('message')} autoComplete="off" placeholder="Subject, feeling, room, scale, timing, and anything the work should avoid." />
               </BareField>
 
               {(status === 'not-configured' || status === 'error') && (
@@ -210,7 +226,7 @@ function CommissionsContent() {
 function BareField({ label, id, error, children }: { label: string; id: string; error?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-3 block font-mono text-[0.58rem] uppercase tracking-[0.18em] text-text-3">{label}</label>
+      <label htmlFor={id} className="mb-3 block font-mono text-[0.7rem] uppercase tracking-[0.18em] text-text-3">{label}</label>
       {children}
       {error && <p className="mt-2 font-mono text-[0.72rem] text-oxide-2" role="alert">{error}</p>}
     </div>
@@ -225,7 +241,7 @@ function SubmitButton({ status }: { status: Status }) {
     : 'Send message'
 
   return (
-    <button type="submit" disabled={status === 'loading'} className="group inline-flex min-h-[44px] items-center gap-3 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-text disabled:opacity-60">
+    <button type="submit" disabled={status === 'loading'} className="group inline-flex min-h-[44px] items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-text disabled:opacity-60">
       <span>{text}</span>
       {status !== 'success' && (
         <span aria-hidden className="transition-transform duration-300 ease-out group-hover:translate-x-1.5">&rarr;</span>

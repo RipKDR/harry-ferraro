@@ -25,7 +25,7 @@ export function Footer() {
 
           <nav aria-label="Footer navigation" className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {FOOTER_NAV.map(({ label, href }) => (
-              <Link key={href} href={href} className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-text-2 transition-colors hover:text-text">
+              <Link key={href} href={href} className="py-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-text-2 transition-colors hover:text-text">
                 {label}
               </Link>
             ))}
@@ -33,11 +33,11 @@ export function Footer() {
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {SOCIAL_LINKS.map((link) => (
-              <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-text-2 transition-colors hover:text-text" aria-label={`${SITE.artistName} on ${link.label}`}>
+              <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="py-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-text-2 transition-colors hover:text-text" aria-label={`${SITE.artistName} on ${link.label}`}>
                 {link.label}
               </a>
             ))}
-            <a href={`mailto:${SITE.email}`} className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-oxide-2 transition-colors hover:text-text">
+            <a href={`mailto:${SITE.email}`} className="py-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-oxide-2 transition-colors hover:text-text">
               {SITE.email}
             </a>
           </div>
@@ -45,8 +45,8 @@ export function Footer() {
       </div>
 
       <div className="site-shell flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] px-5 py-6 md:px-12 lg:px-[4.5rem]">
-        <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-text-3">© {new Date().getFullYear()} Harrison Ferraro.</p>
-        <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-text-3">Original work. Direct artist contact.</p>
+        <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-text-3">© {new Date().getFullYear()} Harrison Ferraro.</p>
+        <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-text-3">Original work. Direct artist contact.</p>
       </div>
     </footer>
   )

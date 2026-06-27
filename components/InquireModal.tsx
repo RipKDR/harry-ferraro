@@ -42,7 +42,7 @@ export function InquireModal({ art, onClose, open = true }: { art: Artwork; onCl
           >
             <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] p-6">
               <div>
-                <p className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-oxide">Artwork enquiry</p>
+                <p className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-oxide">Artwork enquiry</p>
                 <h2 className="mt-2 font-serif text-[2.4rem] leading-none tracking-[-0.045em]">{art.title}</h2>
               </div>
               <button

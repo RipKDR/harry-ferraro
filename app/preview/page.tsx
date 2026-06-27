@@ -31,7 +31,7 @@ export default function PreviewIndexPage() {
                 <Image src={artwork.image} alt={artwork.alt} fill className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" sizes="(max-width:768px) 100vw, 33vw" />
               </div>
               <h2 className="mt-4 font-serif text-[2.4rem] leading-none tracking-[-0.05em]">{artwork.title}</h2>
-              <p className="mt-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-oxide">Open wall preview</p>
+              <p className="mt-2 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-oxide">Open wall preview</p>
             </Link>
           ))}
         </div>

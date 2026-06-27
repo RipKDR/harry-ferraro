@@ -1,13 +1,30 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'motion/react'
 
 type CursorState = 'default' | 'view' | 'link'
 
+const FINE_POINTER_QUERY = '(hover: hover) and (pointer: fine)'
+
+function subscribeFinePointer(callback: () => void) {
+  const mql = window.matchMedia(FINE_POINTER_QUERY)
+  mql.addEventListener('change', callback)
+  return () => mql.removeEventListener('change', callback)
+}
+
+function getFinePointerSnapshot() {
+  return window.matchMedia(FINE_POINTER_QUERY).matches
+}
+
+function getServerSnapshot() {
+  return false
+}
+
 export function Cursor() {
   const reduce = useReducedMotion()
-  const [enabled, setEnabled] = useState(false)
+  const finePointer = useSyncExternalStore(subscribeFinePointer, getFinePointerSnapshot, getServerSnapshot)
+  const enabled = finePointer && !reduce
   const [state, setState] = useState<CursorState>('default')
 
   // Raw pointer position
@@ -19,11 +36,8 @@ export function Cursor() {
   const ringY = useSpring(y, { stiffness: 280, damping: 28, mass: 0.4 })
 
   useEffect(() => {
-    if (reduce) return
-    if (typeof window === 'undefined') return
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    if (!enabled) return
 
-    setEnabled(true)
     document.body.classList.add('cursor-active')
 
     const move = (e: MouseEvent) => {
@@ -47,7 +61,7 @@ export function Cursor() {
       document.removeEventListener('mouseleave', leave)
       document.body.classList.remove('cursor-active')
     }
-  }, [reduce, x, y])
+  }, [enabled, x, y])
 
   if (!enabled) return null
 
@@ -107,9 +121,9 @@ export function Cursor() {
           animate={{ opacity: state === 'view' ? 1 : 0 }}
           transition={{ duration: 0.2 }}
           style={{
-            fontFamily: 'var(--font-jetbrains)',
-            fontSize: '0.48rem',
-            letterSpacing: '0.18em',
+          fontFamily: 'var(--font-jetbrains)',
+          fontSize: '0.62rem',
+          letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: 'var(--text)',
             userSelect: 'none',

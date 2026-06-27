@@ -59,8 +59,8 @@ export default function HomePage() {
                         />
                         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-[linear-gradient(0deg,rgba(8,7,6,0.82),transparent)] opacity-100 transition-opacity duration-[220ms] md:opacity-0 md:group-hover:opacity-100" />
                         <div className="pointer-events-none absolute bottom-0 left-0 p-5 opacity-100 transition-opacity duration-[220ms] md:opacity-0 md:group-hover:opacity-100">
-                          <p className="font-mono text-[0.52rem] uppercase tracking-[0.28em] text-text-3">{artwork.series}</p>
-                          <h3 className="mt-2 font-serif text-[clamp(1.8rem,2.5vw,3rem)] leading-[0.9] tracking-[-0.05em] text-[#f4eadc]">{artwork.title}</h3>
+                          <p className="font-mono text-[0.72rem] uppercase tracking-[0.28em] text-text-3">{artwork.series}</p>
+                          <h3 className="mt-2 font-serif text-[clamp(1.8rem,2.5vw,3rem)] leading-[0.9] tracking-[-0.05em] text-text">{artwork.title}</h3>
                         </div>
                       </div>
                     </ArtFrame>
@@ -82,7 +82,7 @@ export default function HomePage() {
         </div>
       </Reveal>
 
-      <section className="site-shell grid border-y border-[var(--border)] lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="site-shell grid border-y border-[var(--border)] lg:grid-cols-[0.9fr_1.1fr]" aria-labelledby="statement-heading">
         <div className="relative min-h-[34rem] border-b border-[var(--border)] lg:min-h-[40rem] lg:border-b-0 lg:border-r">
           <ArtFrame className="absolute inset-4 lg:inset-6">
             <div className="relative h-full min-h-[30rem]">
@@ -93,7 +93,7 @@ export default function HomePage() {
         </div>
         <Reveal as="section" className="section-pad-tight flex flex-col justify-end">
           <p className="eyebrow mb-5">Artist statement</p>
-          <h2 className="font-serif text-[clamp(3rem,7vw,8rem)] leading-[0.85] tracking-[-0.075em]">
+          <h2 id="statement-heading" className="font-serif text-[clamp(3rem,7vw,8rem)] leading-[0.85] tracking-[-0.075em]">
             I want the face to hold the feeling before it explains anything.
           </h2>
           <div className="mt-8 max-w-[42rem] space-y-5 font-mono text-[0.88rem] leading-8 text-text-2">
@@ -125,12 +125,12 @@ export default function HomePage() {
         </div>
       </Reveal>
 
-      <section className="site-shell relative min-h-[42rem] overflow-hidden border-t border-[var(--border)]">
+      <section className="site-shell relative min-h-[42rem] overflow-hidden border-t border-[var(--border)]" aria-labelledby="tempest-heading">
         <Image src={third.image} alt={third.alt} fill sizes="100vw" className="object-cover" style={{ filter: 'brightness(.58) contrast(1.2) saturate(.72)' }} />
-        <div className="absolute inset-0 bg-[linear-gradient(0deg,#080706_0%,rgba(8,7,6,.3)_62%,rgba(8,7,6,.78)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(0deg,var(--bg)_0%,rgba(8,7,6,.3)_62%,rgba(8,7,6,.78)_100%)]" />
         <Reveal className="absolute bottom-0 left-0 max-w-[70rem] p-5 md:p-12 lg:p-[4.5rem]">
-          <p className="font-mono text-[0.68rem] uppercase tracking-[0.3em] text-oxide">{third.title}</p>
-          <p className="mt-5 font-serif text-[clamp(2.4rem,6vw,6.5rem)] leading-[0.88] tracking-[-0.07em] text-[#f4eadc]">
+          <p className="font-mono text-[0.7rem] uppercase tracking-[0.3em] text-oxide">{third.title}</p>
+          <p id="tempest-heading" className="mt-5 font-serif text-[clamp(2.4rem,6vw,6.5rem)] leading-[0.88] tracking-[-0.07em] text-text">
             How much of a person can a room hold before the air changes?
           </p>
         </Reveal>

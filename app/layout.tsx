@@ -25,10 +25,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.siteUrl),
   title: { default: 'Harrison Ferraro | Painter', template: '%s | Harrison Ferraro' },
   description: `${POSITIONING} Portfolio and studio enquiries by Harrison Ferraro.`,
-  keywords: ['Harrison Ferraro', 'Melbourne painter', 'figurative oil paintings', 'expressive portrait painting', 'Australian visual artist'],
   authors: [{ name: SITE.artistName, url: SITE.siteUrl }],
   creator: SITE.artistName,
   alternates: { canonical: SITE.siteUrl },
+  manifest: '/manifest.webmanifest',
   openGraph: {
     type: 'website',
     locale: 'en_AU',
@@ -38,7 +38,12 @@ export const metadata: Metadata = {
     description: POSITIONING,
     images: [{ url: '/paintings/ignition-ii.jpg', width: 1200, height: 1500, alt: 'Figurative painting by Harrison Ferraro' }],
   },
-  twitter: { card: 'summary_large_image', title: 'Harrison Ferraro | Painter', description: POSITIONING, images: ['/paintings/ignition-ii.jpg'] },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Harrison Ferraro | Painter',
+    description: POSITIONING,
+    images: [{ url: '/paintings/ignition-ii.jpg', alt: 'Figurative painting by Harrison Ferraro' }],
+  },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large' } },
 }
 
@@ -61,8 +66,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <html lang="en-AU" suppressHydrationWarning className={`${cormorant.variable} ${jetbrains.variable}`}>
+    <html lang="en-AU" suppressHydrationWarning className={`no-js ${cormorant.variable} ${jetbrains.variable}`}>
       <body>
+        {/* Swap <html> from .no-js to .js before first paint. If JS is disabled
+            the class stays .no-js and the CSS fallback in globals.css forces
+            motion-hidden content visible, so the page is never blank. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');" }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
         <a href="#main-content" className="skip-nav">Skip to main content</a>
         <Grain />

@@ -1,0 +1,13 @@
+{
+  "name": "Harrison Ferraro | Painter",
+  "short_name": "Harrison Ferraro",
+  "description": "Oil paintings of faces and figures, made in Melbourne from smoke, colour, pressure, and weather.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080706",
+  "theme_color": "#080706",
+  "lang": "en-AU",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
