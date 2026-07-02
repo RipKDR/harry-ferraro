@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import { ARTWORKS, SERIES, type SeriesName } from '@/lib/artworks'
+import { blurProps } from '@/lib/blurPlaceholders'
 import { Footer } from '@/components/Footer'
 
 const EASE_EXPO = [0.16, 1, 0.3, 1] as const
@@ -59,6 +60,7 @@ function SeriesSection({ name, description }: { name: SeriesName; description: s
                   src={artwork.image}
                   alt={artwork.alt}
                   fill
+                  {...blurProps(artwork.slug)}
                   className="art-image object-cover"
                   sizes="(max-width:1024px) 72vw, 380px"
                 />

@@ -5,8 +5,9 @@ import { notFound } from 'next/navigation'
 import { ARTWORKS, SERIES, formatArtworkMeta, getArtwork } from '@/lib/artworks'
 import { SITE } from '@/lib/site'
 import { Footer } from '@/components/Footer'
-import { ArtFrame } from '@/components/ArtFrame'
 import { ArtworkActions } from '@/components/ArtworkActions'
+import { ArtworkStage } from '@/components/ArtworkStage'
+import { blurProps } from '@/lib/blurPlaceholders'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -64,19 +65,10 @@ export default async function ArtworkPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <article className="site-shell lg:grid lg:grid-cols-[58%_42%] lg:items-start">
-        {/* Left — sticky image panel on desktop, stacked top on mobile */}
-        <div className="relative h-[60vh] w-full overflow-hidden bg-[#050403] lg:sticky lg:top-0 lg:h-[100dvh]" aria-label={`${artwork.title} artwork image`}>
-          <ArtFrame className="h-full">
-            <Image
-              src={artwork.image}
-              alt={artwork.alt}
-              fill
-              priority
-              className="object-cover"
-              style={{ objectPosition: 'center' }}
-              sizes="(max-width:1024px) 100vw, 58vw"
-            />
-          </ArtFrame>
+        {/* Left — sticky image panel on desktop, stacked top on mobile.
+            The painting is shown uncropped; tapping it opens the lightbox. */}
+        <div className="relative h-[68vh] w-full overflow-hidden bg-[#050403] lg:sticky lg:top-0 lg:h-[100dvh]" aria-label={`${artwork.title} artwork image`}>
+          <ArtworkStage artwork={artwork} />
         </div>
 
         {/* Right — scrolling content column */}
@@ -116,6 +108,7 @@ export default async function ArtworkPage({ params }: Props) {
                   src={nextArtwork.image}
                   alt={nextArtwork.alt}
                   fill
+                  {...blurProps(nextArtwork.slug)}
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                   sizes="80px"
                 />

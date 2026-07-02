@@ -4,26 +4,12 @@ import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ARTWORKS, SERIES, formatArtworkMeta } from '@/lib/artworks'
+import { blurProps } from '@/lib/blurPlaceholders'
 import { ArtFrame } from '@/components/ArtFrame'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
 
 const FILTERS = ['All', ...Object.keys(SERIES)] as const
-
-// Intrinsic dimensions probed from /public/paintings. Files that are not yet on
-// disk fall back to varied portrait ratios so the masonry still staggers honestly
-// rather than collapsing into a uniform grid.
-const DIMS: Record<string, { w: number; h: number }> = {
-  'ignition-i': { w: 2268, h: 2835 },
-  'ignition-ii': { w: 640, h: 900 },
-  'crimson-study': { w: 600, h: 900 },
-  ascendant: { w: 1000, h: 1320 },
-  tempest: { w: 1000, h: 1500 },
-  radiance: { w: 1000, h: 1180 },
-  dissolution: { w: 900, h: 1400 },
-}
-
-const FALLBACK_DIM = { w: 1000, h: 1280 }
 
 export default function GalleryPage() {
   const [filter, setFilter] = useState<string>('All')
@@ -81,7 +67,6 @@ export default function GalleryPage() {
 
         <div className="columns-1 gap-x-6 sm:columns-2 xl:columns-3">
           {shown.map((artwork, index) => {
-            const dim = DIMS[artwork.slug] ?? FALLBACK_DIM
             const year = formatArtworkMeta(artwork.year)
             const indexLabel = String(index + 1).padStart(2, '0')
             return (
@@ -92,8 +77,9 @@ export default function GalleryPage() {
                       <Image
                         src={artwork.image}
                         alt={artwork.alt}
-                        width={dim.w}
-                        height={dim.h}
+                        width={artwork.imageWidth}
+                        height={artwork.imageHeight}
+                        {...blurProps(artwork.slug)}
                         className="h-auto w-full brightness-100 transition-[filter] duration-200 group-hover:brightness-[0.72]"
                         sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 33vw"
                       />
