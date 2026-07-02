@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ARTIST_INTRO, ARTIST_STATEMENT, POSITIONING, SITE } from '@/lib/site'
 import { ARTWORKS, getFeaturedArtworks } from '@/lib/artworks'
+import { blurProps } from '@/lib/blurPlaceholders'
 import { ArtFrame } from '@/components/ArtFrame'
 import { Footer } from '@/components/Footer'
 import { HomeHero } from '@/components/HomeHero'
@@ -54,6 +55,7 @@ export default function HomePage() {
                           src={artwork.image}
                           alt={artwork.alt}
                           fill
+                          {...blurProps(artwork.slug)}
                           sizes="(max-width:768px) 100vw, 50vw"
                           className="object-cover brightness-100 transition-[filter] duration-300 ease-out md:group-hover:brightness-[0.72]"
                         />
@@ -86,7 +88,7 @@ export default function HomePage() {
         <div className="relative min-h-[34rem] border-b border-[var(--border)] lg:min-h-[40rem] lg:border-b-0 lg:border-r">
           <ArtFrame className="absolute inset-4 lg:inset-6">
             <div className="relative h-full min-h-[30rem]">
-              <Image src={second.image} alt={second.alt} fill sizes="(max-width:1024px) 100vw, 45vw" className="object-cover" style={{ filter: 'brightness(.74) contrast(1.12) saturate(.84)' }} />
+              <Image src={second.image} alt={second.alt} fill {...blurProps(second.slug)} sizes="(max-width:1024px) 100vw, 45vw" className="object-cover" style={{ filter: 'brightness(.74) contrast(1.12) saturate(.84)' }} />
             </div>
           </ArtFrame>
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,.72),transparent_62%)]" />
@@ -126,7 +128,7 @@ export default function HomePage() {
       </Reveal>
 
       <section className="site-shell relative min-h-[42rem] overflow-hidden border-t border-[var(--border)]" aria-labelledby="tempest-heading">
-        <Image src={third.image} alt={third.alt} fill sizes="100vw" className="object-cover" style={{ filter: 'brightness(.58) contrast(1.2) saturate(.72)' }} />
+        <Image src={third.image} alt={third.alt} fill {...blurProps(third.slug)} sizes="100vw" className="object-cover" style={{ filter: 'brightness(.58) contrast(1.2) saturate(.72)' }} />
         <div className="absolute inset-0 bg-[linear-gradient(0deg,var(--bg)_0%,rgba(8,7,6,.3)_62%,rgba(8,7,6,.78)_100%)]" />
         <Reveal className="absolute bottom-0 left-0 max-w-[70rem] p-5 md:p-12 lg:p-[4.5rem]">
           <p className="font-mono text-[0.7rem] uppercase tracking-[0.3em] text-oxide">{third.title}</p>

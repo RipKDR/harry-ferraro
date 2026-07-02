@@ -29,6 +29,29 @@ const PROCESS = [
   ['03', 'I paint'],
 ] as const
 
+const FAQ = [
+  [
+    'How does pricing work?',
+    'Every painting is quoted individually after the brief — size, complexity, and framing all move it. There is no public price list and no checkout; the number is agreed directly, in writing, before work begins.',
+  ],
+  [
+    'What sizes can you paint?',
+    'From small studies to large statement canvases. If you are not sure what suits the space, describe the wall and the room in your message — scale is one of the first things worked out together.',
+  ],
+  [
+    'How long will it take?',
+    'It depends on the painting and the current queue. A realistic timeline is part of the written agreement before the work starts, so there are no surprises either way.',
+  ],
+  [
+    'Do you ship?',
+    'Melbourne collection or delivery can be arranged directly. Shipping within Australia and internationally is quoted per work, and packing and care details are confirmed before the painting leaves the studio.',
+  ],
+  [
+    'Can I ask about a painting already on the site?',
+    'Yes. Every original in the work index can be enquired about directly — choose “Original artwork enquiry” and name the painting, or use the enquiry button on its page.',
+  ],
+] as const
+
 const INPUT_CLASS = 'w-full appearance-none border-0 border-b border-[var(--border)] bg-transparent py-3 font-mono text-[0.95rem] text-text outline-none transition-colors duration-300 focus:border-oxide placeholder:text-text-3'
 
 // Field id map + focus order so the first invalid field receives focus on a
@@ -217,6 +240,27 @@ function CommissionsContent() {
             </div>
           </motion.form>
         )}
+      </section>
+
+      <section className="section-pad site-shell border-t border-[var(--border)]" aria-labelledby="faq-heading">
+        <div className="grid gap-12 lg:grid-cols-[0.62fr_1fr]">
+          <div>
+            <p className="eyebrow mb-5">Before you ask</p>
+            <h2 id="faq-heading" className="font-serif text-[clamp(2.6rem,5vw,5.5rem)] leading-[0.88] tracking-[-0.06em]">
+              The practical side, answered plainly.
+            </h2>
+          </div>
+          <div>
+            {FAQ.map(([question, answer]) => (
+              <details key={question} className="faq-item">
+                <summary>
+                  <h3 className="font-serif text-[clamp(1.5rem,2.4vw,2.1rem)] leading-tight tracking-[-0.03em] transition-colors duration-200">{question}</h3>
+                </summary>
+                <p className="max-w-[40rem] pb-8 font-mono text-[0.86rem] leading-8 text-text-2">{answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
       </section>
       <Footer />
     </div>

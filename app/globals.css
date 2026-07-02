@@ -313,6 +313,31 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   padding: clamp(1.35rem, 3vw, 2.25rem);
 }
 
+/* FAQ accordion — native <details>, styled to the ledger language. */
+.faq-item { border-top: 1px solid var(--border); }
+.faq-item:last-child { border-bottom: 1px solid var(--border); }
+.faq-item summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  cursor: pointer;
+  list-style: none;
+  padding: 1.6rem 0;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: '+';
+  font-family: var(--font-jetbrains);
+  font-size: .9rem;
+  color: var(--oxide-2);
+  transition: transform .3s var(--ease-soft);
+  flex-shrink: 0;
+}
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item summary:hover h3 { color: var(--oxide-2); }
+.faq-item summary:focus-visible { outline: 1px solid var(--oxide-2); outline-offset: 4px; }
+
 .work-tile { display: block; }
 .art-image { filter: brightness(.89) contrast(1.12) saturate(.84); transition: transform 1.2s var(--ease-heavy), filter 1s var(--ease-heavy); }
 .group:hover .art-image, .work-tile:hover .art-image { transform: scale(1.04); filter: brightness(1) contrast(1.12) saturate(.95); }

@@ -1,12 +1,10 @@
-/** Returns the correct image src — either a Sanity CDN URL or a local /paintings/ path. */
-export function artworkSrc(filename: string): string {
-  return filename.startsWith('https://') ? filename : `/paintings/${filename}`
-}
-
 export type Artwork = {
   slug: string
   title: string
   image: string
+  /** Intrinsic pixel dimensions of the image file, so grids keep honest aspect ratios. */
+  imageWidth: number
+  imageHeight: number
   alt: string
   year: number | null
   medium: string | null
@@ -24,6 +22,8 @@ export const ARTWORKS: Artwork[] = [
     slug: 'ignition-i',
     title: 'Ignition I',
     image: '/paintings/ignition-i.jpg',
+    imageWidth: 2268,
+    imageHeight: 2835,
     alt: 'A figurative painting showing a woman holding a lit cigarette in a dark studio setting.',
     year: null,
     medium: null,
@@ -36,6 +36,8 @@ export const ARTWORKS: Artwork[] = [
     slug: 'ignition-ii',
     title: 'Ignition II',
     image: '/paintings/ignition-ii.jpg',
+    imageWidth: 640,
+    imageHeight: 900,
     alt: 'An expressive portrait of a woman lit by the orange glow of a cigarette, surrounded by dark brushwork.',
     year: null,
     medium: null,
@@ -48,6 +50,8 @@ export const ARTWORKS: Artwork[] = [
     slug: 'crimson-study',
     title: 'Crimson Study',
     image: '/paintings/crimson-study.jpg',
+    imageWidth: 600,
+    imageHeight: 900,
     alt: 'A crimson-toned expressive portrait with loose red and black marks around the figure.',
     year: null,
     medium: null,
@@ -60,6 +64,8 @@ export const ARTWORKS: Artwork[] = [
     slug: 'ascendant',
     title: 'Ascendant',
     image: '/paintings/ascendant.jpg',
+    imageWidth: 600,
+    imageHeight: 900,
     alt: 'A black, white, and teal portrait of a woman looking upward with wind-like brushwork around her hair.',
     year: null,
     medium: null,
@@ -72,6 +78,8 @@ export const ARTWORKS: Artwork[] = [
     slug: 'tempest',
     title: 'Tempest',
     image: '/paintings/tempest.jpg',
+    imageWidth: 600,
+    imageHeight: 900,
     alt: 'A dark expressive portrait with windblown hair and rough gestural mark-making.',
     year: null,
     medium: null,
@@ -84,6 +92,8 @@ export const ARTWORKS: Artwork[] = [
     slug: 'radiance',
     title: 'Radiance',
     image: '/paintings/radiance.jpg',
+    imageWidth: 600,
+    imageHeight: 900,
     alt: 'A bright expressive portrait with blue and black gestural marks around a smiling figure.',
     year: null,
     medium: null,
@@ -96,6 +106,8 @@ export const ARTWORKS: Artwork[] = [
     slug: 'dissolution',
     title: 'Dissolution',
     image: '/paintings/dissolution.jpg',
+    imageWidth: 416,
+    imageHeight: 900,
     alt: 'A colourful vertical face study with yellow, green, red, and blue paint marks.',
     year: null,
     medium: null,

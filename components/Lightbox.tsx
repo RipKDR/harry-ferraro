@@ -1,10 +1,12 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import Image from 'next/image'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import type { Artwork } from '@/lib/artworks'
+import { useFocusTrap } from '@/lib/useFocusTrap'
 
 const EASE_EXPO = [0.16, 1, 0.3, 1] as const
 
@@ -21,6 +23,13 @@ type LightboxProps = {
 export function Lightbox({ art, all, onClose, onNav }: LightboxProps) {
   const reduce = useReducedMotion()
   const hasNav = Boolean(onNav && all && all.length > 1)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+  useFocusTrap(dialogRef)
+
+  useEffect(() => {
+    closeRef.current?.focus()
+  }, [])
 
   const handleKey = useCallback(
     (event: KeyboardEvent) => {
@@ -45,10 +54,13 @@ export function Lightbox({ art, all, onClose, onNav }: LightboxProps) {
     }
   }, [handleKey])
 
-  return (
+  // Portal to <body>: ancestors with position:sticky create stacking contexts
+  // that would otherwise trap this fixed overlay beneath the nav.
+  return createPortal(
     <AnimatePresence>
       <motion.div
         key="lightbox"
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={art.title}
@@ -60,6 +72,7 @@ export function Lightbox({ art, all, onClose, onNav }: LightboxProps) {
         transition={{ duration: 0.28, ease: EASE_EXPO }}
       >
         <button
+          ref={closeRef}
           type="button"
           onClick={onClose}
           aria-label="Close"
@@ -100,8 +113,8 @@ export function Lightbox({ art, all, onClose, onNav }: LightboxProps) {
           <Image
             src={art.image}
             alt={art.alt}
-            width={1100}
-            height={1400}
+            width={art.imageWidth}
+            height={art.imageHeight}
             priority
             className="max-h-[82vh] w-auto max-w-full object-contain"
             sizes="90vw"
@@ -119,6 +132,7 @@ export function Lightbox({ art, all, onClose, onNav }: LightboxProps) {
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }

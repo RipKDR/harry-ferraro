@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ARTIST_STATEMENT, SITE } from '@/lib/site'
 import { ARTWORKS } from '@/lib/artworks'
+import { blurProps } from '@/lib/blurPlaceholders'
 import { ArtFrame } from '@/components/ArtFrame'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
@@ -56,7 +57,7 @@ export default function WhoIAmPage() {
         <div className="relative min-h-[70vh] border-t border-[var(--border)] lg:min-h-[100dvh] lg:-ml-[8%] lg:border-l lg:border-t-0">
           <ArtFrame className="absolute inset-4 lg:inset-6">
             <div className="relative h-full min-h-[66vh] lg:min-h-full">
-              <Image src={primary.image} alt={primary.alt} fill className="object-cover" sizes="(max-width:1024px) 100vw, 46vw" style={{ filter: 'brightness(0.74) contrast(1.15) saturate(0.84)' }} />
+              <Image src={primary.image} alt={primary.alt} fill {...blurProps(primary.slug)} className="object-cover" sizes="(max-width:1024px) 100vw, 46vw" style={{ filter: 'brightness(0.74) contrast(1.15) saturate(0.84)' }} />
             </div>
           </ArtFrame>
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,.84),transparent_52%)]" />
@@ -87,7 +88,7 @@ export default function WhoIAmPage() {
 
       <section className="site-shell grid border-b border-[var(--border)] lg:grid-cols-[0.88fr_1.12fr]">
         <div className="relative min-h-[38rem] border-b border-[var(--border)] lg:border-b-0 lg:border-r">
-          <Image src={secondary.image} alt={secondary.alt} fill className="object-cover" sizes="(max-width:1024px) 100vw, 44vw" style={{ filter: 'brightness(.72) contrast(1.14) saturate(.82)' }} />
+          <Image src={secondary.image} alt={secondary.alt} fill {...blurProps(secondary.slug)} className="object-cover" sizes="(max-width:1024px) 100vw, 44vw" style={{ filter: 'brightness(.72) contrast(1.14) saturate(.82)' }} />
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,.72),transparent_58%)]" />
         </div>
         <div className="section-pad-tight">
