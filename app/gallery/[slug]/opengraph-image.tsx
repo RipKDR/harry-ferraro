@@ -68,7 +68,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
             {source.description.length > 120 ? `${source.description.slice(0, 117)}…` : source.description}
           </div>
           <div style={{ marginTop: 32, fontSize: 18, letterSpacing: 3, textTransform: 'uppercase', color: '#8f8375' }}>
-            {SITE.artistName} · {new URL(SITE.siteUrl).host}
+            {`${SITE.artistName} · ${new URL(SITE.siteUrl).host}`}
           </div>
         </div>
       </div>

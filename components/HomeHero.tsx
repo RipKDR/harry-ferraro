@@ -12,6 +12,7 @@ import {
   useTransform,
 } from 'motion/react'
 import type { Artwork } from '@/lib/artworks'
+import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import { ArtFrame } from '@/components/ArtFrame'
 
 type HomeHeroProps = {
@@ -113,6 +114,8 @@ export function HomeHero({ hero, positioning, intro }: HomeHeroProps) {
                   alt={hero.alt}
                   fill
                   priority
+                  placeholder="blur"
+                  blurDataURL={BLUR_PLACEHOLDERS[hero.slug]}
                   sizes="(max-width:1024px) 100vw, 62vw"
                   className="object-cover"
                   style={{

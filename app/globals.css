@@ -272,10 +272,11 @@ h1, h2, h3, h4 { font-family: var(--font-cormorant); font-weight: 300; }
   padding: 0 0.35rem;
   color: var(--text-3);
   font-family: var(--font-jetbrains);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   line-height: 1.05;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  white-space: nowrap;
   transition: color 0.3s var(--ease-soft);
 }
 .mobile-bottom-link.active { color: var(--oxide); }

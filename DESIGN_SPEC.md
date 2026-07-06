@@ -1,79 +1,57 @@
-# Harry Ferraro Studio — UI/UX Overhaul Design Spec
+# Harrison Ferraro — Design System (live)
 
-## Design Philosophy
-Dark, moody, cinematic art portfolio. The overhaul deepens the existing foundation with more depth, richer motion, and stricter cohesion.
+Dark, warm, editorial gallery. The paintings dominate; the site is the frame. No template aesthetics, no commerce UI.
 
-## Color System (Enhanced)
+## Color system
+
 | Token | Value | Usage |
 |-------|-------|-------|
-| bg | #0f0d16 | Deepest background |
-| bg-2 | #16131f | Secondary background |
-| surface | #1e1b28 | Cards, panels |
-| surface-2 | #282533 | Elevated surfaces |
-| surface-glass | rgba(30,27,40,0.72) | Glassmorphism backdrop |
-| border | #2e2a3d | Subtle borders |
-| border-2 | #3d3850 | Active borders |
-| text | #f0ebe3 | Primary text |
-| text-2 | #a9a2b8 | Secondary text |
-| text-3 | #6b6580 | Tertiary / disabled |
-| ember | #d45a0e | Primary accent (slightly warmer) |
-| ember-2 | #e8721f | Hover accent |
-| ember-3 | #8a3d0a | Dark accent |
-| ember-glow | rgba(212,90,14,0.15) | Ambient glow |
-| gold | #c9a96e | Secondary accent |
+| `bg` | `#080706` | Deepest background |
+| `bg-2` | `#100d0a` | Secondary background |
+| `surface` | `#15120f` | Panels |
+| `surface-2` | `#211a15` | Elevated panels |
+| `--paper` | `#f0e7dc` | Filled CTA ground |
+| `text` | `#f0e7dc` | Primary text |
+| `text-2` | `#b7aa9b` | Secondary text |
+| `text-3` | `#8f8375` | Tertiary / muted |
+| `--border` | `rgba(234,225,213,0.16)` | Hairlines |
+| `--border-strong` | `rgba(234,225,213,0.32)` | Active hairlines |
+| `oxide` | `#b65d2c` | Primary accent |
+| `oxide-2` | `#d1844a` | Hover accent |
+| `--blood` | `#4a1410` | Radial background glow |
 
-## Typography Scale
-- display-xl: clamp(72px, 12vw, 160px) / 0.85 / 300 / -0.04em
-- display-lg: clamp(48px, 8vw, 108px) / 0.88 / 300 / -0.03em
-- display-md: clamp(36px, 5vw, 72px) / 0.95 / 300 / -0.02em
-- heading-lg: clamp(32px, 4vw, 60px) / 1.05 / 300 / -0.01em
-- heading-md: clamp(28px, 3.5vw, 48px) / 1.1 / 300 / -0.01em
-- heading-sm: clamp(22px, 2.5vw, 32px) / 1.2 / 400 / 0
-- body-lg: 18px / 1.75 / 300 / 0.01em
-- body: 14px / 1.85 / 300 / 0.02em
-- body-sm: 12px / 1.7 / 300 / 0.04em
-- caption: 10px / 1.5 / 400 / 0.16em
-- micro: 9px / 1.4 / 400 / 0.2em
+Body ground: layered radial gradients (blood top-right, oxide left) over a near-black vertical gradient, plus a fixed SVG grain overlay (`.grain`) and vignette.
 
-Fonts: Cormorant Garamond (display) + JetBrains Mono (utility)
+## Typography
 
-## Spacing Scale
-space-1: 4px, space-2: 8px, space-3: 12px, space-4: 16px, space-5: 20px, space-6: 24px, space-8: 32px, space-10: 40px, space-12: 48px, space-16: 64px, space-20: 80px, space-24: 96px, space-32: 128px, space-40: 160px
+- **Display:** Cormorant Garamond 300–600 + italics — oversized serif headlines, tight tracking (−0.04em to −0.09em), fluid `clamp()` sizes up to ~15rem
+- **Utility:** JetBrains Mono 300–500 — eyebrows, body copy (~0.86–0.94rem, generous leading), buttons, metadata
+- `.eyebrow` — mono uppercase micro-label with a leading oxide rule
 
-Page padding: clamp(24px, 4vw, 64px)
+## Motion
 
-## Animation (Framer Motion)
-- ease-out-expo: [0.16, 1, 0.3, 1]
-- ease-in-out: [0.25, 0.46, 0.45, 0.94]
-- ease-out-quart: [0.25, 1, 0.5, 1]
-- ease-spring: { type: "spring", stiffness: 100, damping: 15 }
-- Reveal: fadeUp, fadeIn, scaleIn, clipReveal, slideLeft
-- Stagger: container staggerChildren: 0.08, child duration: 0.7
-- Page transition: exit {opacity:0,y:-12,duration:0.3}, enter {opacity:1,y:0,duration:0.5,ease:easeOutExpo}
+- Easings: `--ease-heavy` `cubic-bezier(0.16,1,0.3,1)`, `--ease-soft` `cubic-bezier(0.32,0.72,0,1)`
+- Route entrance: `app/template.tsx` — opacity-only fade (0.45s). No per-page entrance classes.
+- Scroll reveals: `Reveal` (blur + rise, once), `TextReveal` (word groups), `SeriesSection` clip-path titles
+- Hero: pointer parallax + scroll parallax + slow Ken Burns (`HomeHero`)
+- **View transitions:** `experimental.viewTransition` + `ArtworkTransition` — each painting carries `artwork-<slug>` and morphs from gallery card to detail hero. Root cross-fade 0.4s, group morph 0.55s (`globals.css`).
+- All motion honors `prefers-reduced-motion`; a `.no-js` rescue keeps content visible without JavaScript.
 
-## New Components
-1. MotionReveal — Framer Motion scroll reveal (replaces CSS Reveal)
-2. TextReveal — Word-by-word text animation
-3. StaggerContainer — Wrapper for staggered children
-4. AmbientGlow — Decorative glow orb
-5. ScrollProgress — Thin scroll progress bar
-6. ParallaxWrapper — Scroll-driven parallax
-7. MagneticButton — Hover magnetic effect
-8. PageTransition — AnimatePresence wrapper for routes
+## UI primitives
 
-## Responsive Breakpoints
-- xs: < 480px (mobile)
-- sm: 480-768px (tablet small)
-- md: 768-1024px (tablet large)
-- lg: 1024-1440px (desktop)
-- xl: > 1440px (wide)
+- Buttons: `.btn-ink` (paper fill) and `.btn-line` (outline) only; `↗` tail glyph; `.btn-full` modifier
+- `ArtFrame` (`.art-shell` / `.art-core`) — hairline gallery frame around every painting
+- `.statement-panel`, `.success-box`, `.divider`
+- Nav: fixed glass bar (desktop) / bottom-pinned bar + "More" sheet with focus trap (mobile)
 
-## Key Improvements Per Page
-- Home: parallax hero, word-by-word text reveal, ambient glow, staggered sections
-- Gallery: animated filter tabs, layout animation on filter, enhanced card hover
-- Artwork Detail: sticky image parallax, staggered info panel, enhanced lightbox
-- Series: hover zoom cards, staggered grid entrance
-- Process: timeline border reveal, parallax image strip
-- About: parallax hero, staggered bio paragraphs
-- Commissions/Contact: enhanced form focus states, shake on error, success animation
-- All: glassmorphism nav on scroll, scroll progress indicator, page transitions
+## Imagery
+
+- `next/image` with `placeholder="blur"` from `lib/blurPlaceholders.ts` on every painting
+- `priority` only on the homepage hero and the artwork-detail hero
+- Paintings darkened/desaturated with CSS filters when used as backgrounds so type stays readable
+
+## Information architecture
+
+Home → Work (`/gallery`, filterable index) → Artwork detail (studio-walk prev/next) → Series rails → Who I am → Process → Commissions/Contact. Wall preview (`/preview`) is the signature feature: linked from nav, footer, home section, gallery header, and every artwork's actions.
+
+Publication is gated by `Artwork.available` — works without a JPEG in `public/paintings/` stay catalogued but unpublished.

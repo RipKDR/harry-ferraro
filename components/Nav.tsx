@@ -16,7 +16,7 @@ const NAV_LINKS = [
 
 // Primary destinations pinned to the mobile bottom bar; the rest live in the
 // "More" sheet so labels never overflow on narrow screens.
-const MOBILE_PRIMARY = ['/gallery', '/series', '/who-i-am']
+const MOBILE_PRIMARY = ['/gallery', '/who-i-am']
 const MOBILE_MORE = NAV_LINKS.filter((link) => !MOBILE_PRIMARY.includes(link.href))
 
 export function Nav() {

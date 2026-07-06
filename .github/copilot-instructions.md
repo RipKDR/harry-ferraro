@@ -1,219 +1,127 @@
-# Copilot Instructions — Harry Ferraro Fine Art Portfolio
+# Copilot Instructions — Harrison Ferraro Artist Portfolio
 
-Next.js 16 App Router portfolio site with Stripe checkout, Resend email, and a static artwork catalogue. React 19, TypeScript, Tailwind CSS 3, deployed on Vercel.
+Next.js 16 App Router portfolio for Harrison Ferraro (Melbourne, figurative oil). Portfolio and enquiry only — **no pricing, no checkout, no e-commerce**. React 19, TypeScript, Tailwind CSS 3, Motion, Resend, deployed on Vercel.
 
 ## Commands
 
 ```bash
-npm run dev       # Start dev server with Turbopack (http://localhost:3000)
-npm run build     # Production build
-npm run lint      # ESLint via next lint
-npm start         # Start production server
+npm run dev        # Dev server with Turbopack (http://localhost:3000)
+npm run typecheck  # tsc --noEmit
+npm run lint       # eslint .
+npm run build      # Production build
+npm start          # Start production server
 ```
 
-There are no tests.
+Quality gate before shipping: `npm run typecheck && npm run lint && npm run build`. There are no tests.
 
 ## Key Dependencies
 
 | Package | Version | Purpose |
 |---|---|---|
-| `next` | 16 | Framework (App Router) |
+| `next` | 16 | Framework (App Router, `experimental.viewTransition` enabled) |
 | `react` / `react-dom` | 19 | UI runtime |
-| `stripe` | 20 | Server-side Stripe SDK |
-| `resend` | 4 | Transactional email |
-| `framer-motion` | 11 | Animation (used selectively) |
+| `motion` | 12 | Animation (`motion/react`) |
+| `resend` | 4 | Transactional email (optional — forms fall back to mailto) |
 | `zod` | 3 | API route input validation |
-| `clsx` + `tailwind-merge` | — | Conditional class merging |
+| `tailwindcss` | 3 | Styling |
 
 ## Architecture
 
 ### Data layer
-`lib/artworks.ts` is the **single source of truth** for all artwork data. It exports:
-- `ARTWORKS` — array of `Artwork` objects
-- `SERIES` — record mapping `SeriesName` to description and accent hex colour
 
-The `Artwork` type shape:
-```ts
-type Artwork = {
-  id: number; slug: string; title: string; year: number
-  medium: string; dimensions: string; series: SeriesName
-  price: number; status: 'available' | 'sold'
-  statement: string; filename: string
-}
-```
+`lib/artworks.ts` is the **single source of truth** for artwork data:
 
-When adding a new artwork:
-1. Add the image to `public/paintings/` (JPEG, 600–1200px wide, < 500 KB)
-2. Add an entry to `ARTWORKS` in `lib/artworks.ts`
-3. Add the base64 blur placeholder to `lib/blurPlaceholders.ts` (keyed by `slug`)
+- `ARTWORKS` — every catalogued work, including ones whose image is not yet in the repo
+- `AVAILABLE_ARTWORKS` — works whose JPEG exists in `public/paintings/`; **every rendered surface, the sitemap, and `generateStaticParams` read from this**
+- `SERIES` / `getActiveSeries()` — series copy; active = has at least one available work
+- `getArtwork`, `getFeaturedArtworks`, `getSeriesWorks`, `getAdjacentArtworks`
 
-`SeriesName` is a union type: `'Fire' | 'Wind' | 'Portraits' | 'Colour Studies'` — extend this union and add an entry to `SERIES` when adding a new series.
+The `Artwork.available` flag gates publication. When adding a new artwork:
+
+1. Add the JPEG to `public/paintings/` (portrait, ≤ ~1200px wide preferred)
+2. Add/enable the entry in `ARTWORKS` with `available: true`
+3. Add a base64 blur placeholder in `lib/blurPlaceholders.ts` (keyed by slug)
+
+`lib/site.ts` holds identity, positioning copy, artist statement, `PROCESS_STEPS` (single source for `/process` and `/commissions`), and social links.
 
 ### Routing (App Router)
-- `app/page.tsx` — Home (splash + hero + featured works)
-- `app/gallery/page.tsx` — Masonry gallery with filter system
-- `app/gallery/[slug]/page.tsx` — Individual artwork detail page (statically generated via `generateStaticParams`)
-- `app/series/page.tsx` — Browse by series
-- `app/about/page.tsx` — Artist bio
-- `app/process/page.tsx` — Process / approach
-- `app/commissions/page.tsx` — Commission intake
-- `app/contact/page.tsx` — Contact form
-- `app/api/checkout/route.ts` — Stripe Checkout session creation
-- `app/api/contact/route.ts` — Resend email handler for contact form
-- `app/api/commission/route.ts` — Resend email handler for commission intake
 
-Gallery detail pages are fully static (`generateStaticParams` + `generateMetadata` both read from `ARTWORKS`).
+- `/` — editorial hero, featured works, statement, wall-preview pitch, contact
+- `/gallery` — server page (metadata + `ItemList` JSON-LD) rendering the client `GalleryIndex` filter island
+- `/gallery/[slug]` — SSG artwork detail; sticky image, studio-walk prev/next, `VisualArtwork` + `BreadcrumbList` JSON-LD
+- `/series` — server page rendering client `SeriesSection` rails
+- `/who-i-am` — artist narrative (`/about` 308-redirects here via `next.config.ts`)
+- `/process`, `/commissions`, `/contact` — process + enquiry (forms are client islands: `CommissionForm`, `ContactForm`)
+- `/preview`, `/preview/[slug]` — camera wall preview (flagship feature; immersive route hides nav)
+- `app/opengraph-image.tsx`, `app/gallery/[slug]/opengraph-image.tsx` — dynamic OG images via `next/og`
+- `app/api/contact`, `app/api/commission` — Resend handlers (Zod + honeypot; 503 when email unconfigured)
 
 ### Client vs Server Components
-Pages and most layout components are Server Components. Use `'use client'` only when the component needs state, effects, or event handlers. `ArtworkActions` is the canonical example — it wraps `PurchaseModal` and `InquireModal` so the parent detail page stays a Server Component.
 
-### Components
-| Component | Type | Purpose |
-|---|---|---|
-| `ArtworkActions` | Client | Purchase / Inquire buttons + modal state |
-| `PurchaseModal` | Client | Stripe checkout modal |
-| `InquireModal` | Client | Artwork inquiry form modal |
-| `Lightbox` | Client | Full-screen image viewer |
-| `Cursor` | Client | Custom cursor (hidden on touch devices) |
-| `MobileNav` | Client | Hamburger nav for small screens |
-| `Nav` | Server | Primary navigation bar |
-| `Footer` | Server | Site footer |
-| `Reveal` | Client | IntersectionObserver fade-up wrapper |
-| `Grain` | Server | Fixed SVG film-grain overlay |
-| `Marquee` | Server | Infinite scrolling text ticker |
-| `StatCounter` | Client | Animated number counter |
+Pages are Server Components; interactivity lives in small client islands (`GalleryIndex`, `CommissionForm`, `ContactForm`, `Nav`, `Reveal`, `HomeHero`, `SeriesSection`, `WallPreview`). Keep `metadata` exports on server pages.
 
-### API route validation
-All API routes validate request bodies with `zod` before processing. Keep schemas colocated in the route file.
+### View transitions
 
-### Environment variables
-Required in `.env.local`:
-```
-RESEND_API_KEY=
-STRIPE_SECRET_KEY=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-NEXT_PUBLIC_SITE_URL=https://harryferraro.com.au
-```
-`NEXT_PUBLIC_SITE_URL` is used in OG image generation and Stripe redirect URLs.
-
-### Security headers & image config (`next.config.ts`)
-- CSP locks scripts to `'self'` + `js.stripe.com`; fonts to `'self'`
-- `images.formats` → `['image/avif', 'image/webp']`
-- `/paintings/:path*` served with `Cache-Control: public, max-age=31536000, immutable`
-- `experimental.optimizeCss: true` (critters)
-
----
+`experimental.viewTransition` is on. `components/ArtworkTransition.tsx` wraps React's experimental `ViewTransition` and tags paintings with `artwork-<slug>` so they morph between the gallery card and detail hero. It degrades to a plain wrapper when the export/API is absent.
 
 ## Key Conventions
 
-### Class merging utility
-Use `clsx` + `tailwind-merge` together when building dynamic class strings:
-```ts
-import { clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-const cn = (...inputs: Parameters<typeof clsx>) => twMerge(clsx(...inputs))
-```
-
 ### Styling
-Styling is split between `app/globals.css` (semantic component classes) and Tailwind utility classes. Prefer the existing semantic classes for UI components and Tailwind for layout/spacing.
 
-**Buttons**
-| Class | Purpose |
-|---|---|
-| `btn-ember` | Primary filled ember-orange button |
-| `btn-ghost` | Outlined ghost button |
-| `btn-full` | Full-width modifier (apply alongside `btn-ember` or `btn-ghost`) |
+Semantic classes in `app/globals.css`, Tailwind for layout/spacing.
 
-**Badges**
-| Class | Purpose |
-|---|---|
-| `badge-available` | Green "Available" status pill |
-| `badge-sold` | Muted "Sold" status pill |
+**Buttons** — two voices only: `btn-ink` (paper-filled primary) and `btn-line` (outlined). `btn-full` is the width modifier.
 
-**Cards**
-| Class | Purpose |
-|---|---|
-| `gallery-card` | Masonry card with hover image scale + overlay |
-| `gallery-card-info` | Title/price block inside `gallery-card` (slides up on hover) |
-| `feat-card` | Featured artwork card (home page) |
-| `feat-card-overlay` / `feat-card-info` | Overlay + info block inside `feat-card` |
-| `series-card` | Series browse card |
+**Layout/typography**: `eyebrow`, `site-shell`, `section-pad` / `section-pad-tight`, `statement-panel`, `success-box`, `divider`, `art-shell` / `art-core` (via `ArtFrame`), `grain` (via `Grain`).
 
-**Forms**
-| Class | Purpose |
-|---|---|
-| `form-input` | Text input / textarea / select — ember focus ring |
-| `form-label` | Field label |
-| `form-error` | Inline validation error (red, mono, 11px) |
-
-**Layout & typography**
-| Class | Purpose |
-|---|---|
-| `eyebrow` | Small uppercase label with leading ember line (`::before`) |
-| `info-row` / `info-key` / `info-val` | Key-value table rows (artwork detail page) |
-| `modal-backdrop` / `modal-sheet` | Modal overlay + sliding panel |
-| `reveal` | Scroll-triggered fade-up — adds `visible` class via IntersectionObserver |
-| `page-enter` | Page entrance animation (wrap top-level page `<div>`) |
-| `divider` | 1px horizontal rule |
-| `grain` | Fixed SVG noise overlay (rendered by `<Grain />`) |
-
-### Design tokens
-Brand colours are defined in both CSS variables (`:root`) and `tailwind.config.ts`. Always use the named token rather than a raw hex:
+### Design tokens (warm near-black + oxide)
 
 | Token | Value | Role |
 |---|---|---|
-| `ember` | `#c8570a` | Primary accent / CTA |
-| `ember-2` | `#e06a18` | Hover state for ember buttons |
-| `ember-3` | `#7a3408` | Scrollbar thumb, deep ember tint |
-| `bg` | `#15131c` | Page background |
-| `bg-2` | `#1c1a24` | Secondary background |
-| `surface` | `#22202c` | Card / panel surface |
-| `surface-2` | `#2b2836` | Elevated surface |
-| `text` | `#f2ede5` | Primary text |
-| `text-2` | `#b0a9bc` | Secondary text |
-| `text-3` | `#7c768a` | Tertiary / placeholder text |
-| `border` | `#38354a` | Default border |
-| `border-2` | `#48455a` | Elevated border |
+| `bg` / `bg-2` | `#080706` / `#100d0a` | Page backgrounds |
+| `surface` / `surface-2` | `#15120f` / `#211a15` | Panels |
+| `oxide` / `oxide-2` | `#b65d2c` / `#d1844a` | Accent / hover accent |
+| `text` / `text-2` / `text-3` | `#f0e7dc` / `#b7aa9b` / `#8f8375` | Type ramp |
+| `--paper` | `#f0e7dc` | Filled CTA background |
+| `--blood` | `#4a1410` | Radial background accent |
+| `--border` / `--border-strong` | rgba paper 0.16 / 0.32 | Hairlines |
 
-CSS easing variables (use in inline styles or custom CSS, not available as Tailwind utilities):
-- `--ease-out-expo` → `cubic-bezier(0.16, 1, 0.3, 1)`
-- `--ease-in-out` → `cubic-bezier(0.25, 0.46, 0.45, 0.94)`
-- `--transition-base` → `0.25s var(--ease-in-out)`
-
-Tailwind easing utilities (via `tailwind.config.ts`):
-- `ease-out-expo` — fast out, great for entrances
-- `ease-in-out` — smooth both ends
-
-### Tailwind animation classes
-Pre-defined keyframe animations available as Tailwind utilities:
-
-| Class | Description |
-|---|---|
-| `animate-hero-zoom` | Slow scale 1.06→1 (hero image kenburns) |
-| `animate-fade-up` | Opacity + translateY entrance (1.5s) |
-| `animate-scroll-pulse` | Opacity pulse for scroll indicator |
-| `animate-marquee` / `animate-marquee-2` | Infinite ticker scroll (offset by half) |
-| `animate-grain` | SVG noise position jitter |
-| `animate-page-in` | Page entrance (0.55s) |
-| `animate-scale-in` | Scale + opacity entrance (0.4s) |
-| `animate-slide-right` | Slide in from left |
-| `animate-fade-in` | Simple opacity fade (0.3s) |
+Easings: `--ease-heavy` `cubic-bezier(0.16,1,0.3,1)`, `--ease-soft` `cubic-bezier(0.32,0.72,0,1)`.
 
 ### Typography
-- `font-serif` → Cormorant Garamond — headings, prices, display text, artist statements
-- `font-mono` → JetBrains Mono — UI labels, navigation, metadata, buttons, form fields
+
+- `font-serif` → Cormorant Garamond — display headings, editorial lines
+- `font-mono` → JetBrains Mono — UI labels, body copy, metadata
+
+### Motion & accessibility
+
+- Route entrance: `app/template.tsx` opacity fade only (no `.page-enter`; would double up and fight the view-transition morph)
+- Scroll reveals: `components/Reveal.tsx` (Motion `whileInView`); `TextReveal` for word-group headings
+- Every animated component must respect `useReducedMotion`; CSS `prefers-reduced-motion` and `.no-js` rescue blocks in `globals.css` force hidden content visible
+- Forms focus the first invalid field on failed submit; shared primitives in `components/FormPrimitives.tsx`
+- Modal-ish overlays (mobile More sheet) use `lib/useFocusTrap.ts`
+
+### Images
+
+Always use `next/image` with `placeholder="blur"` + `blurDataURL={BLUR_PLACEHOLDERS[slug]}` for paintings. `priority` only on the homepage hero and artwork-detail hero.
+
+### Environment variables
+
+Optional in `.env.local` (see `.env.example`):
+
+```
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+CONTACT_TO_EMAIL=
+NEXT_PUBLIC_SITE_URL=
+```
+
+Forms return 503 and offer a mailto fallback when Resend is not configured. **Never add Stripe/commerce.**
+
+### Security headers (`next.config.ts`)
+
+CSP (`script-src 'self' 'unsafe-inline'`, `connect-src 'self' https://api.resend.com`), `X-Frame-Options: DENY`, nosniff, long-cache for `/paintings/*`, AVIF/WebP.
 
 ### Path alias
-`@/` resolves to the project root (configured in `tsconfig.json`).
 
-### Scroll animations
-Wrap sections in `<Reveal>` (from `components/Reveal.tsx`) for IntersectionObserver-driven fade-up. Fires once at 8% visibility then unobserves.
-- `delay` prop — transition delay in seconds
-- `as` prop — changes the rendered HTML element (default: `div`)
-- Internally applies the `reveal` CSS class; adds `visible` when intersecting
-
-### Modals
-Modals trap focus using `lib/useFocusTrap.ts`. Any new modal must use this hook and toggle `document.body.classList` with `modal-open` to prevent scroll.
-
-### Stripe currency
-Prices in `ARTWORKS` are stored as whole-dollar integers (AUD). The checkout route multiplies by 100 for Stripe's minor-unit format. Currency is hardcoded to `'aud'`.
+`@/` resolves to the project root (`tsconfig.json`).
