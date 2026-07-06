@@ -1,20 +1,30 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useFocusTrap } from '@/lib/useFocusTrap'
 
 const NAV_LINKS = [
   { label: 'Work', href: '/gallery' },
   { label: 'Series', href: '/series' },
+  { label: 'Preview', href: '/preview' },
   { label: 'Who I am', href: '/who-i-am' },
   { label: 'Process', href: '/process' },
   { label: 'Contact', href: '/contact' },
 ]
 
+// Primary destinations pinned to the mobile bottom bar; the rest live in the
+// "More" sheet so labels never overflow on narrow screens.
+const MOBILE_PRIMARY = ['/gallery', '/series', '/who-i-am']
+const MOBILE_MORE = NAV_LINKS.filter((link) => !MOBILE_PRIMARY.includes(link.href))
+
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const pathname = usePathname()
+  const sheetRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(sheetRef, moreOpen)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 48)
@@ -23,7 +33,17 @@ export function Nav() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const active = (href: string) => pathname === href || pathname.startsWith(`${href}/`) || (href === '/who-i-am' && pathname === '/about')
+  // Close the sheet on Escape; link clicks close it directly.
+  useEffect(() => {
+    if (!moreOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMoreOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [moreOpen])
+
+  const active = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
   const immersivePreview = /^\/preview\/[^/]+$/.test(pathname)
 
   if (immersivePreview) return null
@@ -58,22 +78,52 @@ export function Nav() {
         </nav>
       </header>
 
-      {/* Mobile nav (< lg): bottom-pinned bar. Trimmed to primary destinations
-          (Home + the four most-used routes) so labels never overflow on narrow
-          screens. Process and Contact remain reachable via the footer. */}
+      {/* Mobile nav (< lg): bottom-pinned bar with a "More" sheet for the
+          secondary destinations (Preview, Process, Contact). */}
       <nav aria-label="Mobile" className="mobile-bottom-nav lg:hidden">
         <Link href="/" className={`mobile-bottom-link ${pathname === '/' ? 'active' : ''}`}>
           Home
         </Link>
-        {NAV_LINKS.filter((l) => l.href === '/gallery' || l.href === '/series' || l.href === '/who-i-am').map(({ label, href }) => (
+        {NAV_LINKS.filter((link) => MOBILE_PRIMARY.includes(link.href)).map(({ label, href }) => (
           <Link key={href} href={href} className={`mobile-bottom-link ${active(href) ? 'active' : ''}`}>
             {label}
           </Link>
         ))}
+        <button
+          type="button"
+          className={`mobile-bottom-link ${moreOpen || MOBILE_MORE.some(({ href }) => active(href)) ? 'active' : ''}`}
+          aria-expanded={moreOpen}
+          aria-controls="mobile-more-sheet"
+          onClick={() => setMoreOpen((open) => !open)}
+        >
+          More
+        </button>
         <Link href="/commissions" className={`mobile-bottom-link cta ${pathname.startsWith('/commissions') ? 'active' : ''}`}>
           Enquire
         </Link>
       </nav>
+
+      {moreOpen && (
+        <div className="mobile-more-backdrop lg:hidden" onClick={() => setMoreOpen(false)}>
+          <div
+            id="mobile-more-sheet"
+            ref={sheetRef}
+            role="dialog"
+            aria-label="More pages"
+            className="mobile-more-sheet"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {MOBILE_MORE.map(({ label, href }) => (
+              <Link key={href} href={href} onClick={() => setMoreOpen(false)} className={`mobile-more-link ${active(href) ? 'active' : ''}`}>
+                {label}
+              </Link>
+            ))}
+            <button type="button" className="mobile-more-close" onClick={() => setMoreOpen(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   )
 }

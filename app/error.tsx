@@ -15,7 +15,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
         >
           An unexpected error occurred.
         </h1>
-        <button onClick={reset} className="btn-ember">
+        <button onClick={reset} className="btn-ink">
           Try again
         </button>
       </div>

@@ -2,7 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ARTIST_STATEMENT, SITE } from '@/lib/site'
-import { ARTWORKS } from '@/lib/artworks'
+import { AVAILABLE_ARTWORKS } from '@/lib/artworks'
+import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import { ArtFrame } from '@/components/ArtFrame'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
@@ -11,6 +12,7 @@ import { TextReveal } from '@/components/TextReveal'
 export const metadata: Metadata = {
   title: 'Who I am',
   description: 'Artist statement and practice notes for Harrison Ferraro, Melbourne painter working in expressive figuration.',
+  alternates: { canonical: `${SITE.siteUrl}/who-i-am` },
 }
 
 const ABOUT = [
@@ -21,8 +23,8 @@ const ABOUT = [
 ]
 
 export default function WhoIAmPage() {
-  const primary = ARTWORKS.find((artwork) => artwork.slug === 'crimson-study') ?? ARTWORKS[0]
-  const secondary = ARTWORKS.find((artwork) => artwork.slug === 'ascendant') ?? ARTWORKS[1]
+  const primary = AVAILABLE_ARTWORKS.find((artwork) => artwork.slug === 'crimson-study') ?? AVAILABLE_ARTWORKS[0]
+  const secondary = AVAILABLE_ARTWORKS.find((artwork) => artwork.slug === 'ignition-i') ?? AVAILABLE_ARTWORKS[1]
 
   const summary: Array<[string, string, string]> = [
     ['01', 'Work', 'Figurative oil paintings, portraits, figure studies, and colour studies.'],
@@ -30,8 +32,22 @@ export default function WhoIAmPage() {
     ['03', 'Enquiries', 'Original work, selected commissions, exhibitions, press, and collaboration. The site does not list prices or run checkout.'],
   ]
 
+  const profileJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: {
+      '@type': 'Person',
+      name: SITE.artistName,
+      url: `${SITE.siteUrl}/who-i-am`,
+      jobTitle: 'Painter',
+      sameAs: [SITE.instagramUrl, SITE.facebookUrl],
+      address: { '@type': 'PostalAddress', addressLocality: 'Melbourne', addressCountry: 'AU' },
+    },
+  }
+
   return (
-    <div className="page-enter">
+    <div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(profileJsonLd) }} />
       <section className="site-shell relative grid min-h-[100dvh] border-b border-[var(--border)] lg:grid-cols-[1.08fr_0.92fr]">
         <div className="relative z-10 flex flex-col justify-end px-5 pb-16 pt-36 md:px-12 lg:px-[4.5rem] lg:pb-24">
           <p className="eyebrow mb-5">Who I am</p>
@@ -56,7 +72,7 @@ export default function WhoIAmPage() {
         <div className="relative min-h-[70vh] border-t border-[var(--border)] lg:min-h-[100dvh] lg:-ml-[8%] lg:border-l lg:border-t-0">
           <ArtFrame className="absolute inset-4 lg:inset-6">
             <div className="relative h-full min-h-[66vh] lg:min-h-full">
-              <Image src={primary.image} alt={primary.alt} fill className="object-cover" sizes="(max-width:1024px) 100vw, 46vw" style={{ filter: 'brightness(0.74) contrast(1.15) saturate(0.84)' }} />
+              <Image src={primary.image} alt={primary.alt} fill className="object-cover" sizes="(max-width:1024px) 100vw, 46vw" placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[primary.slug]} style={{ filter: 'brightness(0.74) contrast(1.15) saturate(0.84)' }} />
             </div>
           </ArtFrame>
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,.84),transparent_52%)]" />
@@ -87,7 +103,7 @@ export default function WhoIAmPage() {
 
       <section className="site-shell grid border-b border-[var(--border)] lg:grid-cols-[0.88fr_1.12fr]">
         <div className="relative min-h-[38rem] border-b border-[var(--border)] lg:border-b-0 lg:border-r">
-          <Image src={secondary.image} alt={secondary.alt} fill className="object-cover" sizes="(max-width:1024px) 100vw, 44vw" style={{ filter: 'brightness(.72) contrast(1.14) saturate(.82)' }} />
+          <Image src={secondary.image} alt={secondary.alt} fill className="object-cover" sizes="(max-width:1024px) 100vw, 44vw" placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[secondary.slug]} style={{ filter: 'brightness(.72) contrast(1.14) saturate(.82)' }} />
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,.72),transparent_58%)]" />
         </div>
         <div className="section-pad-tight">

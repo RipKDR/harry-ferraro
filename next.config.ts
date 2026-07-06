@@ -21,6 +21,15 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizeCss: true,
+    // React ViewTransition support — shared-element morph from the gallery
+    // index to the artwork detail hero (see components/ArtworkTransition.tsx).
+    viewTransition: true,
+  },
+  async redirects() {
+    return [
+      // Canonical artist page is /who-i-am; /about persisted from an earlier IA.
+      { source: '/about', destination: '/who-i-am', permanent: true },
+    ]
   },
   async headers() {
     return [

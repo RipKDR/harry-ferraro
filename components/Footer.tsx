@@ -4,6 +4,7 @@ import { SITE, SOCIAL_LINKS } from '@/lib/site'
 const FOOTER_NAV = [
   { label: 'Work', href: '/gallery' },
   { label: 'Series', href: '/series' },
+  { label: 'Wall preview', href: '/preview' },
   { label: 'Who I am', href: '/who-i-am' },
   { label: 'Process', href: '/process' },
   { label: 'Enquire', href: '/commissions' },
