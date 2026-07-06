@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   creator: SITE.artistName,
   alternates: { canonical: SITE.siteUrl },
   manifest: '/manifest.webmanifest',
+  // Open Graph / Twitter images come from app/opengraph-image.tsx (site-wide)
+  // and app/gallery/[slug]/opengraph-image.tsx (per artwork).
   openGraph: {
     type: 'website',
     locale: 'en_AU',
@@ -36,13 +38,11 @@ export const metadata: Metadata = {
     siteName: SITE.artistName,
     title: 'Harrison Ferraro | Painter',
     description: POSITIONING,
-    images: [{ url: '/paintings/ignition-ii.jpg', width: 1200, height: 1500, alt: 'Figurative painting by Harrison Ferraro' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Harrison Ferraro | Painter',
     description: POSITIONING,
-    images: [{ url: '/paintings/ignition-ii.jpg', alt: 'Figurative painting by Harrison Ferraro' }],
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large' } },
 }

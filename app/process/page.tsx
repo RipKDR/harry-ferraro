@@ -1,23 +1,18 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+import { PROCESS_STEPS, SITE } from '@/lib/site'
 import { Footer } from '@/components/Footer'
 import { Reveal } from '@/components/Reveal'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Process',
   description: 'Studio process and commission notes for Harrison Ferraro.',
+  alternates: { canonical: `${SITE.siteUrl}/process` },
 }
-
-const STEPS = [
-  ['01', 'Brief', 'Send the subject, references, room, size, timing, and what the painting should avoid.'],
-  ['02', 'Fit check', 'Harrison confirms whether the request suits the work and asks for anything that needs clearing up.'],
-  ['03', 'Agreement', 'Scope, revision points, delivery, image usage, and timeline are confirmed in writing.'],
-  ['04', 'Making', 'The painting begins once the practical details are clear. Progress expectations are agreed case by case.'],
-  ['05', 'Delivery', 'Collection, shipping, and care details are confirmed before the work leaves the studio.'],
-]
 
 export default function ProcessPage() {
   return (
-    <div className="page-enter">
+    <div>
       <section className="section-pad site-shell border-b border-[var(--border)] pt-36 md:pt-44">
         <p className="eyebrow mb-5">Process</p>
         <div className="grid gap-8 lg:grid-cols-[1fr_0.68fr] lg:items-end">
@@ -32,7 +27,7 @@ export default function ProcessPage() {
 
       <section className="section-pad site-shell">
         <ol className="relative">
-          {STEPS.map(([number, title, body], index) => (
+          {PROCESS_STEPS.map(([number, title, body], index) => (
             <li
               key={number}
               className="relative flex flex-col gap-4 border-t border-[var(--border)] py-12 first:border-t-0 first:pt-0 md:flex-row md:items-start md:gap-10"

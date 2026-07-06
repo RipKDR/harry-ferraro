@@ -2,13 +2,13 @@ import { useEffect, type RefObject } from 'react'
 
 const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
 
-export function useFocusTrap(ref: RefObject<HTMLElement | null>) {
+export function useFocusTrap(ref: RefObject<HTMLElement | null>, active = true) {
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
+    if (!active) return
 
     const trap = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return
+      const el = ref.current
+      if (!el || e.key !== 'Tab') return
       const nodes = Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE))
       if (!nodes.length) return
       const first = nodes[0]
@@ -22,5 +22,5 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>) {
 
     document.addEventListener('keydown', trap)
     return () => document.removeEventListener('keydown', trap)
-  }, [ref])
+  }, [ref, active])
 }

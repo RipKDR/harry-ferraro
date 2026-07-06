@@ -1,8 +1,3 @@
-/** Returns the correct image src — either a Sanity CDN URL or a local /paintings/ path. */
-export function artworkSrc(filename: string): string {
-  return filename.startsWith('https://') ? filename : `/paintings/${filename}`
-}
-
 export type Artwork = {
   slug: string
   title: string
@@ -14,7 +9,13 @@ export type Artwork = {
   series: SeriesName
   description: string
   featured: boolean
-  socialPostUrl?: string
+  /**
+   * Whether the painting's JPEG is present in `public/paintings/`.
+   * Entries with `available: false` stay in the data (title, copy, series)
+   * but are hidden from every rendered surface, the sitemap, and static
+   * params until the image file lands — drop the JPEG in and flip this on.
+   */
+  available: boolean
 }
 
 export type SeriesName = 'Figure studies' | 'Fire and smoke' | 'Colour rupture' | 'Movement studies'
@@ -31,6 +32,7 @@ export const ARTWORKS: Artwork[] = [
     series: 'Fire and smoke',
     description: 'A charged portrait built around smoke, shadow, and the small violence of a flame.',
     featured: true,
+    available: true,
   },
   {
     slug: 'ignition-ii',
@@ -43,6 +45,7 @@ export const ARTWORKS: Artwork[] = [
     series: 'Fire and smoke',
     description: 'A portrait where light does the speaking. The figure sits between control and collapse, with the flame holding the centre of the painting.',
     featured: true,
+    available: true,
   },
   {
     slug: 'crimson-study',
@@ -55,7 +58,11 @@ export const ARTWORKS: Artwork[] = [
     series: 'Figure studies',
     description: 'A red, unsettled figure study. The work leans into pressure, gaze, and the feeling of being seen before you are ready.',
     featured: true,
+    available: true,
   },
+  // The four works below are catalogued but their photographs are not yet in
+  // `public/paintings/`. They stay `available: false` so no page ships a
+  // broken image. Add the JPEG and set `available: true` to publish.
   {
     slug: 'ascendant',
     title: 'Ascendant',
@@ -67,6 +74,7 @@ export const ARTWORKS: Artwork[] = [
     series: 'Movement studies',
     description: 'A lifted face, loose marks, and weather moving through the body.',
     featured: true,
+    available: false,
   },
   {
     slug: 'tempest',
@@ -79,6 +87,7 @@ export const ARTWORKS: Artwork[] = [
     series: 'Movement studies',
     description: 'A figure caught in motion. Hair, posture, and marks pull the work toward storm rather than stillness.',
     featured: true,
+    available: false,
   },
   {
     slug: 'radiance',
@@ -91,6 +100,7 @@ export const ARTWORKS: Artwork[] = [
     series: 'Movement studies',
     description: 'A lighter work without losing weight. It carries movement, softness, and a release of pressure.',
     featured: false,
+    available: false,
   },
   {
     slug: 'dissolution',
@@ -103,8 +113,11 @@ export const ARTWORKS: Artwork[] = [
     series: 'Colour rupture',
     description: 'A colour-heavy face study. The image feels fractured, bright, and uncomfortable in the right way.',
     featured: false,
+    available: false,
   },
 ]
+
+export const AVAILABLE_ARTWORKS: Artwork[] = ARTWORKS.filter((artwork) => artwork.available)
 
 export const SERIES: Record<SeriesName, { description: string }> = {
   'Figure studies': {
@@ -121,23 +134,36 @@ export const SERIES: Record<SeriesName, { description: string }> = {
   },
 }
 
+/** Series that currently have at least one published (available) work. */
+export function getActiveSeries(): Array<[SeriesName, { description: string }]> {
+  return (Object.entries(SERIES) as Array<[SeriesName, { description: string }]>).filter(
+    ([name]) => AVAILABLE_ARTWORKS.some((artwork) => artwork.series === name),
+  )
+}
+
 export function getArtwork(slug: string) {
-  return ARTWORKS.find((artwork) => artwork.slug === slug)
+  return AVAILABLE_ARTWORKS.find((artwork) => artwork.slug === slug)
 }
 
 export function getFeaturedArtworks() {
-  return ARTWORKS.filter((artwork) => artwork.featured)
+  return AVAILABLE_ARTWORKS.filter((artwork) => artwork.featured)
+}
+
+export function getSeriesWorks(name: SeriesName) {
+  return AVAILABLE_ARTWORKS.filter((artwork) => artwork.series === name)
+}
+
+/** Previous/next published works relative to `slug`, wrapping at each end. */
+export function getAdjacentArtworks(slug: string) {
+  const index = AVAILABLE_ARTWORKS.findIndex((artwork) => artwork.slug === slug)
+  if (index === -1) return null
+  const count = AVAILABLE_ARTWORKS.length
+  return {
+    previous: AVAILABLE_ARTWORKS[(index - 1 + count) % count],
+    next: AVAILABLE_ARTWORKS[(index + 1) % count],
+  }
 }
 
 export function formatArtworkMeta(value: string | number | null) {
   return value === null || value === '' ? null : String(value)
-}
-
-export function artworkMetaItems(artwork: Artwork) {
-  return [
-    ['Year', formatArtworkMeta(artwork.year)],
-    ['Medium', formatArtworkMeta(artwork.medium)],
-    ['Dimensions', formatArtworkMeta(artwork.dimensions)],
-    ['Series', artwork.series],
-  ].filter((item): item is [string, string] => Boolean(item[1]))
 }

@@ -13,10 +13,11 @@ Next.js App Router site for **Harrison Ferraro** (Melbourne, figurative oil). Po
 ## Features
 
 - Editorial home hero, work index, series, process
-- **Who I am** — portfolio narrative
-- **Wall preview** — phone camera + drag/pinch placement (`/preview`, `/preview/[slug]`)
-- Commission & contact forms (Zod + honeypot)
-- SEO metadata, sitemap, security headers (CSP)
+- **Who I am** — portfolio narrative (`/about` redirects here)
+- **Wall preview** — phone camera + drag/pinch placement (`/preview`, `/preview/[slug]`), linked from nav, footer, and home
+- **View transitions** — paintings morph from the gallery index into the detail hero (React `ViewTransition`, graceful fallback)
+- Commission & contact forms (Zod + honeypot, mailto fallback)
+- Per-page metadata, dynamic OG images, JSON-LD (`Person`, `VisualArtwork`, `ItemList`, `BreadcrumbList`, `ProfilePage`), sitemap, security headers (CSP)
 
 No public prices, Stripe, or checkout.
 
@@ -39,14 +40,17 @@ npm run typecheck && npm run lint && npm run build
 
 1. Push to `main` on GitHub (`RipKDR/harry-ferraro`).
 2. Import repo on [vercel.com/new](https://vercel.com/new) or use existing project.
-3. Set environment variables: `RESEND_API_KEY`, and any vars referenced in `app/api/contact` and `app/api/commission`.
+3. Set environment variables: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `CONTACT_TO_EMAIL` (see `.env.example`).
 4. Deploy. Confirm `lib/site.ts` `siteUrl` matches your production domain.
 
 ## Adding paintings
 
 1. Add JPEG to `public/paintings/`.
-2. Add entry in `lib/artworks.ts` (slug, title, series, description, `featured`, etc.).
-3. Rebuild — static paths regenerate for gallery and preview.
+2. Add (or enable) the entry in `lib/artworks.ts` with `available: true` — works without their image on disk stay catalogued but unpublished.
+3. Add a blur placeholder in `lib/blurPlaceholders.ts` (keyed by slug).
+4. Rebuild — static paths regenerate for gallery and preview.
+
+Four catalogued works (`ascendant`, `tempest`, `radiance`, `dissolution`) are currently `available: false` awaiting their image files.
 
 ## Docs
 

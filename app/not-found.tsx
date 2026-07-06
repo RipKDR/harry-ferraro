@@ -14,8 +14,8 @@ export default function NotFound() {
         The page may have moved. Return to the gallery or start a commission enquiry.
       </p>
       <div className="flex flex-wrap justify-center gap-3">
-        <Link href="/gallery" className="btn-ember">View gallery</Link>
-        <Link href="/" className="btn-ghost">Go home</Link>
+        <Link href="/gallery" className="btn-ink">View gallery</Link>
+        <Link href="/" className="btn-line">Go home</Link>
       </div>
     </div>
   )

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ARTWORKS } from '@/lib/artworks'
+import { AVAILABLE_ARTWORKS } from '@/lib/artworks'
+import { BLUR_PLACEHOLDERS } from '@/lib/blurPlaceholders'
 import { SITE } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function PreviewIndexPage() {
   return (
-    <div className="page-enter min-h-[100dvh] border-b border-[var(--border)]">
+    <div className="min-h-[100dvh] border-b border-[var(--border)]">
       <header className="section-pad site-shell border-b border-[var(--border)] pt-36 md:pt-44">
         <p className="eyebrow mb-5">Virtual preview</p>
         <h1 className="max-w-[52rem] font-serif text-[clamp(3.4rem,9vw,9rem)] leading-[0.82] tracking-[-0.08em]">
@@ -25,10 +26,10 @@ export default function PreviewIndexPage() {
 
       <section className="section-pad site-shell" aria-label="Choose a painting">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {ARTWORKS.map((artwork) => (
+          {AVAILABLE_ARTWORKS.map((artwork) => (
             <Link key={artwork.slug} href={`/preview/${artwork.slug}`} className="work-tile group block border border-[var(--border)] p-4 transition-colors hover:border-[var(--border-strong)]">
               <div className="relative aspect-[4/5] overflow-hidden bg-[#050403]">
-                <Image src={artwork.image} alt={artwork.alt} fill className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" sizes="(max-width:768px) 100vw, 33vw" />
+                <Image src={artwork.image} alt={artwork.alt} fill placeholder="blur" blurDataURL={BLUR_PLACEHOLDERS[artwork.slug]} className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" sizes="(max-width:768px) 100vw, 33vw" />
               </div>
               <h2 className="mt-4 font-serif text-[2.4rem] leading-none tracking-[-0.05em]">{artwork.title}</h2>
               <p className="mt-2 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-oxide">Open wall preview</p>
